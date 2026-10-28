@@ -1,0 +1,83 @@
+{
+  "app": "bp-workflow-studio",
+  "version": 1,
+  "exportedAt": "2026-10-28T18:21:58.366Z",
+  "wf": {
+    "name": "Sample: Requisition approvals",
+    "client": "",
+    "bp": "Requisition Event",
+    "init": {
+      "groups": [
+        "Employee As Self",
+        "Procurement Specialist"
+      ],
+      "note": ""
+    },
+    "items": [
+      {
+        "kind": "par",
+        "id": "0fz4arq",
+        "steps": [
+          {
+            "kind": "step",
+            "id": "q6y7e6n",
+            "type": "approval",
+            "groups": [
+              "Manager"
+            ],
+            "condition": "",
+            "restrictions": [],
+            "optional": false,
+            "task": "",
+            "note": ""
+          },
+          {
+            "kind": "step",
+            "id": "ydkh00z",
+            "type": "approval",
+            "groups": [
+              "Cost Center Manager"
+            ],
+            "condition": "",
+            "restrictions": [
+              "Cost Center"
+            ],
+            "optional": false,
+            "task": "",
+            "note": ""
+          }
+        ]
+      },
+      {
+        "kind": "step",
+        "id": "znb3rhz",
+        "type": "chain",
+        "groups": [
+          "Cost Center Manager"
+        ],
+        "condition": "Amount > 50,000",
+        "restrictions": [
+          "Cost Center Hierarchy"
+        ],
+        "optional": false,
+        "task": "",
+        "note": ""
+      },
+      {
+        "kind": "step",
+        "id": "7pjkwvz",
+        "type": "todo",
+        "groups": [
+          "Procurement Specialist"
+        ],
+        "condition": "",
+        "restrictions": [],
+        "optional": false,
+        "task": "Confirm sourcing method",
+        "note": ""
+      }
+    ],
+    "customGroups": [],
+    "customConds": []
+  }
+}
