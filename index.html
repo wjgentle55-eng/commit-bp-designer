@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BP Workflow Studio</title>
+<meta name="description" content="Drag-and-drop builder for proposed Workday business process approval chains.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: app shell. Header bar, then three panes: block palette | canvas with Build/Flow/Config tabs | step inspector. Stacks to one column on phones. */
+:root{
+  --bg:#E9EDF3; --panel:#FFFFFF; --panel-2:#F4F6FA; --ink:#18212F; --muted:#5B677B; --line:#D5DCE6;
+  --accent:#2C5BD0; --accent-ink:#FFFFFF; --canvas:#F7F9FC; --dot:#C9D1DD; --sel:#0F1C33;
+  --warn:#B4610B; --warn-bg:#FDF1E2; --ok:#1F7A4D; --ok-bg:#E3F4EA; --danger:#B42318;
+  --cond:#1E8A5B; --par:#55657D;
+  --ui:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F131A; --panel:#171D27; --panel-2:#1D2430; --ink:#E5E9F1; --muted:#97A3B6; --line:#2B3443;
+    --accent:#7FA3FF; --accent-ink:#0B1220; --canvas:#131923; --dot:#28303D; --sel:#FFFFFF;
+    --warn:#F2B15C; --warn-bg:#33240F; --ok:#6FD3A0; --ok-bg:#12291D; --danger:#FF8A80;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --panel:#171D27; --panel-2:#1D2430; --ink:#E5E9F1; --muted:#97A3B6; --line:#2B3443;
+  --accent:#7FA3FF; --accent-ink:#0B1220; --canvas:#131923; --dot:#28303D; --sel:#FFFFFF;
+  --warn:#F2B15C; --warn-bg:#33240F; --ok:#6FD3A0; --ok-bg:#12291D; --danger:#FF8A80;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 var(--ui);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+
+.app{display:grid;grid-template-rows:auto minmax(0,1fr);height:100%;gap:12px;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Header */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:4px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);display:grid;place-items:center}
+.logo svg{display:block}
+.brand h1{font-size:16px;font-weight:800;letter-spacing:-.01em;margin:0;white-space:nowrap}
+.meta{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 420px;min-width:0}
+.field{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 140px}
+.field label{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.field input{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0;width:100%}
+.actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:default}
+.status{font-size:12px;color:var(--muted);white-space:nowrap}
+.status.dirty{color:var(--warn)}
+.menu{position:relative}
+.menu-list{position:absolute;right:0;top:calc(100% + 6px);background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(10,20,40,.18);padding:6px;min-width:230px;z-index:50;display:flex;flex-direction:column}
+.menu-list button{background:none;border:0;text-align:left;padding:8px 10px;border-radius:6px;display:flex;flex-direction:column;gap:1px}
+.menu-list button:hover{background:var(--panel-2)}
+.menu-list small{color:var(--muted);font-size:11.5px}
+
+/* Panes */
+.main{display:grid;grid-template-columns:262px minmax(0,1fr) 310px;gap:12px;min-height:0}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.pane-h{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.pane-h h2{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.pane-b{overflow:auto;padding:12px;flex:1;min-height:0}
+
+/* Palette */
+.ptabs{display:flex;gap:2px;padding:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ptab{border:0;background:none;padding:6px 9px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.ptab[aria-selected="true"]{background:var(--panel-2);color:var(--ink)}
+.pal-list{display:flex;flex-direction:column;gap:12px}
+.pal-item{display:flex;flex-direction:column;gap:4px}
+.pal-item p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.35}
+.pal-group{display:flex;flex-direction:column;gap:6px}
+.pal-group h3{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;font-weight:700}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.search{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.addrow{display:flex;gap:6px}
+.addrow input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
+.tip{font-size:11.5px;color:var(--muted);margin:0;line-height:1.4}
+
+/* Draggable pills (palette) */
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);touch-action:none;cursor:grab;user-select:none}
+.pill .k{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pill.cond{border:0;background:var(--cond);color:#fff;border-radius:0;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);padding:5px 16px}
+.pill.restr{border-style:dashed}
+
+/* Center */
+.ctabs{display:flex;gap:2px;align-items:center;padding:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ctab{border:0;background:none;padding:6px 12px;border-radius:7px;font-weight:700;font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
+.ctab[aria-selected="true"]{background:var(--panel-2);color:var(--ink)}
+.badge{font-size:11px;font-weight:700;border-radius:999px;padding:0 7px;line-height:18px;background:var(--warn-bg);color:var(--warn)}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.ctabs .spacer{flex:1}
+.view{flex:1;min-height:0;overflow:auto}
+.canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;min-height:100%;padding:28px 28px 80px;position:relative}
+.script{max-width:640px;min-width:340px;width:fit-content}
+.legend{font-size:11.5px;color:var(--muted);margin:0 0 14px;max-width:62ch}
+
+/* Scratch-style blocks */
+.block{--c:#2F6FD6;position:relative;background:var(--c);color:#fff;padding:13px 12px 17px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:48px;font-weight:600;font-size:13px;user-select:none;
+  clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px))}
+.block.hat{clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px));border-radius:22px 22px 0 0;padding-top:16px;--c:#B8700F}
+.block.end{clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);border-radius:0 0 10px 10px;--c:#3D4757;min-height:40px;padding-bottom:10px;font-weight:700}
+[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="new"]>.block,[data-drag="newpar"] .block{cursor:grab;touch-action:none}
+.ord{font-family:var(--mono);font-weight:700;font-size:12px;background:rgba(0,0,0,.24);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
+.verb{font-weight:700}
+.verb b{font-weight:800;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.gp{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#18212F;border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:650}
+.gp.role{box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+.gp .kk{font-size:9px;font-weight:800;letter-spacing:.05em;color:#5B677B;text-transform:uppercase;margin-right:2px}
+.hex{display:inline-flex;align-items:center;gap:3px;background:var(--cond);color:#fff;padding:4px 10px 4px 15px;font-size:12px;font-weight:700;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%)}
+.hex i{font-style:normal;opacity:.8;font-weight:600}
+.slot{border:1.5px dashed rgba(255,255,255,.75);border-radius:999px;padding:2px 10px;font-weight:500;font-size:12px;opacity:.95}
+.rs,.opt,.task{font-size:11.5px;background:rgba(0,0,0,.2);border-radius:6px;padding:2px 7px;font-weight:600}
+.opt{font-style:italic}
+.task{background:rgba(255,255,255,.18)}
+.x{width:18px;height:18px;border-radius:50%;border:0;background:transparent;color:inherit;display:inline-grid;place-items:center;font-size:14px;line-height:1;opacity:.55;padding:0}
+.x:hover{opacity:1;background:rgba(0,0,0,.12)}
+.hex .x:hover{background:rgba(0,0,0,.2)}
+
+.stack{display:flex;flex-direction:column;position:relative}
+.stack>*{margin-top:-6px}
+.stack.root{min-height:12px}
+.stack.root:empty{min-height:70px;margin-top:-6px}
+.stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600}
+.script>.stack{margin-top:-6px}
+.script>.endw{margin-top:-6px}
+.stack.root:empty + .endw{margin-top:8px}
+
+.cblock{display:flex;flex-direction:column}
+.chead{--c:var(--par);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),62px calc(100% - 6px),56px 100%,38px 100%,32px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px))}
+.chead .hint{font-size:11.5px;font-weight:500;opacity:.85}
+.cmid{display:flex;margin-top:-6px}
+.carm{width:16px;background:var(--par);flex:none}
+.stack.inner{flex:1;min-width:0;padding-right:0}
+.stack.inner>*:first-child{margin-top:0}
+.stack.inner:empty{min-height:50px;margin:6px 0 6px 6px;border:2px dashed var(--line);border-radius:8px}
+.stack.inner:empty::after{content:"Drop 2+ steps here";display:grid;place-items:center;height:46px;color:var(--muted);font-size:12px;font-weight:600}
+.cfoot{height:22px;background:var(--par);margin-top:-6px;clip-path:polygon(0 0,32px 0,38px 6px,56px 6px,62px 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px));border-radius:0 0 0 4px}
+
+.bw{position:relative}
+.bw.sel{filter:drop-shadow(2px 0 0 var(--sel)) drop-shadow(-2px 0 0 var(--sel)) drop-shadow(0 2px 0 var(--sel)) drop-shadow(0 -2px 0 var(--sel));z-index:2}
+.bw.drop-ok{filter:drop-shadow(3px 0 0 var(--accent)) drop-shadow(-3px 0 0 var(--accent)) drop-shadow(0 3px 0 var(--accent)) drop-shadow(0 -3px 0 var(--accent));z-index:3}
+.ph{height:44px;border:2px dashed var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);margin-top:2px!important;margin-bottom:8px}
+.drag-ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;opacity:.92;max-width:460px;transform-origin:0 0}
+.drag-ghost .bw{filter:drop-shadow(0 10px 18px rgba(10,20,40,.3))}
+body.dragging,body.dragging *{cursor:grabbing!important}
+body.trash .palette{outline:2px dashed var(--danger);outline-offset:-2px}
+.trash-note{display:none;position:absolute;inset:auto 12px 12px 12px;background:var(--danger);color:#fff;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12.5px;text-align:center}
+body.trash .trash-note{display:block}
+.palette{position:relative}
+
+/* Inspector */
+.ins{display:flex;flex-direction:column;gap:16px}
+.ins-h{display:flex;align-items:center;gap:8px}
+.ins-h .sw{width:14px;height:14px;border-radius:4px;flex:none}
+.ins-h h3{margin:0;font-size:15px;font-weight:800}
+.sec{display:flex;flex-direction:column;gap:6px}
+.sec>label,.sec>.lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.sec select,.sec input[type=text],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.sec textarea{min-height:70px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:600}
+.chip .x{opacity:.6}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:var(--panel-2);font-weight:600}
+.toggle input{margin:0;accent-color:var(--accent)}
+.toggle:has(input:checked){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--panel))}
+.check-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.check-row input{accent-color:var(--accent);width:16px;height:16px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.help{font-size:12px;color:var(--muted);margin:0;line-height:1.45}
+.empty-ins{display:flex;flex-direction:column;gap:12px}
+.empty-ins ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--panel-2)}
+
+/* Checks */
+.checks{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.checks li{font-size:12.5px;padding:7px 10px;border-radius:8px;background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);cursor:pointer}
+.checks li.ok{background:var(--ok-bg);border-left-color:var(--ok);cursor:default}
+.checks b{font-family:var(--mono)}
+
+/* Flow + Config */
+.flow-wrap{padding:20px;display:flex;justify-content:center;min-width:fit-content}
+.flow-wrap svg{background:#fff;border-radius:10px;box-shadow:0 1px 0 var(--line),0 8px 24px rgba(10,20,40,.08);max-width:none}
+.cfg{padding:20px;display:flex;flex-direction:column;gap:18px}
+.cfg h3{margin:0;font-size:13px;font-weight:800}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table.def{border-collapse:collapse;width:100%;font-size:12.5px;min-width:820px}
+table.def th{background:var(--panel-2);text-align:left;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.def td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.def tr:last-child td{border-bottom:0}
+table.def td.o{font-family:var(--mono);font-weight:700}
+table.def tr{cursor:pointer}
+table.def tr:hover td{background:var(--panel-2)}
+.tdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(8,14,26,.45);z-index:200;display:grid;place-items:center;padding:16px}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:min(760px,100%);max-height:min(88vh,820px);display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal-h{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal-h h2{margin:0;font-size:16px;font-weight:800;flex:1}
+.modal-b{padding:16px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+.modal-b h3{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.card{text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card:hover{border-color:var(--accent)}
+.card b{font-size:13.5px}
+.card small{color:var(--muted);font-size:12px;line-height:1.4}
+.minis{display:flex;gap:3px;flex-wrap:wrap}
+.minis span{width:16px;height:7px;border-radius:2px}
+.list{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.li:last-child{border-bottom:0}
+.li .t{flex:1 1 200px;min-width:0;display:flex;flex-direction:column}
+.li .t b{font-size:13.5px}
+.li .t small{color:var(--muted);font-size:12px}
+.empty{padding:18px;color:var(--muted);font-size:13px;text-align:center;border:1px dashed var(--line);border-radius:10px}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;z-index:300;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+.toast button{background:none;border:0;color:var(--accent);font-weight:800;padding:0;filter:brightness(1.3)}
+
+@media (max-width:1100px){ .main{grid-template-columns:230px minmax(0,1fr) 270px} }
+@media (max-width:900px){
+  html,body{height:auto}
+  .app{height:auto}
+  .main{grid-template-columns:minmax(0,1fr)}
+  .palette .pane-b{max-height:300px}
+  .view{min-height:62vh}
+  .script{min-width:0;width:100%}
+  .canvas{padding:20px 14px 60px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18"><rect x="2" y="2" width="10" height="4" rx="1" fill="#fff"/><rect x="6" y="7" width="10" height="4" rx="1" fill="#fff" opacity=".8"/><rect x="2" y="12" width="10" height="4" rx="1" fill="#fff" opacity=".6"/></svg></div>
+      <h1>BP Workflow Studio</h1>
+    </div>
+    <div class="meta">
+      <div class="field"><label for="f-name">Design name</label><input id="f-name" type="text" placeholder="e.g. AP invoice approvals v2"></div>
+      <div class="field"><label for="f-client">Client</label><input id="f-client" type="text" placeholder="e.g. Aprio"></div>
+      <div class="field"><label for="f-bp">Business process</label><input id="f-bp" type="text" list="bp-list" placeholder="Supplier Invoice Event"></div>
+      <datalist id="bp-list"></datalist>
+    </div>
+    <div class="actions">
+      <span class="status" id="status"></span>
+      <button class="btn ghost" id="b-undo" title="Undo (Ctrl/Cmd+Z)">Undo</button>
+      <button class="btn" id="b-new">New</button>
+      <button class="btn" id="b-open">Open</button>
+      <button class="btn primary" id="b-save">Save</button>
+      <div class="menu">
+        <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
+        <div class="menu-list" id="export-menu" hidden>
+          <button data-exp="xlsx"><span>Excel config table</span><small>Order, step, groups, conditions, restrictions</small></button>
+          <button data-exp="pdf"><span>PDF for sign-off</span><small>Flow diagram plus definition table</small></button>
+          <button data-exp="png"><span>PNG image</span><small>Flow diagram for decks</small></button>
+          <button data-exp="json"><span>Design file (.json)</span><small>Share with a teammate or commit to the repo</small></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="pane palette" aria-label="Block palette">
+      <div class="ptabs" role="tablist">
+        <button class="ptab" role="tab" data-ptab="steps" aria-selected="true">Steps</button>
+        <button class="ptab" role="tab" data-ptab="groups" aria-selected="false">Groups</button>
+        <button class="ptab" role="tab" data-ptab="conds" aria-selected="false">Conditions</button>
+        <button class="ptab" role="tab" data-ptab="restr" aria-selected="false">Restrictions</button>
+      </div>
+      <div class="pane-b" id="palette"></div>
+      <div class="trash-note">Drop here to remove the step</div>
+    </section>
+
+    <section class="pane center" aria-label="Workflow">
+      <div class="ctabs" role="tablist">
+        <button class="ctab" role="tab" data-view="build" aria-selected="true">Build</button>
+        <button class="ctab" role="tab" data-view="flow" aria-selected="false">Flow</button>
+        <button class="ctab" role="tab" data-view="config" aria-selected="false">Config <span class="badge" id="check-badge">0</span></button>
+        <span class="spacer"></span>
+      </div>
+      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag blocks from the left to build the chain. Drop a security group, condition or restriction pill onto a step to attach it. Drag a step back to the palette to remove it.</p><div class="script" id="script"></div></div></div>
+      <div class="view" id="v-flow" hidden><div class="flow-wrap" id="flow"></div></div>
+      <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
+    </section>
+
+    <aside class="pane" aria-label="Step details">
+      <div class="pane-h"><h2>Step details</h2></div>
+      <div class="pane-b" id="inspector"></div>
+    </aside>
+  </main>
+</div>
+
+<div class="modal-bg" id="modal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-h"><h2 id="modal-title"></h2><button class="btn ghost" id="modal-close">Close</button></div><div class="modal-b" id="modal-b"></div></div></div>
+<input type="file" id="import-file" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+/* ---------- Reference data ---------- */
+const TYPES = {
+  approval:   {label:'Approval', verb:'Approval by', color:'#2F6FD6', desc:'One member of the group approves, denies or sends back.'},
+  chain:      {label:'Approval Chain', verb:'Approval Chain by', color:'#4B4FC9', desc:'Walks up a role hierarchy (supervisory org or cost center) until the chain ends.'},
+  cchain:     {label:'Consolidated Approval Chain', verb:'Consolidated Approval Chain by', color:'#7243C2', desc:'Chain across lines and worktags, collapsing duplicate approvers into one inbox item.'},
+  review:     {label:'Review', verb:'Review by', color:'#13857A', desc:'Reviewer can edit the transaction, then submits it forward.'},
+  todo:       {label:'To Do', verb:'To Do for', color:'#C2541E', desc:'Manual task outside the BP. Marked done to move on.'},
+  action:     {label:'Action', verb:'Action by', color:'#2E8540', desc:'Performs a Workday task or launches a sub-process.'},
+  checklist:  {label:'Checklist', verb:'Checklist for', color:'#6E7D12', desc:'List of items that must be completed before advancing.'},
+  integration:{label:'Integration', verb:'Integration via', color:'#B3366F', desc:'Launches an integration system (ISSG) as a step.'}
+};
+const INIT_COLOR = '#B8700F', PAR_COLOR = '#55657D';
+const GROUP_CATALOG = [
+  {kind:'Role', label:'Role-based', names:['Manager','Cost Center Manager','Region Manager','Project Manager','Grant Manager','Fund Manager','Business Unit Manager']},
+  {kind:'User', label:'User-based', names:['Accounts Payable Specialist','Accounts Payable Manager','Accountant','Accounting Manager','Asset Accountant','Buyer','Procurement Specialist','Procurement Manager','Expense Partner','Settlement Specialist','Treasurer','Supplier Data Administrator','Finance Administrator','Business Process Administrator']},
+  {kind:'Self', label:'Self-service', names:['Employee As Self']},
+  {kind:'ISSG', label:'Integration', names:['Integration System']}
+];
+const DEFAULT_CONDS = ['Amount > 10,000','Amount > 50,000','Amount > 250,000','Initiator is not Cost Center Manager','Has Exceptions','Journal Source = Manual','Spend Category = IT Hardware','Supplier is New','Is Capital Asset','Receipt Missing'];
+const RESTRICTIONS = ['Company','Cost Center','Company Hierarchy','Cost Center Hierarchy','Region','Supervisory Organization','Business Unit','Project','Fund','Grant','Location'];
+const EXTRA_BPS = ['Customer Invoice Event','Supplier Contract Event','Receipt Event','Settlement Run Event','Procurement Card Transaction Verification Event','Customer Contract Event'];
+
+/* ---------- Helpers ---------- */
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 9);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+function letters(i){ let s=''; i++; while(i>0){ i--; s=String.fromCharCode(97+i%26)+s; i=Math.floor(i/26);} return s; }
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch{ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } }
+};
+function groupKind(name){
+  for(const g of GROUP_CATALOG) if(g.names.includes(name)) return g.kind;
+  return 'Custom';
+}
+
+function S(type, groups, o={}){ return {kind:'step', id:uid(), type, groups:[...groups], condition:o.cond||'', restrictions:o.restr||[], optional:!!o.optional, task:o.task||'', note:o.note||''}; }
+function P(steps){ return {kind:'par', id:uid(), steps}; }
+function blankWf(bp){ return {name:'', client:'', bp:bp||'', init:{groups:[], note:''}, items:[], customGroups:[], customConds:[]}; }
+function mk(bp, initGroups, items){ const w = blankWf(bp); w.init.groups = initGroups; w.items = items; return w; }
+
+const STARTERS = [
+  {bp:'Supplier Invoice Event', desc:'AP keys the invoice, cost center approves, AP manager over 10k.', build:()=>mk('Supplier Invoice Event',['Accounts Payable Specialist'],[
+    S('approval',['Cost Center Manager'],{restr:['Cost Center']}),
+    S('approval',['Accounts Payable Manager'],{cond:'Amount > 10,000'}),
+    S('review',['Accounts Payable Specialist'],{cond:'Has Exceptions', task:'Resolve match exceptions'})])},
+  {bp:'Expense Report Event', desc:'Manager then cost center, expense partner reviews exceptions.', build:()=>mk('Expense Report Event',['Employee As Self','Expense Partner'],[
+    S('approval',['Manager']),
+    S('approval',['Cost Center Manager'],{cond:'Initiator is not Cost Center Manager', restr:['Cost Center']}),
+    S('review',['Expense Partner'],{cond:'Receipt Missing'})])},
+  {bp:'Requisition Event', desc:'Parallel manager and cost center approval, chain over 50k.', build:()=>mk('Requisition Event',['Employee As Self','Procurement Specialist'],[
+    P([S('approval',['Manager']), S('approval',['Cost Center Manager'],{restr:['Cost Center']})]),
+    S('chain',['Cost Center Manager'],{cond:'Amount > 50,000', restr:['Cost Center Hierarchy']}),
+    S('todo',['Procurement Specialist'],{task:'Confirm sourcing method'})])},
+  {bp:'Purchase Order Event', desc:'Buyer creates, procurement manager over 50k, PO sent out.', build:()=>mk('Purchase Order Event',['Buyer'],[
+    S('approval',['Procurement Manager'],{cond:'Amount > 50,000'}),
+    S('integration',['Integration System'],{task:'Send PO to supplier'})])},
+  {bp:'Journal Entry Event', desc:'Accountant posts, manual journals need accounting manager.', build:()=>mk('Journal Entry Event',['Accountant'],[
+    S('approval',['Accounting Manager'],{cond:'Journal Source = Manual', restr:['Company']})])},
+  {bp:'Spend Authorization Event', desc:'Manager approves, cost center manager over 10k.', build:()=>mk('Spend Authorization Event',['Employee As Self'],[
+    S('approval',['Manager']),
+    S('approval',['Cost Center Manager'],{cond:'Amount > 10,000'})])},
+  {bp:'Supplier Request Event', desc:'Employee requests a supplier, data admin reviews, AP approves.', build:()=>mk('Supplier Request Event',['Employee As Self'],[
+    S('review',['Supplier Data Administrator'],{task:'Validate tax ID and banking'}),
+    S('approval',['Accounts Payable Manager'])])},
+  {bp:'Ad Hoc Bank Transaction Event', desc:'Settlement creates, treasurer approves.', build:()=>mk('Ad Hoc Bank Transaction Event',['Settlement Specialist'],[
+    S('approval',['Treasurer'],{restr:['Company']})])},
+  {bp:'Asset Disposal Event', desc:'Asset accountant initiates, accounting manager approves.', build:()=>mk('Asset Disposal Event',['Asset Accountant'],[
+    S('approval',['Accounting Manager'],{cond:'Is Capital Asset'})])}
+];
+
+/* ---------- State ---------- */
+let wf, docId = null, savedAt = null, dirty = false;
+let sel = null, view = 'build', ptab = 'steps', groupFilter = '';
+let hist = [];
+
+function snapshot(){ hist.push(JSON.stringify({wf, docId})); if(hist.length > 80) hist.shift(); }
+function undo(){
+  const h = hist.pop(); if(!h){ toast('Nothing to undo'); return; }
+  const o = JSON.parse(h); wf = o.wf; docId = o.docId; markDirty(false); renderAll();
+}
+function markDirty(push=true){ dirty = true; store.set('bpws.draft', {wf, docId, dirty}); renderStatus(); }
+
+function orderMap(){
+  const m = {init:'a'};
+  wf.items.forEach((it,i)=>{ const L = letters(i+1); m[it.id] = L; if(it.kind==='par') it.steps.forEach(s=>m[s.id]=L); });
+  return m;
+}
+function find(id){
+  for(let i=0;i<wf.items.length;i++){
+    const it = wf.items[i];
+    if(it.id===id) return {item:it, list:wf.items, index:i, parent:null};
+    if(it.kind==='par') for(let j=0;j<it.steps.length;j++) if(it.steps[j].id===id) return {item:it.steps[j], list:it.steps, index:j, parent:it};
+  }
+  return null;
+}
+function listFor(key){ if(key==='root') return wf.items; const p = wf.items.find(i=>i.id===key.slice(4)); return p ? p.steps : null; }
+function allSteps(){ const out=[]; wf.items.forEach(it=> it.kind==='par' ? out.push(...it.steps) : out.push(it)); return out; }
+function condLibrary(){ const s = new Set([...DEFAULT_CONDS, ...(wf.customConds||[])]); allSteps().forEach(x=>x.condition && s.add(x.condition)); return [...s]; }
+
+/* ---------- Rendering: Build ---------- */
+function groupChip(g, i, removable=true){
+  const k = groupKind(g);
+  return `<span class="gp${k==='Role'?' role':''}">${k==='Role'?'<span class="kk">role</span>':''}${esc(g)}${removable?`<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button>`:''}</span>`;
+}
+function stepHTML(s, om){
+  const T = TYPES[s.type] || TYPES.approval;
+  return `<div class="bw${sel===s.id?' sel':''}" data-id="${s.id}" data-drag="block"><div class="block" style="--c:${T.color}">`+
+    `<span class="ord">${om[s.id]||'?'}</span>`+
+    (s.condition?`<span class="hex"><i>if</i> ${esc(s.condition)}<button class="x" data-rm="cond" aria-label="Remove condition">×</button></span>`:'')+
+    `<span class="verb">${T.verb}</span>`+
+    (s.groups.length ? s.groups.map((g,i)=>groupChip(g,i)).join('') : '<span class="slot">drop a security group</span>')+
+    (s.task?`<span class="task">${esc(s.task)}</span>`:'')+
+    (s.restrictions.length?`<span class="rs">restricted to ${s.restrictions.map(esc).join(', ')}</span>`:'')+
+    (s.optional?'<span class="opt">optional</span>':'')+
+  `</div></div>`;
+}
+function parHTML(p, om){
+  return `<div class="bw par${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
+    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">every step inside shares order ${om[p.id]}</span></div>`+
+    `<div class="cmid"><div class="carm"></div><div class="stack inner" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om)).join('')}</div></div>`+
+    `<div class="cfoot"></div></div></div>`;
+}
+function itemHTML(it, om){ return it.kind==='par' ? parHTML(it, om) : stepHTML(it, om); }
+function renderBuild(){
+  const om = orderMap();
+  const bp = wf.bp || 'this business process';
+  $('#script').innerHTML =
+    `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init"><div class="block hat">`+
+      `<span class="ord">a</span><span class="verb">When <b>${esc(bp)}</b> is initiated by</span>`+
+      (wf.init.groups.length ? wf.init.groups.map((g,i)=>groupChip(g,i)).join('') : '<span class="slot">drop a security group</span>')+
+    `</div></div>`+
+    `<div class="stack root" data-list="root">${wf.items.map(it=>itemHTML(it,om)).join('')}</div>`+
+    `<div class="endw"><div class="block end">Business process complete</div></div>`;
+}
+
+/* ---------- Rendering: Palette ---------- */
+function renderPalette(){
+  document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.ptab===ptab)));
+  const el = $('#palette');
+  if(ptab==='steps'){
+    el.innerHTML = `<div class="pal-list">`+
+      Object.entries(TYPES).map(([k,T])=>`<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add at the end"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`).join('')+
+      `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas, or click to add at the end"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Wrap two or more steps so they run at the same time with the same order letter.</p></div>`+
+    `</div>`;
+  } else if(ptab==='groups'){
+    const f = groupFilter.trim().toLowerCase();
+    const custom = wf.customGroups || [];
+    const cats = [...GROUP_CATALOG, {kind:'Custom', label:'Custom (this design)', names:custom}];
+    el.innerHTML = `<div class="pal-list"><input class="search" id="g-search" type="text" placeholder="Search groups" value="${esc(groupFilter)}">`+
+      cats.map(c=>{ const names = c.names.filter(n=>!f || n.toLowerCase().includes(f)); if(!names.length) return '';
+        return `<div class="pal-group"><h3>${c.label}</h3><div class="pills">${names.map(n=>`<span class="pill" data-drag="group" data-name="${esc(n)}">${esc(n)}</span>`).join('')}</div></div>`; }).join('')+
+      `<div class="pal-group"><h3>Add a client-specific group</h3><div class="addrow"><input id="g-new" type="text" placeholder="e.g. CFO Approver"><button class="btn" id="g-add">Add</button></div></div>`+
+      `<p class="tip">Drag a group onto a step, or select a step and click a group to attach it.</p></div>`;
+  } else if(ptab==='conds'){
+    el.innerHTML = `<div class="pal-list"><div class="pills">`+
+      condLibrary().map(c=>`<span class="pill cond" data-drag="cond" data-label="${esc(c)}">${esc(c)}</span>`).join('')+
+      `</div><div class="pal-group"><h3>New condition rule</h3><div class="addrow"><input id="c-new" type="text" placeholder="e.g. Company = UK Entity"><button class="btn" id="c-add">Add</button></div></div>`+
+      `<p class="tip">A condition is the step's entry condition. The step only runs when it evaluates true. One condition per step, so name compound rules plainly (e.g. "Amount > 50,000 and Capex").</p></div>`;
+  } else {
+    el.innerHTML = `<div class="pal-list"><div class="pills">`+
+      RESTRICTIONS.map(r=>`<span class="pill restr" data-drag="restr" data-name="${esc(r)}">${esc(r)}</span>`).join('')+
+      `</div><p class="tip">Routing restrictions limit who in the group gets the step, e.g. only the Cost Center Manager for the cost center on the transaction.</p></div>`;
+  }
+}
+
+/* ---------- Rendering: Inspector ---------- */
+function groupSelect(id){
+  return `<select id="${id}"><option value="">Add a security group…</option>`+
+    [...GROUP_CATALOG, {label:'Custom', names:wf.customGroups||[]}].filter(c=>c.names.length).map(c=>`<optgroup label="${c.label}">${c.names.map(n=>`<option>${esc(n)}</option>`).join('')}</optgroup>`).join('')+
+    `</select>`;
+}
+function renderInspector(){
+  const el = $('#inspector');
+  const om = orderMap();
+  if(sel==='init'){
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${INIT_COLOR}"></span><h3>Step a · Initiation</h3></div>`+
+      `<div class="sec"><span class="lbl">Who can initiate</span><div class="chips">${wf.init.groups.map((g,i)=>`<span class="chip">${esc(g)}<button class="x" data-irm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('i-addgroup')}</div>`+
+      `<div class="sec"><label for="i-note">Design notes</label><textarea id="i-note" placeholder="Why these groups, client decisions, open questions">${esc(wf.init.note)}</textarea></div></div>`;
+    return;
+  }
+  const f = sel && find(sel);
+  if(!f){
+    const checks = runChecks();
+    el.innerHTML = `<div class="empty-ins"><p class="help">Select a block on the canvas to edit it.</p><ol>`+
+      `<li>Pick a starter from <b>New</b> or start blank.</li><li>Drag step blocks into the chain. The order letters update on their own.</li><li>Drop groups, conditions and restrictions onto steps.</li><li>Check the <b>Config</b> tab, then export for sign-off.</li></ol>`+
+      `<p class="help"><span class="kbd">Del</span> removes the selected step, <span class="kbd">Ctrl/⌘ Z</span> undoes.</p>`+
+      `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(checks)}</div></div>`;
+    return;
+  }
+  const it = f.item;
+  if(it.kind==='par'){
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${PAR_COLOR}"></span><h3>Step ${om[it.id]} · Parallel</h3></div>`+
+      `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} run at the same time. The BP waits for all of them before moving to the next order letter.</p>`+
+      `<div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn danger" id="p-del">Delete block</button></div></div>`;
+    return;
+  }
+  const T = TYPES[it.type];
+  const conds = condLibrary();
+  el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${T.color}"></span><h3>Step ${om[it.id]} · ${T.label}</h3></div>`+
+    `<div class="sec"><label for="s-type">Step type</label><select id="s-type">${Object.entries(TYPES).map(([k,t])=>`<option value="${k}"${k===it.type?' selected':''}>${t.label}</option>`).join('')}</select><p class="help">${T.desc}</p></div>`+
+    `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('s-addgroup')}</div>`+
+    `<div class="sec"><label for="s-cond">Condition (entry rule)</label><select id="s-cond"><option value="">Always runs</option>${conds.map(c=>`<option${c===it.condition?' selected':''}>${esc(c)}</option>`).join('')}</select>`+
+      `<div class="addrow"><input id="s-cond-new" type="text" placeholder="Or type a new rule"><button class="btn" id="s-cond-set">Set</button></div></div>`+
+    `<div class="sec"><span class="lbl">Routing restrictions</span><div class="chips">${RESTRICTIONS.map(r=>`<label class="toggle"><input type="checkbox" data-restr="${esc(r)}"${it.restrictions.includes(r)?' checked':''}>${esc(r)}</label>`).join('')}</div></div>`+
+    `<div class="sec"><label for="s-task">Label on block</label><input id="s-task" type="text" value="${esc(it.task)}" placeholder="e.g. Resolve match exceptions"></div>`+
+    `<div class="sec"><label class="check-row"><input type="checkbox" id="s-opt"${it.optional?' checked':''}> Optional step</label></div>`+
+    `<div class="sec"><label for="s-note">Design notes</label><textarea id="s-note" placeholder="Client decisions, thresholds, open questions">${esc(it.note)}</textarea></div>`+
+    `<div class="row"><button class="btn" id="s-dup">Duplicate</button><button class="btn danger" id="s-del">Delete step</button></div></div>`;
+}
+
+/* ---------- Checks ---------- */
+function runChecks(){
+  const out = [], om = orderMap();
+  if(!wf.init.groups.length) out.push({id:'init', msg:'<b>a</b> Initiation has no security group, so nobody can start this BP.'});
+  if(!wf.items.length) out.push({id:null, msg:'No steps after initiation. The transaction would complete on submit.'});
+  let prev = null;
+  wf.items.forEach(it=>{
+    if(it.kind==='par'){
+      if(it.steps.length<2) out.push({id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs at least two to mean anything.`});
+      it.steps.forEach(s=>checkStep(s, om, out));
+      prev = null; return;
+    }
+    checkStep(it, om, out);
+    if(prev && !it.condition && !prev.condition && it.groups.length && it.groups.join('|')===prev.groups.join('|') && it.type===prev.type)
+      out.push({id:it.id, msg:`<b>${om[prev.id]}</b> and <b>${om[it.id]}</b> route the same ${TYPES[it.type].label.toLowerCase()} to the same group back to back.`});
+    prev = it;
+  });
+  return out;
+}
+function checkStep(s, om, out){
+  const L = om[s.id];
+  if(!s.groups.length) out.push({id:s.id, msg:`<b>${L}</b> ${TYPES[s.type].label} has no security group.`});
+  if((s.type==='chain'||s.type==='cchain') && s.groups.some(g=>groupKind(g)!=='Role'))
+    out.push({id:s.id, msg:`<b>${L}</b> Approval chains walk a hierarchy, so they need a role-based group (e.g. Cost Center Manager).`});
+  if(s.type==='integration' && !s.groups.includes('Integration System'))
+    out.push({id:s.id, msg:`<b>${L}</b> Integration steps usually run as an Integration System security group.`});
+  if(s.restrictions.length && s.groups.length && s.groups.every(g=>groupKind(g)==='Role'))
+    out.push({id:s.id, msg:`<b>${L}</b> Role-based groups already route by the transaction's worktag, so double check the restriction is needed.`});
+}
+function checksHTML(list){
+  if(!list.length) return `<ul class="checks"><li class="ok">No issues found.</li></ul>`;
+  return `<ul class="checks">${list.map(c=>`<li data-goto="${c.id||''}">${c.msg}</li>`).join('')}</ul>`;
+}
+
+/* ---------- Rendering: Flow (SVG used for view and exports) ---------- */
+function wrapText(t, n){
+  const words = String(t).split(/\s+/), lines = []; let cur = '';
+  words.forEach(w=>{ if((cur+' '+w).trim().length>n && cur){ lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); });
+  if(cur) lines.push(cur); return lines;
+}
+function flowSVG(){
+  const om = orderMap();
+  const FONT = 'Helvetica, Arial, sans-serif';
+  const W = 250, GX = 26, GY = 50, PAD = 36, HEAD = 78, CH = 34;
+  const node = (s, isInit) => {
+    const lines = [];
+    const groups = isInit ? wf.init.groups : s.groups;
+    wrapText(groups.length ? groups.join(', ') : 'No security group', CH).forEach(l=>lines.push({t:l, c:'#273244', w:'600'}));
+    if(!isInit && s.task) wrapText(s.task, CH).forEach(l=>lines.push({t:l, c:'#5B677B', w:'400', i:true}));
+    if(!isInit && s.condition) wrapText('If ' + s.condition, CH).forEach(l=>lines.push({t:l, c:'#1E8A5B', w:'700'}));
+    if(!isInit && s.restrictions.length) wrapText('Restricted to ' + s.restrictions.join(', '), CH).forEach(l=>lines.push({t:l, c:'#5B677B', w:'400'}));
+    if(!isInit && s.optional) lines.push({t:'Optional', c:'#5B677B', w:'400', i:true});
+    const T = isInit ? {label:'Initiation', color:INIT_COLOR} : TYPES[s.type];
+    return {letter: isInit ? 'a' : om[s.id], label: T.label, color: T.color, lines, h: 42 + lines.length*16 + 10};
+  };
+  const rows = [{par:false, nodes:[node(null,true)]}];
+  wf.items.forEach(it=>{
+    if(it.kind==='par'){ if(it.steps.length) rows.push({par:true, letter:om[it.id], nodes:it.steps.map(s=>node(s))}); }
+    else rows.push({par:false, nodes:[node(it)]});
+  });
+  const rowW = r => r.nodes.length*W + (r.nodes.length-1)*GX;
+  const width = Math.max(640, ...rows.map(r=>rowW(r)+ (r.par?32:0))) + PAD*2;
+  let y = HEAD + PAD; const cx = width/2;
+  rows.forEach(r=>{ r.h = Math.max(...r.nodes.map(n=>n.h)); r.y = y + (r.par?22:0); const x0 = cx - rowW(r)/2; r.nodes.forEach((n,i)=>{ n.x = x0 + i*(W+GX); n.y = r.y; n.cx = n.x + W/2; }); y = r.y + r.h + (r.par?14:0) + GY; });
+  const endY = y - GY + 30;
+  const height = endY + 34 + PAD;
+  let s = '';
+  const line = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#8C98AB" stroke-width="1.6"/>`;
+  const arrow = (x,yb) => `<path d="M${x-5},${yb-8} L${x},${yb} L${x+5},${yb-8} Z" fill="#8C98AB"/>`;
+  // edges
+  const tops = rows.map(r=>r.nodes.map(n=>({x:n.cx, y:n.y}))).concat([[{x:cx, y:endY}]]);
+  for(let i=0;i<rows.length;i++){
+    const r = rows[i], nextTops = tops[i+1];
+    const bottomY = r.y + r.h + (r.par?14:0);
+    const nextTopY = nextTops[0].y - ((rows[i+1]&&rows[i+1].par)?22:0);
+    const mid = (bottomY + nextTopY)/2;
+    const srcs = r.nodes.map(n=>({x:n.cx, y:n.y + n.h}));
+    const xs = srcs.map(p=>p.x).concat(nextTops.map(p=>p.x));
+    if(srcs.length===1 && nextTops.length===1 && srcs[0].x===nextTops[0].x){ s += line(srcs[0].x, srcs[0].y, cx, nextTops[0].y-1) + arrow(cx, nextTops[0].y); continue; }
+    srcs.forEach(p=> s += line(p.x, p.y, p.x, mid));
+    s += line(Math.min(...xs), mid, Math.max(...xs), mid);
+    nextTops.forEach(p=> s += line(p.x, mid, p.x, p.y-1) + arrow(p.x, p.y));
+  }
+  // parallel frames
+  rows.filter(r=>r.par).forEach(r=>{
+    const x = r.nodes[0].x - 16, w = rowW(r) + 32;
+    s += `<rect x="${x}" y="${r.y-22}" width="${w}" height="${r.h+36}" rx="12" fill="#F2F4F8" stroke="#B9C2D0" stroke-dasharray="5 4"/>`;
+    s += `<text x="${x+12}" y="${r.y-7}" font-family="${FONT}" font-size="10.5" font-weight="700" fill="#55657D" letter-spacing=".6">PARALLEL · ORDER ${r.letter.toUpperCase()}</text>`;
+  });
+  // nodes
+  rows.forEach(r=>r.nodes.forEach(n=>{
+    s += `<g><rect x="${n.x}" y="${n.y}" width="${W}" height="${n.h}" rx="10" fill="#FFFFFF" stroke="#D3DAE5"/>`+
+      `<rect x="${n.x}" y="${n.y}" width="6" height="${n.h}" rx="3" fill="${n.color}"/>`+
+      `<rect x="${n.x+16}" y="${n.y+12}" width="22" height="20" rx="5" fill="${n.color}"/>`+
+      `<text x="${n.x+27}" y="${n.y+26.5}" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" font-weight="700" fill="#fff">${n.letter}</text>`+
+      `<text x="${n.x+46}" y="${n.y+27}" font-family="${FONT}" font-size="14" font-weight="700" fill="#18212F">${esc(n.label)}</text>`+
+      n.lines.map((l,i)=>`<text x="${n.x+16}" y="${n.y+52+i*16}" font-family="${FONT}" font-size="12" font-weight="${l.w}"${l.i?' font-style="italic"':''} fill="${l.c}">${esc(l.t)}</text>`).join('')+
+      `</g>`;
+  }));
+  // end pill
+  s += `<rect x="${cx-90}" y="${endY}" width="180" height="32" rx="16" fill="#3D4757"/><text x="${cx}" y="${endY+20.5}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="700" fill="#fff">Business process complete</text>`;
+  // header
+  const title = wf.name || (wf.bp ? wf.bp + ' workflow' : 'Proposed workflow');
+  const sub = [wf.client, wf.bp, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})].filter(Boolean).join('  ·  ');
+  const head = `<text x="${PAD}" y="${PAD+18}" font-family="${FONT}" font-size="19" font-weight="800" fill="#18212F">${esc(title)}</text>`+
+    `<text x="${PAD}" y="${PAD+40}" font-family="${FONT}" font-size="12.5" fill="#5B677B">${esc(sub)}</text>`+
+    `<line x1="${PAD}" y1="${PAD+56}" x2="${width-PAD}" y2="${PAD+56}" stroke="#E3E8EF"/>`;
+  return {svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${s}</svg>`, width, height};
+}
+function renderFlow(){ $('#flow').innerHTML = flowSVG().svg; }
+
+/* ---------- Rendering: Config ---------- */
+function defRows(){
+  const om = orderMap();
+  const rows = [{id:'init', order:'a', cond:'', type:'Initiation', groups:wf.init.groups.join(', '), restr:'', optional:'', label:'', note:wf.init.note, color:INIT_COLOR}];
+  allSteps().forEach(s=>rows.push({id:s.id, order:om[s.id], cond:s.condition, type:TYPES[s.type].label, groups:s.groups.join(', '), restr:s.restrictions.join(', '), optional:s.optional?'Yes':'', label:s.task, note:s.note, color:TYPES[s.type].color, parallel: !!find(s.id).parent}));
+  return rows;
+}
+function renderConfig(){
+  const rows = defRows(), checks = runChecks();
+  $('#config').innerHTML = `<div class="sec"><h3>Business process definition</h3><p class="help">Mirrors the step grid you'd configure in the tenant. Click a row to edit that step.</p></div>`+
+    `<div class="tbl-wrap"><table class="def"><thead><tr><th>Order</th><th>If (condition)</th><th>Step type</th><th>Security groups</th><th>Routing restrictions</th><th>Optional</th><th>Label</th><th>Notes</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr data-goto="${r.id}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.cond)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.groups)||'<span style="color:var(--warn)">None</span>'}</td><td>${esc(r.restr)}</td><td>${r.optional}</td><td>${esc(r.label)}</td><td>${esc(r.note)}</td></tr>`).join('')+
+    `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(checks)}</div>`;
+}
+
+function renderBadge(){
+  const n = runChecks().length, b = $('#check-badge');
+  b.textContent = n ? n : '✓'; b.classList.toggle('ok', !n);
+  b.title = n ? `${n} design check${n===1?'':'s'} to review` : 'No issues';
+}
+function renderStatus(){
+  const el = $('#status');
+  if(dirty){ el.textContent = docId ? 'Unsaved changes' : 'Not saved yet'; el.className = 'status dirty'; }
+  else { el.textContent = savedAt ? 'Saved ' + timeAgo(savedAt) : ''; el.className = 'status'; }
+  $('#b-undo').disabled = !hist.length;
+}
+function renderMeta(){
+  if(document.activeElement !== $('#f-name')) $('#f-name').value = wf.name || '';
+  if(document.activeElement !== $('#f-client')) $('#f-client').value = wf.client || '';
+  if(document.activeElement !== $('#f-bp')) $('#f-bp').value = wf.bp || '';
+}
+function renderView(){
+  document.querySelectorAll('.ctab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.view===view)));
+  $('#v-build').hidden = view!=='build'; $('#v-flow').hidden = view!=='flow'; $('#v-config').hidden = view!=='config';
+  if(view==='flow') renderFlow();
+  if(view==='config') renderConfig();
+}
+function renderAll(keepInspector){
+  renderMeta(); renderBuild(); if(!keepInspector) renderInspector(); renderBadge(); renderStatus(); renderView();
+}
+function timeAgo(t){
+  const d = (Date.now()-t)/1000;
+  if(d<60) return 'just now'; if(d<3600) return Math.floor(d/60)+'m ago'; if(d<86400) return Math.floor(d/3600)+'h ago';
+  return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+
+/* ---------- Mutations ---------- */
+function change(fn, keepInspector){ snapshot(); fn(); markDirty(); renderAll(keepInspector); }
+function addGroupTo(id, name){
+  if(id==='init'){ if(!wf.init.groups.includes(name)) change(()=>wf.init.groups.push(name)); return true; }
+  const f = find(id); if(!f || f.item.kind!=='step') return false;
+  if(!f.item.groups.includes(name)) change(()=>f.item.groups.push(name));
+  return true;
+}
+function setCond(id, label){ const f = find(id); if(!f || f.item.kind!=='step') return false; change(()=>f.item.condition = label); return true; }
+function addRestr(id, r){ const f = find(id); if(!f || f.item.kind!=='step') return false; if(!f.item.restrictions.includes(r)) change(()=>f.item.restrictions.push(r)); return true; }
+function removeItem(id){
+  const f = find(id); if(!f) return;
+  change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; });
+  toast('Step removed', 'Undo', undo);
+}
+
+/* ---------- Drag and drop (pointer events: mouse, pen and touch) ---------- */
+let drag = null, justDragged = 0;
+document.addEventListener('pointerdown', e=>{
+  if(e.button!==0) return;
+  if(e.target.closest('.x, input, select, textarea, a, .btn')) return;
+  const src = e.target.closest('[data-drag]');
+  if(!src) return;
+  drag = {src, x0:e.clientX, y0:e.clientY, started:false};
+});
+document.addEventListener('pointermove', e=>{
+  if(!drag) return;
+  if(!drag.started){
+    if(Math.hypot(e.clientX-drag.x0, e.clientY-drag.y0) < 6) return;
+    startDrag(e);
+  }
+  if(drag && drag.started){ e.preventDefault(); moveDrag(e); }
+}, {passive:false});
+document.addEventListener('pointerup', e=>{ if(drag && drag.started){ endDrag(e); justDragged = Date.now(); } drag = null; });
+document.addEventListener('pointercancel', ()=>{ if(drag && drag.started) cancelDrag(); drag = null; });
+
+function startDrag(e){
+  const src = drag.src, kind = src.dataset.drag;
+  const rect = src.getBoundingClientRect();
+  drag.dx = Math.min(e.clientX - rect.left, 60); drag.dy = Math.min(e.clientY - rect.top, 24);
+  let ghostHTML;
+  if(kind==='block'){
+    const id = src.dataset.id; const f = find(id); if(!f){ drag=null; return; }
+    snapshot();
+    drag.payload = {kind:'item', item:f.item, fromList:f.parent?'par:'+f.parent.id:'root', fromIndex:f.index, isMove:true};
+    ghostHTML = src.outerHTML;
+    f.list.splice(f.index,1); sel = id;
+    renderBuild();
+  } else if(kind==='new' || kind==='newpar'){
+    const item = kind==='new' ? S(src.dataset.type, []) : P([]);
+    drag.payload = {kind:'item', item, isMove:false};
+    ghostHTML = itemHTML(item, {});
+  } else {
+    drag.payload = {kind, value: src.dataset.name || src.dataset.label};
+    ghostHTML = src.outerHTML;
+  }
+  drag.started = true;
+  const g = document.createElement('div'); g.className = 'drag-ghost'; g.innerHTML = ghostHTML;
+  g.style.width = (drag.payload.kind==='item' ? Math.max(260, Math.min(rect.width, 460)) : rect.width) + 'px';
+  document.body.appendChild(g); drag.ghost = g;
+  document.body.classList.add('dragging');
+  const ph = document.createElement('div'); ph.className = 'ph'; drag.ph = ph;
+}
+function overPalette(x,y){ const r = $('.palette').getBoundingClientRect(); return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom; }
+function computeTarget(x,y){
+  const cv = $('#v-build').getBoundingClientRect();
+  if(view!=='build' || x<cv.left || x>cv.right || y<cv.top || y>cv.bottom) return null;
+  const isPar = drag.payload.item.kind==='par';
+  let best = null, bestArea = Infinity;
+  document.querySelectorAll('#script .stack').forEach(st=>{
+    if(isPar && st.dataset.list!=='root') return;
+    const r = st.getBoundingClientRect();
+    const padX = st.dataset.list==='root' ? 400 : 10, padY = st.dataset.list==='root' ? 2000 : 6;
+    if(x>=r.left-padX && x<=r.right+padX && y>=r.top-padY && y<=r.bottom+padY){
+      const area = r.width*r.height + (st.dataset.list==='root' ? 1e9 : 0);
+      if(area<bestArea){ bestArea = area; best = st; }
+    }
+  });
+  if(!best) return null;
+  const kids = [...best.children].filter(c=>c.classList.contains('bw'));
+  let index = kids.length;
+  for(let i=0;i<kids.length;i++){ const r = kids[i].getBoundingClientRect(); if(y < r.top + Math.min(r.height/2, 30)){ index = i; break; } }
+  return {stack:best, index, kids};
+}
+function clearDropOk(){ document.querySelectorAll('.drop-ok').forEach(n=>n.classList.remove('drop-ok')); }
+function pillTarget(x,y){
+  drag.ghost.style.display = 'none';
+  const el = document.elementFromPoint(x,y);
+  drag.ghost.style.display = '';
+  const bw = el && el.closest('#script .bw');
+  if(!bw) return null;
+  if(bw.classList.contains('par')) return null;
+  if(bw.dataset.id==='init' && drag.payload.kind!=='group') return null;
+  return bw;
+}
+function moveDrag(e){
+  const x = e.clientX, y = e.clientY;
+  drag.ghost.style.transform = `translate(${x-drag.dx}px, ${y-drag.dy}px) rotate(1.5deg)`;
+  if(drag.payload.kind==='item'){
+    const trash = overPalette(x,y) && drag.payload.isMove;
+    document.body.classList.toggle('trash', trash);
+    const t = trash ? null : computeTarget(x,y);
+    drag.target = t;
+    if(!t){ drag.ph.remove(); return; }
+    const ref = t.kids[t.index] || null;
+    if(drag.ph.parentNode!==t.stack || drag.ph.nextSibling!==ref) t.stack.insertBefore(drag.ph, ref);
+  } else {
+    clearDropOk();
+    const bw = pillTarget(x,y); drag.pillTarget = bw;
+    if(bw) bw.classList.add('drop-ok');
+  }
+}
+function finishDragUI(){
+  drag.ghost && drag.ghost.remove(); drag.ph && drag.ph.remove();
+  document.body.classList.remove('dragging','trash'); clearDropOk();
+}
+function endDrag(e){
+  const p = drag.payload, x = e.clientX, y = e.clientY;
+  if(p.kind==='item'){
+    const t = drag.target, onTrash = overPalette(x,y);
+    finishDragUI();
+    if(t){
+      const list = listFor(t.stack.dataset.list);
+      if(!p.isMove) snapshot();
+      list.splice(t.index, 0, p.item); sel = p.item.id;
+      markDirty(); renderAll();
+    } else if(p.isMove && onTrash){
+      if(sel===p.item.id) sel = null;
+      markDirty(); renderAll(); toast('Step removed', 'Undo', undo);
+    } else if(p.isMove){
+      const list = listFor(p.fromList) || wf.items; list.splice(Math.min(p.fromIndex, list.length), 0, p.item);
+      hist.pop(); renderAll();
+    }
+  } else {
+    const bw = drag.pillTarget; finishDragUI();
+    if(bw) applyPill(bw.dataset.id, p.kind, p.value);
+  }
+}
+function cancelDrag(){
+  const p = drag.payload; finishDragUI();
+  if(p && p.kind==='item' && p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(p.fromIndex,0,p.item); hist.pop(); renderAll(); }
+}
+function applyPill(id, kind, value){
+  sel = id;
+  if(kind==='group') addGroupTo(id, value);
+  else if(kind==='cond') setCond(id, value);
+  else if(kind==='restr') addRestr(id, value);
+}
+
+/* ---------- Clicks ---------- */
+document.addEventListener('click', e=>{
+  if(Date.now() - justDragged < 250) return;
+  const t = e.target;
+  // chip removal on canvas
+  const x = t.closest('#script .x');
+  if(x){
+    const id = x.closest('.bw').dataset.id;
+    if(x.dataset.rm==='group'){ const i = +x.dataset.i; change(()=>{ (id==='init' ? wf.init.groups : find(id).item.groups).splice(i,1); }); }
+    if(x.dataset.rm==='cond') change(()=>{ find(id).item.condition=''; });
+    return;
+  }
+  // palette click = add to end / attach to selected step
+  const pal = t.closest('#palette [data-drag]');
+  if(pal){
+    const k = pal.dataset.drag;
+    if(k==='new' || k==='newpar'){ const it = k==='new' ? S(pal.dataset.type, []) : P([]); change(()=>{ wf.items.push(it); sel = it.id; }); return; }
+    if(!sel){ toast('Select a step on the canvas first, or drag the pill onto one'); return; }
+    const f = sel==='init' ? null : find(sel);
+    if(sel!=='init' && (!f || f.item.kind!=='step')){ toast('Pick a step block, not the parallel wrapper'); return; }
+    if(sel==='init' && k!=='group'){ toast('Initiation only takes security groups'); return; }
+    applyPill(sel, k, pal.dataset.name || pal.dataset.label); return;
+  }
+  const bw = t.closest('#script .bw');
+  if(bw && !t.closest('.endw')){
+    const inner = t.closest('#script .bw');
+    sel = inner.dataset.id; renderBuild(); renderInspector(); return;
+  }
+  if(t.closest('#canvas') && !t.closest('.bw')){ if(sel){ sel = null; renderBuild(); renderInspector(); } return; }
+  const go = t.closest('[data-goto]');
+  if(go && go.dataset.goto){ sel = go.dataset.goto; view = 'build'; renderAll(); const n = document.querySelector(`#script [data-id="${sel}"]`); n && n.scrollIntoView({block:'center', behavior:'smooth'}); return; }
+  const pt = t.closest('.ptab'); if(pt){ ptab = pt.dataset.ptab; renderPalette(); return; }
+  const ct = t.closest('.ctab'); if(ct){ view = ct.dataset.view; renderView(); return; }
+  // inspector buttons
+  if(t.id==='p-ungroup'){ const f = find(sel); change(()=>{ f.list.splice(f.index,1,...f.item.steps); sel=null; }); return; }
+  if(t.id==='p-del' || t.id==='s-del'){ removeItem(sel); return; }
+  if(t.id==='s-dup'){ const f = find(sel); const c = clone(f.item); c.id = uid(); change(()=>{ f.list.splice(f.index+1,0,c); sel=c.id; }); return; }
+  if(t.dataset.grm!==undefined){ const f = find(sel); change(()=>f.item.groups.splice(+t.dataset.grm,1)); return; }
+  if(t.dataset.irm!==undefined){ change(()=>wf.init.groups.splice(+t.dataset.irm,1)); return; }
+  if(t.id==='s-cond-set'){ const v = $('#s-cond-new').value.trim(); if(v){ change(()=>{ find(sel).item.condition=v; wf.customConds = wf.customConds||[]; if(!condLibrary().includes(v)) wf.customConds.push(v); }); } return; }
+  if(t.id==='g-add'){ addCustomGroup(); return; }
+  if(t.id==='c-add'){ const v = $('#c-new').value.trim(); if(v){ change(()=>{ wf.customConds = wf.customConds||[]; if(!condLibrary().includes(v)) wf.customConds.push(v); }); renderPalette(); } return; }
+  // export menu
+  const ex = t.closest('[data-exp]'); if(ex){ $('#export-menu').hidden = true; $('#b-export').setAttribute('aria-expanded','false'); doExport(ex.dataset.exp); return; }
+  if(t.closest('#b-export')){ const m = $('#export-menu'); m.hidden = !m.hidden; $('#b-export').setAttribute('aria-expanded', String(!m.hidden)); return; }
+  if(!t.closest('.menu')) $('#export-menu').hidden = true;
+});
+function addCustomGroup(){
+  const v = $('#g-new').value.trim(); if(!v) return;
+  if(groupKind(v)!=='Custom' || (wf.customGroups||[]).includes(v)){ toast('That group is already in the list'); return; }
+  change(()=>{ wf.customGroups = wf.customGroups||[]; wf.customGroups.push(v); });
+  renderPalette();
+}
+document.addEventListener('change', e=>{
+  const t = e.target;
+  if(t.id==='s-type'){ const f = find(sel); change(()=>f.item.type = t.value); }
+  else if(t.id==='s-addgroup' && t.value){ addGroupTo(sel, t.value); }
+  else if(t.id==='i-addgroup' && t.value){ addGroupTo('init', t.value); }
+  else if(t.id==='s-cond'){ const f = find(sel); change(()=>f.item.condition = t.value); }
+  else if(t.dataset.restr){ const f = find(sel); const r = t.dataset.restr; change(()=>{ const a = f.item.restrictions; t.checked ? (a.includes(r)||a.push(r)) : a.splice(a.indexOf(r),1); }); }
+  else if(t.id==='s-opt'){ const f = find(sel); change(()=>f.item.optional = t.checked); }
+});
+// text fields: snapshot once per focus, update live without rebuilding the inspector
+let typingSnap = false;
+document.addEventListener('focusin', e=>{ if(e.target.matches('#s-task,#s-note,#i-note,#f-name,#f-client,#f-bp')) typingSnap = false; });
+document.addEventListener('input', e=>{
+  const t = e.target;
+  const map = {'s-task':v=>find(sel).item.task=v, 's-note':v=>find(sel).item.note=v, 'i-note':v=>wf.init.note=v, 'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-bp':v=>wf.bp=v};
+  if(map[t.id]){
+    if(!typingSnap){ snapshot(); typingSnap = true; }
+    map[t.id](t.value); markDirty(); renderBuild(); renderBadge(); if(view!=='build') renderView();
+  }
+  if(t.id==='g-search'){ groupFilter = t.value; renderPalette(); const s = $('#g-search'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+});
+document.addEventListener('keydown', e=>{
+  const typing = e.target.matches('input, textarea, select');
+  if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='z' && !typing){ e.preventDefault(); undo(); }
+  else if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); saveDesign(); }
+  else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); removeItem(sel); }
+  else if(e.key==='Escape'){ if(!$('#modal').hidden) closeModal(); else if(drag && drag.started){ cancelDrag(); drag=null; } }
+  else if(e.key==='Enter' && e.target.id==='g-new'){ addCustomGroup(); }
+  else if(e.key==='Enter' && e.target.id==='c-new'){ $('#c-add').click(); }
+  else if(e.key==='Enter' && e.target.id==='s-cond-new'){ $('#s-cond-set').click(); }
+});
+
+/* ---------- Save / open / templates (browser storage + JSON files) ---------- */
+function designs(){ return store.get('bpws.designs', []); }
+function templates(){ return store.get('bpws.templates', []); }
+function saveDesign(asCopy){
+  if(!wf.name.trim()) wf.name = [wf.client, wf.bp || 'Workflow'].filter(Boolean).join(' · ');
+  const list = designs();
+  if(asCopy || !docId) docId = uid();
+  const rec = {id:docId, name:wf.name, client:wf.client, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
+  const i = list.findIndex(d=>d.id===docId);
+  i>=0 ? list.splice(i,1,rec) : list.unshift(rec);
+  if(!store.set('bpws.designs', list)){ toast('Your browser blocked local saving. Use Export › Design file instead.'); return; }
+  dirty = false; savedAt = rec.updatedAt; store.set('bpws.draft', {wf, docId, dirty:false, savedAt});
+  renderMeta(); renderStatus(); toast('Saved to this browser');
+}
+function loadWf(w, id){
+  const base = blankWf();
+  wf = Object.assign(base, clone(w)); wf.init = Object.assign({groups:[], note:''}, wf.init);
+  docId = id || null; sel = null; hist = []; dirty = !id; savedAt = null;
+  store.set('bpws.draft', {wf, docId, dirty});
+  renderAll(); renderPalette();
+}
+function openModal(title, html){ $('#modal-title').textContent = title; $('#modal-b').innerHTML = html; $('#modal').hidden = false; }
+function closeModal(){ $('#modal').hidden = true; }
+$('#modal-close').onclick = closeModal;
+$('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+
+function minis(w){ const cols=[INIT_COLOR]; (w.items||[]).forEach(it=> it.kind==='par' ? it.steps.forEach(s=>cols.push(TYPES[s.type].color)) : cols.push(TYPES[it.type].color)); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
+
+function showNew(){
+  const tpls = templates();
+  openModal('Start a new workflow',
+    (dirty ? `<p class="help" style="color:var(--warn)">You have unsaved changes. Starting new keeps them only in Undo until you reload, so save first if you need them.</p>` : '')+
+    `<h3>Workday starting points</h3><p class="help" style="margin-top:-8px">Typical default routing to start the conversation. Confirm against the client's delivered definition before you build.</p>`+
+    `<div class="cards"><button class="card" data-new="blank"><b>Blank canvas</b><small>Just the initiation step.</small></button>`+
+    STARTERS.map((s,i)=>`<button class="card" data-new="s${i}"><b>${esc(s.bp)}</b>${minis(s.build())}<small>${esc(s.desc)}</small></button>`).join('')+`</div>`+
+    `<h3>Your templates</h3>`+
+    (tpls.length ? `<div class="list">${tpls.map(t=>`<div class="li"><div class="t"><b>${esc(t.name)}</b><small>${esc(t.bp||'')} · ${minis(t.wf)}</small></div><button class="btn" data-new="t:${t.id}">Use</button><button class="btn danger" data-tdel="${t.id}">Delete</button></div>`).join('')}</div>`
+      : `<div class="empty">No saved templates yet. Save the current canvas as a template below to reuse it across clients.</div>`)+
+    `<div class="addrow"><input id="tpl-name" type="text" placeholder="Template name, e.g. Mid-market AP standard" value="${esc(wf.name)}"><button class="btn primary" id="tpl-save">Save current as template</button></div>`);
+}
+function showOpen(){
+  const list = designs();
+  openModal('Open a saved design',
+    `<p class="help">Designs are saved in this browser. To share one, export it as a design file and import it on the other side (or commit it to the repo's <code>designs/</code> folder).</p>`+
+    `<div class="row"><button class="btn" id="imp">Import design file…</button></div>`+
+    (list.length ? `<div class="list">${list.map(d=>`<div class="li"><div class="t"><b>${esc(d.name||'Untitled')}</b><small>${esc([d.client,d.bp].filter(Boolean).join(' · '))} · ${timeAgo(d.updatedAt)}</small></div>${minis(d.wf)}<button class="btn" data-open="${d.id}">Open</button><button class="btn danger" data-ddel="${d.id}">Delete</button></div>`).join('')}</div>`
+      : `<div class="empty">No saved designs yet. Build a workflow and hit Save, and it will show up here.</div>`));
+}
+$('#modal-b').addEventListener('click', e=>{
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.dataset.new){
+    const v = t.dataset.new;
+    if(v==='blank') loadWf(blankWf(wf.bp));
+    else if(v.startsWith('s')) loadWf(STARTERS[+v.slice(1)].build());
+    else { const tp = templates().find(x=>x.id===v.slice(2)); if(tp){ const w = clone(tp.wf); w.name=''; w.client=''; loadWf(w); } }
+    closeModal(); toast('New workflow ready'); return;
+  }
+  if(t.id==='tpl-save'){
+    const name = $('#tpl-name').value.trim(); if(!name){ $('#tpl-name').focus(); return; }
+    const tp = templates(); tp.unshift({id:uid(), name, bp:wf.bp, wf:clone(wf), createdAt:Date.now()});
+    store.set('bpws.templates', tp); showNew(); toast('Template saved'); return;
+  }
+  if(t.dataset.tdel){ if(t.dataset.armed){ store.set('bpws.templates', templates().filter(x=>x.id!==t.dataset.tdel)); showNew(); } else { t.dataset.armed='1'; t.textContent='Confirm delete'; } return; }
+  if(t.dataset.open){ const d = designs().find(x=>x.id===t.dataset.open); if(d){ loadWf(d.wf, d.id); savedAt = d.updatedAt; dirty=false; renderStatus(); closeModal(); } return; }
+  if(t.dataset.ddel){ if(t.dataset.armed){ store.set('bpws.designs', designs().filter(x=>x.id!==t.dataset.ddel)); if(docId===t.dataset.ddel){ docId=null; dirty=true; renderStatus(); } showOpen(); } else { t.dataset.armed='1'; t.textContent='Confirm delete'; } return; }
+  if(t.id==='imp'){ $('#import-file').click(); }
+});
+$('#import-file').addEventListener('change', async e=>{
+  const file = e.target.files[0]; e.target.value = ''; if(!file) return;
+  try{
+    const data = JSON.parse(await file.text());
+    const recs = (Array.isArray(data) ? data : [data]).map(d => d.wf ? d : {wf:d}).filter(d=>d.wf && d.wf.init && Array.isArray(d.wf.items));
+    if(!recs.length) throw new Error('shape');
+    const list = designs();
+    recs.forEach(r=>{ const id = uid(); list.unshift({id, name:r.wf.name||r.name||'Imported design', client:r.wf.client||'', bp:r.wf.bp||'', wf:r.wf, updatedAt:Date.now()}); });
+    store.set('bpws.designs', list);
+    const first = list[0]; loadWf(first.wf, first.id); dirty=false; savedAt=first.updatedAt; renderStatus(); closeModal();
+    toast(recs.length===1 ? 'Design imported' : `${recs.length} designs imported`);
+  }catch{ toast("That file isn't a BP Workflow Studio design file"); }
+});
+$('#b-new').onclick = showNew;
+$('#b-open').onclick = showOpen;
+$('#b-save').onclick = ()=>saveDesign();
+$('#b-undo').onclick = undo;
+
+/* ---------- Exports ---------- */
+const LIBS = {
+  xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  pdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+};
+const loaded = {};
+function loadLib(k){
+  if(!loaded[k]) loaded[k] = new Promise((res, rej)=>{ const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = ()=>{ loaded[k]=null; rej(new Error('load')); }; document.head.appendChild(s); });
+  return loaded[k];
+}
+function fileBase(){ return (wf.name || [wf.client, wf.bp].filter(Boolean).join(' ') || 'workflow').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_').slice(0,80) || 'workflow'; }
+function saveFile(blob, filename){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function svgToCanvas(scale){
+  const {svg, width, height} = flowSVG();
+  return new Promise((res, rej)=>{
+    const img = new Image();
+    img.onload = ()=>{ const c = document.createElement('canvas'); c.width = width*scale; c.height = height*scale; const ctx = c.getContext('2d'); ctx.scale(scale, scale); ctx.drawImage(img,0,0); res({canvas:c, width, height}); };
+    img.onerror = rej;
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+}
+async function doExport(kind){
+  try{
+    if(kind==='json'){
+      saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:1, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json');
+      toast('Design file downloaded'); return;
+    }
+    if(kind==='png'){
+      const {canvas} = await svgToCanvas(2);
+      canvas.toBlob(b=>{ saveFile(b, fileBase()+'.png'); toast('PNG downloaded'); }, 'image/png'); return;
+    }
+    if(kind==='xlsx'){
+      toast('Building Excel file…');
+      await loadLib('xlsx');
+      const rows = defRows();
+      const def = [['Order','Parallel','If (Condition)','Step Type','Security Groups','Routing Restrictions','Optional','Label','Design Notes']]
+        .concat(rows.map(r=>[r.order, r.parallel?'Yes':'', r.cond, r.type, r.groups, r.restr, r.optional, r.label, r.note]));
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(def);
+      ws['!cols'] = [{wch:7},{wch:9},{wch:30},{wch:26},{wch:42},{wch:28},{wch:9},{wch:28},{wch:48}];
+      ws['!autofilter'] = {ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:def.length-1, c:def[0].length-1}})};
+      const checks = runChecks().map(c=>[c.msg.replace(/<[^>]+>/g,'')]);
+      const sum = XLSX.utils.aoa_to_sheet([['Design', wf.name||''],['Client', wf.client||''],['Business Process', wf.bp||''],['Exported', new Date().toLocaleString()],['Steps (incl. initiation)', rows.length],['Open design checks', checks.length]]);
+      sum['!cols'] = [{wch:24},{wch:50}];
+      const chk = XLSX.utils.aoa_to_sheet([['Design check']].concat(checks.length?checks:[['No issues found']]));
+      chk['!cols'] = [{wch:110}];
+      XLSX.utils.book_append_sheet(wb, sum, 'Summary');
+      XLSX.utils.book_append_sheet(wb, ws, 'BP Definition');
+      XLSX.utils.book_append_sheet(wb, chk, 'Design Checks');
+      const buf = XLSX.write(wb, {bookType:'xlsx', type:'array'});
+      saveFile(new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), fileBase()+'.xlsx');
+      toast('Excel file downloaded'); return;
+    }
+    if(kind==='pdf'){
+      toast('Building PDF…');
+      await loadLib('pdf');
+      const {canvas, width, height} = await svgToCanvas(2);
+      const {jsPDF} = window.jspdf;
+      const doc = new jsPDF({orientation: width>height ? 'landscape' : 'portrait', unit:'pt', format:'letter'});
+      const pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight(), m = 36;
+      const sc = Math.min((pw-2*m)/width, (ph-2*m)/height);
+      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (pw-width*sc)/2, m, width*sc, height*sc);
+      // page 2: definition table
+      doc.addPage('letter','landscape');
+      const W2 = doc.internal.pageSize.getWidth(), H2 = doc.internal.pageSize.getHeight();
+      doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.text('Business process definition', m, m+8);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(91,103,123);
+      doc.text([wf.client, wf.bp, wf.name].filter(Boolean).join('  ·  '), m, m+24);
+      const cols = [{h:'Order',w:44,k:'order'},{h:'If (condition)',w:130,k:'cond'},{h:'Step type',w:110,k:'type'},{h:'Security groups',w:170,k:'groups'},{h:'Restrictions',w:110,k:'restr'},{h:'Opt.',w:34,k:'optional'},{h:'Notes',w:W2-2*m-598,k:'note'}];
+      let y = m + 46;
+      const header = ()=>{ doc.setFillColor(238,241,246); doc.rect(m, y-12, W2-2*m, 18, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(91,103,123); let x=m+6; cols.forEach(c=>{ doc.text(c.h.toUpperCase(), x, y); x+=c.w; }); y += 16; };
+      header();
+      doc.setFontSize(9.5);
+      defRows().forEach(r=>{
+        const cells = cols.map(c=>doc.splitTextToSize(String((c.k==='order' && r.parallel) ? r.order+' (parallel)' : (r[c.k]||'')), c.w-10));
+        const h = Math.max(...cells.map(c=>c.length))*12 + 8;
+        if(y + h > H2 - m){ doc.addPage('letter','landscape'); y = m+12; header(); doc.setFontSize(9.5); }
+        let x = m+6;
+        cells.forEach((c,i)=>{ doc.setFont('helvetica', i===0 ? 'bold' : 'normal'); doc.setTextColor(24,33,47); doc.text(c, x, y); x += cols[i].w; });
+        y += h; doc.setDrawColor(222,227,235); doc.line(m, y-10, W2-m, y-10);
+      });
+      saveFile(doc.output('blob'), fileBase()+'.pdf');
+      toast('PDF downloaded'); return;
+    }
+  }catch(err){
+    toast(err && err.message==='load' ? "Couldn't load the export library. Check your connection and try again." : 'Export failed. Try again, and let me know if it keeps happening.');
+  }
+}
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg, actLabel, act){
+  let el = document.querySelector('.toast'); if(el) el.remove();
+  el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status');
+  el.innerHTML = `<span>${esc(msg)}</span>` + (actLabel ? `<button>${esc(actLabel)}</button>` : '');
+  if(act) el.querySelector('button').onclick = ()=>{ el.remove(); act(); };
+  document.body.appendChild(el);
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.remove(), actLabel ? 5000 : 2600);
+}
+
+/* ---------- Boot ---------- */
+$('#bp-list').innerHTML = [...STARTERS.map(s=>s.bp), ...EXTRA_BPS].map(b=>`<option value="${esc(b)}">`).join('');
+(function boot(){
+  const d = store.get('bpws.draft', null);
+  if(d && d.wf && d.wf.init){ wf = Object.assign(blankWf(), d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
+  else { wf = STARTERS[0].build(); wf.name = 'Sample: Supplier invoice approvals'; dirty = true; }
+  renderPalette(); renderAll();
+  setInterval(renderStatus, 60000);
+})();
+</script>
+</body>
+</html>
