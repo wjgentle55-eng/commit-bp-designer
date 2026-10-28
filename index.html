@@ -141,6 +141,10 @@ code{font-family:var(--mono);font-size:.9em}
 .verb{font-weight:800}
 .spec{font-weight:700;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
 .by{font-weight:500;opacity:.85}
+.spec-pick{appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23171E33'/%3E%3C/svg%3E") no-repeat right 9px center/9px 5px;color:#171E33;border:0;border-radius:999px;padding:4px 26px 4px 11px;font-size:12px;font-weight:700;max-width:280px;min-width:0;text-overflow:ellipsis;cursor:pointer}
+.spec-pick.empty{background-color:transparent;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23ffffff'/%3E%3C/svg%3E");color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.75);font-weight:600}
+.spec-pick option{color:#171E33;background:#fff;font-weight:500}
+.spec-pick:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .gp{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#171E33;border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:650}
 .gp.plain{padding-right:10px}
 .gp .kk{font-size:9px;font-weight:800;letter-spacing:.05em;color:#8A4B00;text-transform:uppercase;margin-right:2px}
@@ -475,13 +479,27 @@ const BP_CATALOG = {
   'Supplier Invoice Event': {
     loaded: true, noun: 'supplier invoice',
     actions: [
-      {name:'Supplier Accounts Match Process', desc:''},
+      {name:'Assign Asset Accounting Information from Invoice', desc:''},
+      {name:'Check Budget', desc:''},
+      {name:'Create Receipt for Purchase Order of Supplier Invoice', desc:''},
+      {name:'Initiate Supplier Invoice Intercompany Event', desc:''},
       {name:'Review Supplier Invoice', desc:''},
       {name:'Review Trackable Invoice Lines', desc:''},
-      {name:'Initiate Supplier Invoice Intercompany Event', desc:''},
-      {name:'Assign Asset Accounting Information from Invoice', desc:''}
+      {name:'Supplier Accounts Match Process', desc:''}
     ],
-    services: [{name:'Initiate Asset Registration Events from Invoice', desc:''}],
+    services: [
+      {name:'Create Case', desc:''},
+      {name:'Document Delivery', desc:''},
+      {name:'Document Retrieval', desc:''},
+      {name:'Execute Prism Data Change Service', desc:''},
+      {name:'Initiate Asset Registration Events from Invoice', desc:''},
+      {name:'Initiate Supplier Accounts Match Event for related Supplier Invoices', desc:''},
+      {name:'Invoke Agent', desc:''},
+      {name:'Journey Distribution Service', desc:''},
+      {name:'Orchestration Service', desc:''},
+      {name:'Publish Prism Dataset Service', desc:''},
+      {name:'Step Configuration Placeholder Service', desc:''}
+    ],
     groups: ['Accounts Payable Data Entry Specialist','Accounts Payable Specialist','Accounts Payable Manager','Cost Center Manager','Project Manager','Controller','Business Asset Accountant','Accountant','Accounting Manager','Procurement Specialist','Buyer','Manager', ...ADMIN_GROUPS, 'Supplier Data Administrator'],
     rules: [R_NONPO, R_NOTREC, R_FROMREC, R_10K, R_PROJ, R_IC, R_APR, R_MATCH, R_TRACK, R_ICEV, R_ASSET, R_ACCT],
     recs: [
@@ -617,6 +635,15 @@ function condHex(text, i){
   if(isOwned(text)) return `<span class="hex owned" title="Workday owned: ${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span><span class="wd">WD</span></span>`;
   return `<span class="hex" title="${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span>${i==null?'':`<button class="x" data-rm="cond" data-i="${i}" aria-label="Remove condition">×</button>`}</span>`;
 }
+/* Specify dropdown that sits on the block itself, like the Specify prompt in the tenant */
+function specPick(s, tasks){
+  const inList = tasks.some(t=>t.name===s.specify), custom = !s.specify && customSpec.has(s.id);
+  return `<select class="spec-pick${s.specify?'':' empty'}" data-specpick="${s.id}" title="${esc(s.specify || 'Pick a task')}" aria-label="Specify ${TYPES[s.type].label.toLowerCase()} task">`+
+    `<option value="">${tasks.length ? 'pick a task' : 'no tasks loaded'}</option>`+
+    tasks.map(t=>`<option value="${esc(t.name)}"${t.name===s.specify?' selected':''}>${esc(t.name)}</option>`).join('')+
+    (s.specify && !inList ? `<option value="${esc(s.specify)}" selected>${esc(s.specify)} (custom)</option>` : '')+
+    `<option value="__custom"${custom?' selected':''}>Custom task…</option></select>`;
+}
 function stepHTML(s, om, lane){
   const T = TYPES[s.type] || TYPES.action;
   const flags = [];
@@ -625,7 +652,8 @@ function stepHTML(s, om, lane){
   if(s.due) flags.push('due ' + s.due);
   if(s.optional) flags.push('optional');
   if(s.doNotAdvance) flags.push('do not advance');
-  const specSlot = s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? `<span class="slot req">${s.type==='todo'?'add To Do text':'name it'}</span>` : (T.spec && s.type!=='checklist' ? '<span class="slot">specify</span>' : ''));
+  const tasks = tasksFor(s.type);
+  const specSlot = tasks ? specPick(s, tasks) : s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? `<span class="slot req">${s.type==='todo'?'add To Do text':'name it'}</span>` : (T.spec && s.type!=='checklist' ? '<span class="slot">specify</span>' : ''));
   const who = T.noGroup ? '' : `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>');
   const cl = s.type==='checklist' ? `<span class="cl">${s.items.length ? s.items.map(i=>`<span class="cl-i"><span class="bx"></span><span class="t">${esc(i.text||'Untitled item')}</span>${i.assignee?`<span class="gp plain">${esc(i.assignee)}</span>`:'<span class="slot">assign</span>'}</span>`).join('') : '<span class="cl-empty">Add items in Step details, or drop a To Do here</span>'}</span>` : '';
   return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
@@ -1102,6 +1130,7 @@ document.addEventListener('toggle', e=>{ const d = e.target; if(d.matches && d.m
 document.addEventListener('click', e=>{
   if(Date.now() - justDragged < 250) return;
   const t = e.target;
+  if(t.closest('#script select')) return;
   const del = t.closest('[data-del]'); if(del){ removeItem(del.dataset.del); return; }
   const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
   const ra = t.closest('[data-recadd]'); if(ra){ addRec(ra.dataset.recadd); return; }
@@ -1165,6 +1194,12 @@ function addCustomGroup(){
 }
 document.addEventListener('change', e=>{
   const t = e.target, s = stepOf(sel);
+  if(t.dataset.specpick){
+    const st = stepOf(t.dataset.specpick); if(!st) return;
+    if(t.value==='__custom'){ customSpec.add(st.id); change(()=>{ st.specify=''; sel = st.id; }); setTimeout(()=>{ const i = $('#s-spec'); if(i){ i.focus(); i.scrollIntoView({block:'center'}); } }, 0); }
+    else { customSpec.delete(st.id); change(()=>{ st.specify = t.value; sel = st.id; }); }
+    return;
+  }
   if(t.id==='f-bp'){ if(t.value==='__other'){ $('#f-bp-other').hidden = false; $('#f-bp-other').focus(); } else setBP(t.value); }
   else if(t.id==='f-bp-other'){ setBP(t.value.trim()); }
   else if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(TYPES[s.type].noGroup){ if(s.type==='checklist' && !s.items.length && s.groups.length) s.items = s.groups.map(g=>Item('', g)); s.groups = []; s.restr = []; s.all = false; } }); }
