@@ -5,15 +5,19 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 ## How it works
 
 - **Build**: Initiation is always step `a`. Drag Action, Approval, Approval Chain, Consolidated Approval Chain, Review, To Do, Checklist, Integration and Service blocks into order. Letters update on their own. Mark a step as a sub-step to number it like `a1`, or wrap steps in "Run in parallel" so they share a letter.
-- **Groups and conditions**: drop security group pills and condition rules onto steps. Each step also takes Specify, Due Date, All, Optional, Do Not Advance, Complete, Routing Modifier, Run As User and the Initiator/Approvers routing restrictions.
-- **Paths**: a condition on one step means that step gets skipped when the condition is false, and the app flags it. When the same condition sits on two or more steps (but not all of them), it becomes its own **path split** automatically. You can also add splits by hand, like Company A vs Company B. The Paths tab lays each case out in its own lane. Every lane starts at Initiation and ends at Complete, and you can walk through the lanes one at a time with Previous and Next.
-- **Definition**: the step grid as you'd configure it in the tenant, plus design checks. For example, it warns when a path has no Workday condition rule behind it, which would make the step run for every case.
+- **Conditions**: each step's conditions sit at the front of the block, before the step type. A condition on a single step means that step gets skipped when the condition is false.
+- **Paths**: the main line is the default path, with no conditions. Drop a **Split into paths** block to lay cases out side by side (for example Company A vs Company B, or Non-PO invoices). Every path has its own condition rule, and any step you drop into a path carries that rule. All the paths start at the split and rejoin below it.
+- **Completion**: mark a step as Complete and the BP completes there. Steps after it still run, and they show below a "completes here" marker.
+- **Copying**: use the Copy button on a block, Alt/Option-drag, Ctrl/Cmd+D, or Ctrl/Cmd+C then Ctrl/Cmd+V.
+- **Security groups**: groups with "admin" in the name are user-based. Everything else is role-based (constrained).
+- **Specify**: To Do steps need text here, since it's what the person sees. Action and Service steps pick from a task list (`TASK_CATALOG` in `index.html`), which has room for descriptions.
+- **Definition**: the step grid as you'd configure it in the tenant, plus design checks.
 
 ## Import and export
 
-- **Import** a Workday BP definition export (.xlsx with Step, Order, If, Type, Specify, Group... columns) or a design `.json` file from New or Open. Shared conditions are split into paths automatically.
-- **Excel** export uses the same 16 columns as the definition export. It also includes Paths, Path Splits, Design Checks and Design Notes sheets.
-- **PDF** (Commit-branded paths diagram plus definition table), **PNG**, and design **.json**.
+- **Import** a Workday BP definition export (.xlsx with Step, Order, If, Type, Specify, Group... columns) or a design `.json` file from New or Open. When consecutive steps share a condition, they're grouped into a path automatically.
+- **Excel** export uses the same 16 columns as the definition export. It also includes Paths, Design Checks and Design Notes sheets.
+- **PDF** (Commit-branded flow diagram with paths, plus the definition table), **PNG**, and design **.json**.
 
 `designs/` holds the original Supplier Invoice Event Default Definition export and the matching design file.
 

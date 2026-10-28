@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BP Workflow Studio</title>
-<meta name="description" content="Commit's drag-and-drop builder for proposed Workday business process definitions and approval paths.">
+<meta name="description" content="Commit's drag-and-drop builder for proposed Workday business process definitions and condition paths.">
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: header bar, then three panes: block palette | Build / Paths / Definition views | step details. One column on phones. */
+/* Layout: header bar, then three panes: block palette | Build / Definition views | step details. One column on phones. */
 :root{
   --bg:#E9ECF3; --panel:#FFFFFF; --panel-2:#F3F5FA; --ink:#171E33; --muted:#59647C; --line:#D4DAE6;
   --brand:#29357F; --brand-ink:#FFFFFF; --sky:#00AEEF; --accent:#0B7FB8;
-  --canvas:#F7F9FC; --dot:#C8D0DE; --sel:#0F1733; --rail:#B4BED0;
+  --canvas:#F7F9FC; --dot:#C8D0DE; --sel:#0F1733; --rail:#B4BED0; --lane-bg:rgba(255,255,255,.72);
   --warn:#A8560A; --warn-bg:#FCEFDD; --info:#205E9C; --info-bg:#E4EFFA; --ok:#1F7A4D; --ok-bg:#E3F4EA; --danger:#B42318;
-  --rule:#1E8A5B; --par:#55657D;
+  --rule:#1E8A5B; --par:#55657D; --split:#34405E; --done:#1F7A4D;
   --ui:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme:light;
@@ -25,16 +25,18 @@
   :root:not([data-theme="light"]){
     --bg:#0E121B; --panel:#161C29; --panel-2:#1C2333; --ink:#E6EAF3; --muted:#98A3B8; --line:#2A3346;
     --brand:#7F8BE0; --brand-ink:#0D1224; --sky:#3CC4F5; --accent:#5CC8F5;
-    --canvas:#121825; --dot:#262F40; --sel:#FFFFFF; --rail:#3A4559;
+    --canvas:#121825; --dot:#262F40; --sel:#FFFFFF; --rail:#3A4559; --lane-bg:rgba(22,28,41,.75);
     --warn:#F2B15C; --warn-bg:#33240F; --info:#8CC4FF; --info-bg:#132841; --ok:#6FD3A0; --ok-bg:#12291D; --danger:#FF8A80;
+    --split:#4A5878; --done:#3FB57A;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E121B; --panel:#161C29; --panel-2:#1C2333; --ink:#E6EAF3; --muted:#98A3B8; --line:#2A3346;
   --brand:#7F8BE0; --brand-ink:#0D1224; --sky:#3CC4F5; --accent:#5CC8F5;
-  --canvas:#121825; --dot:#262F40; --sel:#FFFFFF; --rail:#3A4559;
+  --canvas:#121825; --dot:#262F40; --sel:#FFFFFF; --rail:#3A4559; --lane-bg:rgba(22,28,41,.75);
   --warn:#F2B15C; --warn-bg:#33240F; --info:#8CC4FF; --info-bg:#132841; --ok:#6FD3A0; --ok-bg:#12291D; --danger:#FF8A80;
+  --split:#4A5878; --done:#3FB57A;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -92,33 +94,27 @@ code{font-family:var(--mono);font-size:.9em}
 .pal-item{display:flex;flex-direction:column;gap:4px}
 .pal-item p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.35}
 .pal-group{display:flex;flex-direction:column;gap:6px}
-.pal-group h3{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;font-weight:700;display:flex;align-items:center;gap:6px}
-.pal-group h3 .btn{margin-left:auto;text-transform:none;letter-spacing:0}
-.axis-card{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;background:var(--panel-2)}
-.axis-card .ah{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700}
-.axis-card .ah .dot{width:10px;height:10px;border-radius:3px;flex:none}
-.axis-card .ah .btn{margin-left:auto}
+.pal-group h3{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;font-weight:700}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .search{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
 .addrow{display:flex;gap:6px}
 .addrow input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
 .tip{font-size:11.5px;color:var(--muted);margin:0;line-height:1.4}
-
 .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);touch-action:none;cursor:grab;user-select:none;max-width:100%}
-.pill.hexp{border:0;color:#fff;border-radius:0;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);padding:5px 16px}
+.pill.hexp{border:0;color:#fff;border-radius:0;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);padding:5px 16px;background:var(--rule)}
 .pill .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Center */
 .ctabs{display:flex;gap:2px;align-items:center;padding:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .ctab{border:0;background:none;padding:6px 12px;border-radius:7px;font-weight:700;font-size:13px;color:var(--muted);display:inline-flex;gap:6px;align-items:center}
 .ctab[aria-selected="true"]{background:var(--panel-2);color:var(--ink)}
+.ctabs .hint{margin-left:auto;font-size:11.5px;color:var(--muted);padding-right:6px}
 .badge{font-size:11px;font-weight:700;border-radius:999px;padding:0 7px;line-height:18px;background:var(--warn-bg);color:var(--warn)}
 .badge.ok{background:var(--ok-bg);color:var(--ok)}
-.badge.info{background:var(--info-bg);color:var(--info)}
 .view{flex:1;min-height:0;overflow:auto}
-.canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;min-height:100%;padding:24px 28px 80px;position:relative}
-.script{max-width:720px;min-width:340px;width:fit-content}
-.legend{font-size:11.5px;color:var(--muted);margin:0 0 14px;max-width:70ch}
+.canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;min-height:100%;padding:24px 28px 80px;position:relative;width:max-content;min-width:100%}
+.script{min-width:340px;width:max-content}
+.legend{font-size:11.5px;color:var(--muted);margin:0 0 14px;max-width:72ch}
 
 /* Scratch-style blocks */
 .block{--c:#1F78C8;position:relative;background:var(--c);color:#fff;padding:13px 12px 17px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:48px;font-weight:600;font-size:13px;user-select:none;
@@ -126,36 +122,50 @@ code{font-family:var(--mono);font-size:.9em}
 .block.hat{clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px));border-radius:22px 22px 0 0;padding-top:16px;--c:#29357F}
 .block.hat small{font-weight:500;opacity:.8;font-size:11.5px}
 .block.end{clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);border-radius:0 0 10px 10px;--c:#3D4757;min-height:40px;padding-bottom:10px;font-weight:700}
-[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="new"]>.block,[data-drag="newpar"] .block{cursor:grab;touch-action:none}
+[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="block"]>.sblock>.shead,[data-drag="new"]>.block,[data-drag="newpar"] .block,[data-drag="newsplit"] .block{cursor:grab;touch-action:none}
 .ord{font-family:var(--mono);font-weight:700;font-size:12px;background:rgba(0,0,0,.24);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
-.verb{font-weight:700}
-.spec{font-weight:800;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.verb{font-weight:800}
+.spec{font-weight:700;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
+.by{font-weight:500;opacity:.85}
 .gp{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#171E33;border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:650}
-.gp .kk{font-size:9px;font-weight:800;letter-spacing:.05em;color:#59647C;text-transform:uppercase;margin-right:2px}
+.gp .kk{font-size:9px;font-weight:800;letter-spacing:.05em;color:#8A4B00;text-transform:uppercase;margin-right:2px}
 .hex{--h:var(--rule);display:inline-flex;align-items:center;gap:4px;background:var(--h);color:#fff;padding:4px 10px 4px 15px;font-size:12px;font-weight:700;max-width:100%;
   clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%)}
 .hex i{font-style:normal;opacity:.82;font-weight:600}
-.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:320px}
-.hex.path{box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.hex.inh{background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.hex.empty{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rule);color:var(--rule)}
 .slot{border:1.5px dashed rgba(255,255,255,.75);border-radius:999px;padding:2px 10px;font-weight:500;font-size:12px;opacity:.95}
+.slot.req{border-color:#FFD9A8;color:#FFE7C7;font-weight:700}
 .flag{font-size:11.5px;background:rgba(0,0,0,.2);border-radius:6px;padding:2px 7px;font-weight:600}
 .x{width:18px;height:18px;border-radius:50%;border:0;background:transparent;color:inherit;display:inline-grid;place-items:center;font-size:14px;line-height:1;opacity:.55;padding:0;flex:none}
 .x:hover{opacity:1;background:rgba(0,0,0,.15)}
-.condrow{display:flex;flex-wrap:wrap;gap:4px;flex-basis:100%}
-.condrow:empty{display:none}
+.cp{margin-left:auto;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:6px;font-size:11.5px;font-weight:700;padding:3px 8px;opacity:0;transition:opacity .12s}
+.bw:hover>.block>.cp,.bw.sel>.block>.cp,.bw:hover>.cblock>.chead>.cp,.bw:hover>.sblock>.shead>.cp,.bw.sel>.cblock>.chead>.cp,.bw.sel>.sblock>.shead>.cp{opacity:1}
+.cp:hover{background:rgba(255,255,255,.3)}
+@media (hover:none){.cp{opacity:1}}
 
 .stack{display:flex;flex-direction:column;position:relative}
 .stack>*{margin-top:-6px}
+.stack.root>.bw:not(.split){max-width:760px}
 .stack.root:empty{min-height:70px}
-.stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600}
+.stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600;max-width:760px}
 .script>.stack,.script>.endw{margin-top:-6px}
+.script>.endw{max-width:760px}
 .stack.root:empty + .endw{margin-top:8px}
 .bw.sub{padding-left:22px}
 .bw.sub::before{content:"";position:absolute;left:8px;top:-2px;bottom:6px;width:3px;border-radius:2px;background:var(--rail)}
 
+/* completion marker */
+.cmark{margin:10px 0 12px!important;display:flex;align-items:center;gap:10px;color:var(--done);font-size:12px;font-weight:700;max-width:760px}
+.cmark::before,.cmark::after{content:"";flex:1;border-top:2px dashed var(--done)}
+.cmark span{white-space:nowrap}
+.cmark + .bw{margin-top:0}
+
+/* parallel C-block */
 .cblock{display:flex;flex-direction:column}
 .chead{--c:var(--par);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),62px calc(100% - 6px),56px 100%,38px 100%,32px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px))}
-.chead .hint{font-size:11.5px;font-weight:500;opacity:.85}
+.chead .hint,.shead .hint{font-size:11.5px;font-weight:500;opacity:.85}
 .cmid{display:flex;margin-top:-6px}
 .carm{width:16px;background:var(--par);flex:none}
 .stack.inner{flex:1;min-width:0}
@@ -164,51 +174,44 @@ code{font-family:var(--mono);font-size:.9em}
 .stack.inner:empty::after{content:"Drop 2+ steps here";display:grid;place-items:center;height:46px;color:var(--muted);font-size:12px;font-weight:600}
 .cfoot{height:22px;background:var(--par);margin-top:-6px;clip-path:polygon(0 0,32px 0,38px 6px,56px 6px,62px 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px))}
 
+/* path split block: lanes side by side, all start and end at the same point */
+.sblock{display:flex;flex-direction:column}
+.shead{--c:var(--split);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);padding-bottom:12px}
+.shead .btn{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
+.shead .btn:hover{background:rgba(255,255,255,.26)}
+.sbody{display:flex;background:var(--split);padding:0 10px 0 16px}
+.lanes-row{display:flex;gap:10px;align-items:stretch;background:var(--canvas);padding:12px;border-radius:8px 8px 0 0;flex:1}
+.lane{width:340px;flex:none;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--line);border-radius:10px;background:var(--lane-bg);padding:8px}
+.lane.selected{border-color:var(--sel);box-shadow:0 0 0 1px var(--sel)}
+.lane.drop-ok{border-color:var(--sky);box-shadow:0 0 0 2px var(--sky)}
+.lane-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;cursor:pointer;padding:2px}
+.lane-head .lname{font-size:13px;font-weight:800;color:var(--ink);flex:1;min-width:0}
+.lane-head .lsub{font-size:11px;color:var(--muted);font-weight:600;flex-basis:100%}
+.lane-head .x{color:var(--muted)}
+.stack.lane-stack{min-height:56px;padding-top:6px}
+.stack.lane-stack>*:first-child{margin-top:0}
+.stack.lane-stack:empty{border:2px dashed var(--line);border-radius:8px}
+.stack.lane-stack:empty::after{content:"Drop steps for this path";display:grid;place-items:center;height:52px;color:var(--muted);font-size:12px;font-weight:600}
+.lane.def{width:190px;border-style:dashed;background:transparent}
+.lane.def .lane-head{cursor:default}
+.passthru{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:600;text-align:center;min-height:56px;position:relative}
+.passthru::before{content:"";width:2px;flex:1;min-height:20px;background:var(--rail)}
+.passthru::after{content:"";width:2px;flex:1;min-height:20px;background:var(--rail)}
+.sfoot{--c:var(--split);background:var(--c);color:#fff;font-size:12px;font-weight:700;padding:8px 14px 14px;clip-path:polygon(0 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px));opacity:.95}
+
 .bw{position:relative}
 .bw.sel{filter:drop-shadow(2px 0 0 var(--sel)) drop-shadow(-2px 0 0 var(--sel)) drop-shadow(0 2px 0 var(--sel)) drop-shadow(0 -2px 0 var(--sel));z-index:2}
+.bw.split.sel{filter:none}
+.bw.split.sel>.sblock>.shead,.bw.split.sel>.sblock>.sfoot{box-shadow:inset 0 0 0 2px var(--sel)}
 .bw.drop-ok{filter:drop-shadow(3px 0 0 var(--sky)) drop-shadow(-3px 0 0 var(--sky)) drop-shadow(0 3px 0 var(--sky)) drop-shadow(0 -3px 0 var(--sky));z-index:3}
 .ph{height:44px;border:2px dashed var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);margin-top:2px!important;margin-bottom:8px}
-.drag-ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;opacity:.92;max-width:460px;transform-origin:0 0}
+.drag-ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;opacity:.92;max-width:460px;transform-origin:0 0;overflow:hidden;max-height:240px}
 .drag-ghost .bw{filter:drop-shadow(0 10px 18px rgba(10,20,40,.3))}
+.drag-ghost.copying::after{content:"+ copy";position:absolute;right:6px;top:6px;background:var(--sky);color:#06202E;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px}
 body.dragging,body.dragging *{cursor:grabbing!important}
 body.trash .palette{outline:2px dashed var(--danger);outline-offset:-2px}
 .trash-note{display:none;position:absolute;inset:auto 12px 12px 12px;background:var(--danger);color:#fff;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12.5px;text-align:center}
 body.trash .trash-note{display:block}
-
-/* Paths view */
-.paths{padding:18px 20px 40px;display:flex;flex-direction:column;gap:14px;min-width:fit-content}
-.pbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.pbar .lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.axis-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:5px 12px 5px 8px;font-size:12.5px;font-weight:650}
-.axis-toggle .dot{width:10px;height:10px;border-radius:3px}
-.axis-toggle[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.segue{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.segue b{font-size:14px}
-.lanes{display:grid;grid-template-columns:repeat(var(--n),minmax(230px,280px));justify-content:center;column-gap:18px}
-.lane-h{padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px;margin-bottom:12px;cursor:pointer;text-align:left}
-.lane-h:hover{border-color:var(--accent)}
-.lane-h .tags{display:flex;flex-wrap:wrap;gap:4px}
-.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 7px;color:#fff;background:var(--h,#55657D)}
-.lane-h small{color:var(--muted);font-size:11.5px}
-.cell{position:relative;display:flex;justify-content:center;padding:7px 0;min-height:24px}
-.cell::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--rail)}
-.cell.span{grid-column:1/-1}
-.cell.span::before{display:none}
-.cell.span .node{width:min(100%,340px)}
-.cell.skip::after{content:"skipped";position:relative;font-size:10.5px;color:var(--muted);background:var(--canvas);padding:0 6px;align-self:center;font-weight:600;letter-spacing:.03em}
-.lanes-wrap{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;border:1px solid var(--line);border-radius:12px;padding:18px}
-.spanrails{grid-column:1/-1;display:grid;grid-template-columns:subgrid;height:0}
-.node{position:relative;z-index:1;width:100%;background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:3px;cursor:pointer;text-align:left}
-.node:hover{border-color:var(--accent);border-left-color:var(--c)}
-.node.sel{box-shadow:0 0 0 2px var(--sel)}
-.node .nt{display:flex;gap:7px;align-items:center;font-weight:800;font-size:13px}
-.node .nt .o{font-family:var(--mono);font-size:11.5px;color:#fff;background:var(--c);border-radius:5px;padding:1px 6px}
-.node .g{font-size:12px;font-weight:600}
-.node .c{font-size:11.5px;color:var(--rule);font-weight:700;display:flex;gap:4px;align-items:flex-start}
-.node .c.p{color:var(--h)}
-.node .m{font-size:11.5px;color:var(--muted)}
-.node.ghosted{opacity:.45;border-style:dashed}
-.node.endpt{border-left-color:var(--c);align-items:center;flex-direction:row;justify-content:center;gap:8px;font-weight:800}
 
 /* Inspector */
 .ins{display:flex;flex-direction:column;gap:16px}
@@ -218,11 +221,15 @@ body.trash .trash-note{display:block}
 .sec{display:flex;flex-direction:column;gap:6px}
 .sec>label,.sec>.lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .sec select,.sec input[type=text],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.sec input.req{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.sec .req-note{font-size:11.5px;color:var(--warn);font-weight:600;margin:0}
 .sec textarea{min-height:64px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:600}
-.crow{display:flex;flex-direction:column;gap:4px;padding:8px;border:1px solid var(--line);border-left:4px solid var(--h,var(--rule));border-radius:8px;background:var(--panel-2)}
+.chip small{font-size:9.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.crow{display:flex;flex-direction:column;gap:4px;padding:8px;border:1px solid var(--line);border-left:4px solid var(--rule);border-radius:8px;background:var(--panel-2)}
+.crow.inh{border-left-color:var(--split);border-style:dashed}
 .crow .ct{font-size:12.5px;font-weight:600;word-break:break-word}
 .crow .cm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
 .crow .cm .btn{margin-left:auto}
@@ -240,11 +247,9 @@ body.trash .trash-note{display:block}
 .checks li{font-size:12.5px;padding:7px 10px;border-radius:8px;background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);cursor:pointer;display:flex;flex-direction:column;gap:6px}
 .checks li.info{background:var(--info-bg);border-left-color:var(--info)}
 .checks li.ok{background:var(--ok-bg);border-left-color:var(--ok);cursor:default}
-.checks li .btn{align-self:flex-start}
 .checks b{font-family:var(--mono)}
 .infos{margin-top:8px}
 .infos summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--info);padding:6px 0}
-.infos .checks{margin-top:4px}
 
 /* Definition */
 .cfg{padding:20px;display:flex;flex-direction:column;gap:18px}
@@ -257,6 +262,7 @@ table.def tr:last-child td{border-bottom:0}
 table.def td.o{font-family:var(--mono);font-weight:700}
 table.def tbody tr{cursor:pointer}
 table.def tbody tr:hover td{background:var(--panel-2)}
+table.def tr.after td{color:var(--muted)}
 .tdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
 
 /* Modal */
@@ -280,11 +286,6 @@ table.def tbody tr:hover td{background:var(--panel-2)}
 .li .t b{font-size:13.5px}
 .li .t small{color:var(--muted);font-size:12px}
 .empty{padding:18px;color:var(--muted);font-size:13px;text-align:center;border:1px dashed var(--line);border-radius:10px}
-.ofields{display:flex;flex-direction:column;gap:8px}
-.orow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) auto;gap:6px;align-items:center}
-.orow input,.mf input{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;min-width:0;width:100%}
-.mf{display:flex;flex-direction:column;gap:4px}
-.mf label{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;z-index:300;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
 .toast button{background:none;border:0;color:var(--sky);font-weight:800;padding:0}
@@ -296,10 +297,8 @@ table.def tbody tr:hover td{background:var(--panel-2)}
   .main{grid-template-columns:minmax(0,1fr)}
   .palette .pane-b{max-height:300px}
   .view{min-height:62vh}
-  .script{min-width:0;width:100%}
   .canvas{padding:20px 14px 60px}
-  .orow{grid-template-columns:1fr auto}
-  .orow input:nth-child(2){grid-column:1/-1;grid-row:2}
+  .lane{width:280px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -326,9 +325,9 @@ table.def tbody tr:hover td{background:var(--panel-2)}
       <div class="menu">
         <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
         <div class="menu-list" id="export-menu" hidden>
-          <button data-exp="xlsx"><span>Excel (Workday definition layout)</span><small>Same columns as a BP definition export, plus a Paths sheet</small></button>
-          <button data-exp="pdf"><span>PDF for sign-off</span><small>Commit-branded paths diagram and definition table</small></button>
-          <button data-exp="png"><span>PNG image</span><small>Paths diagram for decks</small></button>
+          <button data-exp="xlsx"><span>Excel (Workday definition layout)</span><small>Same 16 columns as a BP definition export</small></button>
+          <button data-exp="pdf"><span>PDF for sign-off</span><small>Commit-branded flow with paths, plus definition table</small></button>
+          <button data-exp="png"><span>PNG image</span><small>Flow diagram for decks</small></button>
           <button data-exp="json"><span>Design file (.json)</span><small>Share with a teammate or commit to the repo</small></button>
         </div>
       </div>
@@ -343,17 +342,16 @@ table.def tbody tr:hover td{background:var(--panel-2)}
         <button class="ptab" role="tab" data-ptab="conds" aria-selected="false">Conditions</button>
       </div>
       <div class="pane-b" id="palette"></div>
-      <div class="trash-note">Drop here to remove the step</div>
+      <div class="trash-note">Drop here to remove</div>
     </section>
 
     <section class="pane center" aria-label="Workflow">
       <div class="ctabs" role="tablist">
         <button class="ctab" role="tab" data-view="build" aria-selected="true">Build</button>
-        <button class="ctab" role="tab" data-view="paths" aria-selected="false">Paths <span class="badge info" id="path-badge">1</span></button>
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
+        <span class="hint">Copy a step: ⧉ on the block, Alt-drag, or Ctrl/⌘ D</span>
       </div>
-      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps from the left to build the definition. Drop a security group or condition onto a step to attach it. A condition used by more than one step becomes its own path, which you can compare in the Paths tab. Drag a step back to the palette to remove it.</p><div class="script" id="script"></div></div></div>
-      <div class="view" id="v-paths" hidden><div class="paths" id="paths"></div></div>
+      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps from the left into order. The main line is the default path and has no conditions. Use <b>Split into paths</b> to lay out cases side by side: each path has a condition rule, and any step dropped into it carries that rule. Drop a security group or condition onto a step to attach it.</p><div class="script" id="script"></div></div></div>
       <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
     </section>
 
@@ -366,6 +364,7 @@ table.def tbody tr:hover td{background:var(--panel-2)}
 
 <div class="modal-bg" id="modal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-h"><h2 id="modal-title"></h2><button class="btn quiet" id="modal-close">Close</button></div><div class="modal-b" id="modal-b"></div></div></div>
 <input type="file" id="import-file" accept=".json,.xlsx,.xls,application/json" hidden>
+<datalist id="dl-action"></datalist><datalist id="dl-service"></datalist>
 
 <script>
 "use strict";
@@ -373,27 +372,41 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAeAAAACQCAYAAADQgbjg
 
 /* ---------- Reference data ---------- */
 const TYPES = {
-  action:     {label:'Action', color:'#2E8540', desc:'Performs a Workday task or launches a process. Set the task in Specify.', spec:true},
+  action:     {label:'Action', color:'#2E8540', desc:'Performs a Workday task or launches a process. Pick the task in Specify.', spec:'catalog'},
   approval:   {label:'Approval', color:'#1F78C8', desc:'One member of the group approves, denies or sends back.'},
   chain:      {label:'Approval Chain', color:'#3F4BC0', desc:'Walks up a role hierarchy (supervisory org or cost center).'},
   cchain:     {label:'Consolidated Approval Chain', color:'#6A3FB8', desc:'Chain across lines and worktags, collapsing duplicate approvers.'},
   review:     {label:'Review', color:'#13857A', desc:'Reviewer can edit the transaction, then submits it forward.'},
-  todo:       {label:'To Do', color:'#C2541E', desc:'Manual task outside the BP. Marked done to move on.', spec:true},
-  checklist:  {label:'Checklist', color:'#6E7D12', desc:'List of items that must be completed before advancing.', spec:true},
-  integration:{label:'Integration', color:'#B3366F', desc:'Launches an integration system as a step.', spec:true},
-  service:    {label:'Service', color:'#8A5A1E', desc:'System step Workday runs on its own, no security group.', spec:true}
+  todo:       {label:'To Do', color:'#C2541E', desc:'Manual task outside the BP. The Specify text is what shows in the inbox, so it is required.', spec:'required'},
+  checklist:  {label:'Checklist', color:'#6E7D12', desc:'List of items that must be completed before advancing.', spec:'text'},
+  integration:{label:'Integration', color:'#B3366F', desc:'Launches an integration system as a step.', spec:'text'},
+  service:    {label:'Service', color:'#8A5A1E', desc:'System step Workday runs on its own, no security group.', spec:'catalog'}
 };
 const TYPE_BY_LABEL = Object.fromEntries(Object.entries(TYPES).map(([k,t])=>[t.label.toLowerCase(),k]));
 TYPE_BY_LABEL['review documents'] = 'review';
-const INIT_COLOR = '#29357F', PAR_COLOR = '#55657D', END_COLOR = '#3D4757';
-const AXIS_COLORS = ['#7A3FC0','#0E7C86','#B5477A','#4D6A1E','#A34B12','#2F5D9E'];
-const GROUP_CATALOG = [
-  {kind:'Special', label:'Special', names:['Initiator','Employee As Self']},
-  {kind:'Role', label:'Role-based', names:['Cost Center Manager','Project Manager','Manager','Business Asset Accountant','Region Manager','Grant Manager','Fund Manager']},
-  {kind:'User', label:'User-based', names:['Accounts Payable Data Entry Specialist','Accounts Payable Specialist','Accounts Payable Manager','Controller','Accountant','Accounting Manager','Procurement Specialist','Buyer','Supplier Data Administrator','Finance Administrator','Business Process Administrator']},
-  {kind:'ISSG', label:'Integration', names:['Integration System']}
-];
-const DEFAULT_RULES = ['Supplier Total Invoice Amount >= $10,000 USD?','Is Project Transaction?','Is Direct Intercompany?','Non-PO Supplier Invoice?','Supplier Invoice not from Recurring Supplier Invoice?','Has Exceptions?'];
+const INIT_COLOR = '#29357F', PAR_COLOR = '#55657D', SPLIT_COLOR = '#34405E', END_COLOR = '#3D4757', DONE_COLOR = '#1F7A4D';
+
+/* Task catalogs for the Specify dropdowns on Action and Service steps.
+   Add {name, desc} entries here; desc shows under the field when picked. */
+const TASK_CATALOG = {
+  action: [
+    {name:'Supplier Accounts Match Process', desc:''},
+    {name:'Review Supplier Invoice', desc:''},
+    {name:'Review Trackable Invoice Lines', desc:''},
+    {name:'Initiate Supplier Invoice Intercompany Event', desc:''},
+    {name:'Assign Asset Accounting Information from Invoice', desc:''}
+  ],
+  service: [
+    {name:'Initiate Asset Registration Events from Invoice', desc:''}
+  ]
+};
+
+/* Security groups: anything with "admin" in the name is user-based, everything else is role-based (constrained). */
+const BASE_GROUPS = ['Accounts Payable Data Entry Specialist','Accounts Payable Specialist','Accounts Payable Manager','Accountant','Accounting Manager','Business Asset Accountant','Controller','Cost Center Manager','Project Manager','Manager','Procurement Specialist','Buyer','Region Manager','Grant Manager',
+  'Finance Administrator','Business Process Administrator','Supplier Data Administrator','Security Administrator'];
+function groupKind(n){ if(n==='Initiator') return 'Special'; return /admin/i.test(n) ? 'User' : 'Role'; }
+const KIND_LABEL = {Special:'Special', Role:'Role-based (constrained)', User:'User-based'};
+const DEFAULT_RULES = ['Non-PO Supplier Invoice?','Supplier Invoice not from Recurring Supplier Invoice?','Supplier Total Invoice Amount >= $10,000 USD?','Is Project Transaction?','Is Direct Intercompany?','Not Related to Project APR/WIP alternative setup?'];
 
 /* ---------- Helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -402,145 +415,142 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const clone = o => JSON.parse(JSON.stringify(o));
 const trunc = (s, n) => (s = String(s||'')).length > n ? s.slice(0, n-1).trimEnd() + '…' : s;
 function letters(i){ let s=''; i++; while(i>0){ i--; s=String.fromCharCode(97+i%26)+s; i=Math.floor(i/26);} return s; }
-function shortRule(t){ return trunc(String(t).replace(/\(Workday Owned\)/i,'').replace(/[?\s.]+$/,'').trim(), 44); }
+function shortRule(t){ return trunc(String(t||'').replace(/\(Workday Owned\)/i,'').replace(/[?\s.]+$/,'').trim(), 44); }
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch{ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } }
 };
-function groupKind(name){ for(const g of GROUP_CATALOG) if(g.names.includes(name)) return g.kind; return 'Custom'; }
 
 /* ---------- Model ---------- */
 function S(type, o={}){
-  return {kind:'step', id:uid(), type, specify:o.specify||'', groups:o.groups?[...o.groups]:[], conds:o.conds?clone(o.conds):[],
+  return {kind:'step', id:uid(), type, specify:o.specify||'', groups:o.groups?[...o.groups]:[], conds:o.conds?[...o.conds]:[],
     sub:!!o.sub, optional:!!o.optional, restr:o.restr||[], all:!!o.all, due:o.due||'', modifier:o.modifier||'', runAs:o.runAs||'',
     doNotAdvance:!!o.doNotAdvance, complete:!!o.complete, note:o.note||''};
 }
 function P(steps){ return {kind:'par', id:uid(), steps}; }
-function blankWf(){ return {v:2, name:'', client:'', bp:'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], axes:[], customGroups:[], customRules:[], split:[]}; }
-const R = text => ({t:'rule', text});
-const Pth = (axis, outcome) => ({t:'path', axis, outcome});
+function Lane(name, rule, steps){ return {id:uid(), name:name||'', rule:rule||'', steps:steps||[]}; }
+function Split(lanes){ return {kind:'split', id:uid(), lanes:lanes||[Lane('Path 1','')]}; }
+function blankWf(){ return {v:3, name:'', client:'', bp:'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
 
 function exampleWf(){
   const w = blankWf();
   w.name = 'Supplier Invoice Event: Default Definition';
-  w.axes = [
-    {id:'ax-po', name:'Invoice type', outcomes:[{id:'nonpo', label:'Non-PO invoice', rule:'Non-PO Supplier Invoice?'},{id:'po', label:'PO-backed invoice', rule:''}]},
-    {id:'ax-rec', name:'Recurring source', outcomes:[{id:'not', label:'Not from recurring', rule:'Supplier Invoice not from Recurring Supplier Invoice?'},{id:'from', label:'From recurring invoice', rule:'Supplier Invoice from variable Recurring Supplier Invoice?'}]},
-    {id:'ax-apr', name:'Project APR/WIP setup', outcomes:[{id:'not', label:'Not APR/WIP related', rule:'Not Related to Project APR/WIP alternative setup?'},{id:'rel', label:'APR/WIP related', rule:''}]}
-  ];
   const restr = ['Initiator','Approvers'];
   w.items = [
-    S('action',{sub:true, specify:'Supplier Accounts Match Process', groups:['Initiator'], due:'1 Day', conds:[R('Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)')]}),
-    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'2 Days', conds:[Pth('ax-rec','from')]}),
-    S('approval',{groups:['Cost Center Manager'], restr, all:true, due:'2 Days', conds:[Pth('ax-po','nonpo'), Pth('ax-rec','not')]}),
-    S('approval',{groups:['Project Manager'], restr, all:true, due:'2 Days', conds:[R('Is Project Transaction?'), Pth('ax-po','nonpo')]}),
-    S('approval',{groups:['Controller'], restr, due:'2 Days', conds:[Pth('ax-po','nonpo'), Pth('ax-rec','not'), R('Supplier Total Invoice Amount >= $10,000 USD?')]}),
-    S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:[Pth('ax-apr','not'), R("The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)")]}),
-    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:[R('Is Direct Intercompany?')]}),
-    S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', complete:true, conds:[R('Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)')]}),
-    S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R("The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)")]}),
-    S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R('Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)'), Pth('ax-apr','not')]})
+    S('action',{sub:true, specify:'Supplier Accounts Match Process', groups:['Initiator'], due:'1 Day', conds:['Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)']}),
+    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'2 Days', conds:['Supplier Invoice from variable Recurring Supplier Invoice?']}),
+    Split([Lane('Non-PO invoice', 'Non-PO Supplier Invoice?', [
+      S('approval',{groups:['Cost Center Manager'], restr, all:true, due:'2 Days', conds:['Supplier Invoice not from Recurring Supplier Invoice?']}),
+      S('approval',{groups:['Project Manager'], restr, all:true, due:'2 Days', conds:['Is Project Transaction?']}),
+      S('approval',{groups:['Controller'], restr, due:'2 Days', conds:['Supplier Invoice not from Recurring Supplier Invoice?','Supplier Total Invoice Amount >= $10,000 USD?']})
+    ])]),
+    S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:['Not Related to Project APR/WIP alternative setup?', "The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)"]}),
+    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:['Is Direct Intercompany?']}),
+    S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', complete:true, conds:['Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)']}),
+    S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:["The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)"]}),
+    S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:['Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)', 'Not Related to Project APR/WIP alternative setup?']})
   ];
-  w.split = ['ax-po'];
   return w;
 }
 
 /* ---------- State ---------- */
 let wf, docId = null, savedAt = null, dirty = false;
-let sel = null, view = 'build', ptab = 'steps', groupFilter = '', focusLane = null;
+let sel = null, view = 'build', ptab = 'steps', groupFilter = '', clip = null;
 let hist = [];
-
 function snapshot(){ hist.push(JSON.stringify({wf, docId})); if(hist.length > 80) hist.shift(); }
 function undo(){
   const h = hist.pop(); if(!h){ toast('Nothing to undo'); return; }
-  const o = JSON.parse(h); wf = o.wf; docId = o.docId; if(sel && sel!=='init' && !find(sel)) sel = null;
+  const o = JSON.parse(h); wf = o.wf; docId = o.docId; if(sel && sel!=='init' && !find(sel) && !findLane(sel)) sel = null;
   markDirty(); renderAll(); renderPalette();
 }
-function markDirty(){ dirty = true; store.set('bpws2.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
+function markDirty(){ dirty = true; store.set('bpws3.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
 
+/* Walk every item: fn(item, list, index, ctx) where ctx = {par, lane, split} */
+function walk(fn){
+  const go = (list, ctx) => list.forEach((it, i) => {
+    fn(it, list, i, ctx);
+    if(it.kind==='par') it.steps.forEach((s, j) => fn(s, it.steps, j, {...ctx, par:it}));
+    if(it.kind==='split') it.lanes.forEach(l => go(l.steps, {...ctx, lane:l, split:it}));
+  });
+  go(wf.items, {});
+}
+function find(id){ let r = null; walk((it, list, index, ctx)=>{ if(!r && it.id===id) r = {item:it, list, index, ...ctx}; }); return r; }
+function findLane(id){ if(!id) return null; const key = String(id).replace(/^lane:/,''); for(const it of wf.items) if(it.kind==='split'){ const l = it.lanes.find(l=>l.id===key); if(l) return {lane:l, split:it}; } return null; }
+function allSteps(){ const out=[]; walk(it=>{ if(it.kind==='step') out.push(it); }); return out; }
+function listFor(key){
+  if(key==='root') return wf.items;
+  if(key.startsWith('par:')){ const f = find(key.slice(4)); return f ? f.item.steps : null; }
+  if(key.startsWith('lane:')){ const f = findLane(key.slice(5)); return f ? f.lane.steps : null; }
+  return null;
+}
+function laneOf(id){ const f = find(id); return f ? f.lane || null : null; }
+function effectiveConds(s){ const l = laneOf(s.id); return [...(l && l.rule ? [l.rule] : []), ...s.conds]; }
+
+/* Order letters run down the main line and through each path in turn; sub-steps number off the previous letter. */
 function orderMap(){
   const m = {init:'a'}; let li = 0, sub = 0;
-  wf.items.forEach(it=>{
+  const seq = list => list.forEach(it=>{
+    if(it.kind==='split'){ const start = li; it.lanes.forEach(l=>seq(l.steps)); m[it.id] = li>start ? (li-start>1 ? `${letters(start+1)}-${letters(li)}` : letters(li)) : '·'; return; }
     if(it.kind==='step' && it.sub){ sub++; m[it.id] = letters(li) + sub; return; }
     li++; sub = 0; const L = letters(li); m[it.id] = L;
     if(it.kind==='par') it.steps.forEach(s=>m[s.id]=L);
   });
+  seq(wf.items);
   return m;
 }
-function find(id){
-  for(let i=0;i<wf.items.length;i++){
-    const it = wf.items[i];
-    if(it.id===id) return {item:it, list:wf.items, index:i, parent:null};
-    if(it.kind==='par') for(let j=0;j<it.steps.length;j++) if(it.steps[j].id===id) return {item:it.steps[j], list:it.steps, index:j, parent:it};
-  }
-  return null;
-}
-function listFor(key){ if(key==='root') return wf.items; const p = wf.items.find(i=>i.id===key.slice(4)); return p ? p.steps : null; }
-function allSteps(){ const out=[]; wf.items.forEach(it=> it.kind==='par' ? out.push(...it.steps) : out.push(it)); return out; }
-function axis(id){ return wf.axes.find(a=>a.id===id); }
-function axisColor(id){ const i = wf.axes.findIndex(a=>a.id===id); return AXIS_COLORS[(i<0?0:i) % AXIS_COLORS.length]; }
-function outcome(c){ const a = axis(c.axis); return a ? a.outcomes.find(o=>o.id===c.outcome) : null; }
-function ruleLibrary(){ const s = new Set([...DEFAULT_RULES, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>c.t==='rule' && s.add(c.text))); return [...s]; }
-function condWorkdayText(c){ if(c.t==='rule') return c.text; const o = outcome(c); return o ? o.rule : ''; }
-function ruleUsage(text){ return allSteps().filter(s=>s.conds.some(c=>c.t==='rule' && c.text===text)); }
-
-/* Split a condition rule shared by several steps into a path (its own axis) */
-function splitRule(text, opts={}){
-  const a = {id:'ax-'+uid(), name:shortRule(text), outcomes:[{id:uid(), label:shortRule(text), rule:text},{id:uid(), label:'Otherwise', rule:''}]};
-  wf.axes.push(a);
-  allSteps().forEach(s=>s.conds = s.conds.map(c => c.t==='rule' && c.text===text ? Pth(a.id, a.outcomes[0].id) : c));
-  if(opts.show !== false && !wf.split.includes(a.id) && wf.split.length < 2) wf.split.push(a.id);
-  return a;
-}
-function autoSplit(text){
-  const used = ruleUsage(text), total = allSteps().length;
-  if(used.length >= 2 && used.length < total){ const a = splitRule(text); toast(`Used on ${used.length} steps, so it's now its own path`, 'Undo', undo); return a; }
-  return null;
-}
+function completeStep(){ return allSteps().find(s=>s.complete) || null; }
+function ruleLibrary(){ const s = new Set([...DEFAULT_RULES, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s]; }
+function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
 
 /* ---------- Build canvas ---------- */
 function groupChip(g, i){
-  const k = groupKind(g);
-  return `<span class="gp">${k==='Role'?'<span class="kk">role</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`;
+  return `<span class="gp">${groupKind(g)==='User'?'<span class="kk">user</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`;
 }
-function condHex(c, i){
-  if(c.t==='path'){
-    const a = axis(c.axis), o = outcome(c); if(!a||!o) return '';
-    return `<span class="hex path" style="--h:${axisColor(c.axis)}" title="Path: ${esc(a.name)} › ${esc(o.label)}${o.rule?'\nWorkday rule: '+esc(o.rule):''}"><i>path</i><span class="tr">${esc(o.label)}</span><button class="x" data-rm="cond" data-i="${i}" aria-label="Remove">×</button></span>`;
-  }
-  return `<span class="hex" title="${esc(c.text)}"><i>if</i><span class="tr">${esc(shortRule(c.text))}</span><button class="x" data-rm="cond" data-i="${i}" aria-label="Remove">×</button></span>`;
-}
-function stepHTML(s, om){
+function condHex(text, i){ return `<span class="hex" title="${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span><button class="x" data-rm="cond" data-i="${i}" aria-label="Remove condition">×</button></span>`; }
+function stepHTML(s, om, lane){
   const T = TYPES[s.type] || TYPES.action;
   const flags = [];
   if(s.all) flags.push('all must act');
   if(s.restr.length) flags.push('excl. ' + s.restr.join(', ').toLowerCase());
   if(s.due) flags.push('due ' + s.due);
   if(s.optional) flags.push('optional');
-  if(s.complete) flags.push('completes BP');
   if(s.doNotAdvance) flags.push('do not advance');
-  const needsGroup = s.type!=='service';
+  const specSlot = s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? '<span class="slot req">add To Do text</span>' : (T.spec ? '<span class="slot">specify</span>' : ''));
   return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block"><div class="block" style="--c:${T.color}">`+
-    `<span class="ord">${om[s.id]||'?'}</span><span class="verb">${T.label}</span>`+
-    (s.specify?`<span class="spec">${esc(s.specify)}</span>`:'')+
-    (needsGroup ? `<span class="verb" style="font-weight:500;opacity:.85">by</span>` + (s.groups.length ? s.groups.map((g,i)=>groupChip(g,i)).join('') : '<span class="slot">drop a security group</span>') : '')+
+    `<span class="ord">${om[s.id]||'?'}</span>`+
+    (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>path</i><span class="tr">${esc(lane.name || shortRule(lane.rule) || 'needs a rule')}</span></span>` : '')+
+    s.conds.map(condHex).join('')+
+    `<span class="verb">${T.label}</span>${specSlot}`+
+    (s.type!=='service' ? `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>') : '')+
     flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+
-    `<span class="condrow">${s.conds.map(condHex).join('')}</span>`+
-  `</div></div>`;
+    `<button class="cp" data-copy="${s.id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button>`+
+  `</div></div>` + (s.complete ? `<div class="cmark"><span>✓ Business process completes here · steps below still run</span></div>` : '');
 }
-function parHTML(p, om){
+function parHTML(p, om, lane){
   return `<div class="bw par${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
-    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">every step inside shares order ${om[p.id]}</span></div>`+
-    `<div class="cmid"><div class="carm"></div><div class="stack inner" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om)).join('')}</div></div>`+
+    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">steps inside share order ${om[p.id]}</span><button class="cp" data-copy="${p.id}">⧉ Copy</button></div>`+
+    `<div class="cmid"><div class="carm"></div><div class="stack inner" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om,lane)).join('')}</div></div>`+
     `<div class="cfoot"></div></div></div>`;
 }
-function itemHTML(it, om){ return it.kind==='par' ? parHTML(it, om) : stepHTML(it, om); }
+function splitHTML(sp, om){
+  return `<div class="bw split${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="sblock">`+
+    `<div class="block shead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">every path starts here and rejoins below</span><button class="btn sm" data-addlane="${sp.id}">+ Add path</button><button class="cp" data-copy="${sp.id}">⧉ Copy</button></div>`+
+    `<div class="sbody"><div class="lanes-row">`+
+      sp.lanes.map(l=>`<div class="lane${sel==='lane:'+l.id?' selected':''}" data-lane="${l.id}"><div class="lane-head" data-lanesel="${l.id}">`+
+        `<span class="lname">${esc(l.name||'Unnamed path')}</span><button class="x" data-rmlane="${l.id}" aria-label="Remove path" title="Remove path">×</button>`+
+        (l.rule ? `<span class="hex" title="${esc(l.rule)}"><i>if</i><span class="tr">${esc(shortRule(l.rule))}</span></span>` : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+
+        `<span class="lsub">${l.steps.length} step${l.steps.length===1?' carries':'s carry'} this condition</span></div>`+
+        `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`).join('')+
+      `<div class="lane def"><div class="lane-head"><span class="lname">Default path</span><span class="lsub">No condition</span></div><div class="passthru">continues to the next step</div></div>`+
+    `</div></div><div class="sfoot">Paths rejoin</div></div></div>`;
+}
+function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : stepHTML(it, om); }
 function renderBuild(){
-  const om = orderMap();
+  const om = orderMap(), done = completeStep();
   $('#script').innerHTML =
-    `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init"><div class="block hat"><span class="ord">a</span><span class="verb">Initiation</span><small>${esc(wf.bp||'')}</small></div></div>`+
+    `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init" style="max-width:760px"><div class="block hat"><span class="ord">a</span><span class="verb">Initiation</span><small>${esc(wf.bp||'')}</small></div></div>`+
     `<div class="stack root" data-list="root">${wf.items.map(it=>itemHTML(it,om)).join('')}</div>`+
-    `<div class="endw"><div class="block end">Business process complete</div></div>`;
+    `<div class="endw"><div class="block end">${done ? 'End of definition' : 'Business process complete'}</div></div>`;
 }
 
 /* ---------- Palette ---------- */
@@ -550,77 +560,88 @@ function renderPalette(){
   if(ptab==='steps'){
     el.innerHTML = `<div class="pal-list">`+
       Object.entries(TYPES).map(([k,T])=>`<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add at the end"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`).join('')+
-      `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas, or click to add at the end"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Steps inside share one order letter and run at the same time.</p></div>`+
+      `<div class="pal-item"><div data-drag="newsplit" title="Drag onto the canvas"><div class="block shead" style="min-height:40px"><span class="verb">Split into paths</span></div><div class="sfoot" style="padding:6px 14px 12px">Paths rejoin</div></div><p>Side-by-side paths that start and end at the same point. Each path has a condition rule that every step in it carries.</p></div>`+
+      `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Steps inside share one order letter and run at the same time.</p></div>`+
     `</div>`;
   } else if(ptab==='groups'){
     const f = groupFilter.trim().toLowerCase();
-    const cats = [...GROUP_CATALOG, {kind:'Custom', label:'Custom (this design)', names:wf.customGroups||[]}];
+    const names = [...new Set([...BASE_GROUPS, ...(wf.customGroups||[])])];
+    const cats = ['Special','Role','User'].map(k=>({k, names: (k==='Special' ? ['Initiator'] : names.filter(n=>groupKind(n)===k)).filter(n=>!f || n.toLowerCase().includes(f))}));
     el.innerHTML = `<div class="pal-list"><input class="search" id="g-search" type="text" placeholder="Search groups" value="${esc(groupFilter)}">`+
-      cats.map(c=>{ const names = c.names.filter(n=>!f || n.toLowerCase().includes(f)); if(!names.length) return '';
-        return `<div class="pal-group"><h3>${c.label}</h3><div class="pills">${names.map(n=>`<span class="pill" data-drag="group" data-name="${esc(n)}">${esc(n)}</span>`).join('')}</div></div>`; }).join('')+
+      cats.map(c=> c.names.length ? `<div class="pal-group"><h3>${KIND_LABEL[c.k]}</h3><div class="pills">${c.names.map(n=>`<span class="pill" data-drag="group" data-name="${esc(n)}">${esc(n)}</span>`).join('')}</div></div>` : '').join('')+
       `<div class="pal-group"><h3>Add a client-specific group</h3><div class="addrow"><input id="g-new" type="text" placeholder="e.g. CFO Approver"><button class="btn" id="g-add">Add</button></div></div>`+
-      `<p class="tip">Drag a group onto a step, or select a step and click a group.</p></div>`;
+      `<p class="tip">Groups with "admin" in the name are user-based. Everything else is role-based (constrained).</p></div>`;
   } else {
-    el.innerHTML = `<div class="pal-list">`+
-      `<div class="pal-group"><h3>Paths <button class="btn sm" id="ax-new">New split</button></h3>`+
-      (wf.axes.length ? wf.axes.map(a=>`<div class="axis-card"><div class="ah"><span class="dot" style="background:${axisColor(a.id)}"></span>${esc(a.name)}<button class="btn sm quiet" data-axedit="${a.id}">Edit</button></div><div class="pills">${a.outcomes.map(o=>`<span class="pill hexp" style="background:${axisColor(a.id)}" data-drag="path" data-axis="${a.id}" data-outcome="${o.id}" title="${esc(o.rule||'No Workday rule yet')}"><span class="tr">${esc(o.label)}</span></span>`).join('')}</div></div>`).join('')
-        : `<p class="tip">No paths yet. Add one for cases like Company A vs Company B, or drop the same condition on two steps and it becomes a path on its own.</p>`)+
-      `</div><div class="pal-group"><h3>Condition rules</h3><div class="pills">`+
-      ruleLibrary().map(c=>`<span class="pill hexp" style="background:var(--rule)" data-drag="rule" data-label="${esc(c)}" title="${esc(c)}"><span class="tr">${esc(shortRule(c))}</span></span>`).join('')+
-      `</div><div class="addrow"><input id="c-new" type="text" placeholder="New rule, e.g. Company = UK Entity?"><button class="btn" id="c-add">Add</button></div></div>`+
-      `<p class="tip">A rule on one step means that step is skipped when it's false. Once a rule sits on two or more steps (but not all), it's split into its own path so each case can be designed and compared.</p></div>`;
+    el.innerHTML = `<div class="pal-list"><div class="pills">`+
+      ruleLibrary().map(c=>`<span class="pill hexp" data-drag="rule" data-label="${esc(c)}" title="${esc(c)}"><span class="tr">${esc(shortRule(c))}</span></span>`).join('')+
+      `</div><div class="pal-group"><h3>New condition rule</h3><div class="addrow"><input id="c-new" type="text" placeholder="e.g. Company is Company B?"><button class="btn" id="c-add">Add</button></div></div>`+
+      `<p class="tip">Drop a rule on a step to make that one step conditional. Drop it on a path header to set the path's condition, and every step in the path carries it.</p></div>`;
   }
 }
 
 /* ---------- Inspector ---------- */
 function groupSelect(id){
-  return `<select id="${id}"><option value="">Add a security group…</option>`+
-    [...GROUP_CATALOG, {label:'Custom', names:wf.customGroups||[]}].filter(c=>c.names.length).map(c=>`<optgroup label="${c.label}">${c.names.map(n=>`<option>${esc(n)}</option>`).join('')}</optgroup>`).join('')+`</select>`;
+  const names = [...new Set([...BASE_GROUPS, ...(wf.customGroups||[])])];
+  return `<select id="${id}"><option value="">Add a security group…</option><optgroup label="Special"><option>Initiator</option></optgroup>`+
+    ['Role','User'].map(k=>`<optgroup label="${KIND_LABEL[k]}">${names.filter(n=>groupKind(n)===k).map(n=>`<option>${esc(n)}</option>`).join('')}</optgroup>`).join('')+`</select>`;
 }
-function condSelect(s){
-  const usedAx = new Set(s.conds.filter(c=>c.t==='path').map(c=>c.axis));
-  const paths = wf.axes.map(a=>`<optgroup label="Path: ${esc(a.name)}">${a.outcomes.map(o=>`<option value="p:${a.id}:${o.id}"${usedAx.has(a.id)?' disabled':''}>${esc(o.label)}</option>`).join('')}</optgroup>`).join('');
-  const rules = ruleLibrary().filter(r=>!s.conds.some(c=>c.t==='rule'&&c.text===r));
-  return `<select id="s-addcond"><option value="">Add a condition…</option>${paths}<optgroup label="Condition rules">${rules.map(r=>`<option value="r:${esc(r)}">${esc(trunc(r,70))}</option>`).join('')}</optgroup></select>`;
+function ruleSelect(id, exclude){
+  return `<select id="${id}"><option value="">Pick a condition rule…</option>${ruleLibrary().filter(r=>!exclude.includes(r)).map(r=>`<option value="${esc(r)}">${esc(trunc(r,70))}</option>`).join('')}</select>`;
 }
 function renderInspector(){
   const el = $('#inspector'), om = orderMap();
   if(sel==='init'){
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${INIT_COLOR}"></span><h3>Step a · Initiation</h3></div>`+
-      `<p class="help">Initiation is always step a. Who can start ${esc(wf.bp||'the business process')} comes from the business process security policy, not this definition.</p>`+
-      `<div class="sec"><label for="i-note">Design notes</label><textarea id="i-note" placeholder="Who initiates, entry points, open questions">${esc(wf.init.note)}</textarea></div></div>`;
+      `<p class="help">Initiation is always step a. Who can start ${esc(wf.bp||'the business process')} comes from the business process security policy.</p>`+
+      `<div class="sec"><label for="i-note">Design notes</label><textarea id="i-note" placeholder="Entry points, open questions">${esc(wf.init.note)}</textarea></div></div>`;
+    return;
+  }
+  if(sel && sel.startsWith('lane:')){
+    const f = findLane(sel); if(!f){ sel = null; return renderInspector(); }
+    const l = f.lane;
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Path: ${esc(l.name||'Unnamed')}</h3></div>`+
+      `<p class="help">Every step in this path carries its condition rule. It's combined with each step's own conditions in the If column.</p>`+
+      `<div class="sec"><label for="l-name">Path name</label><input id="l-name" type="text" value="${esc(l.name)}" placeholder="e.g. Company B"></div>`+
+      `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}">${l.rule?'':'<p class="req-note">A path needs a rule, otherwise its steps run for every case.</p>'}${ruleSelect('l-pick', [l.rule])}</div>`+
+      `<p class="help">${l.steps.length} step${l.steps.length===1?'':'s'} in this path.</p>`+
+      `<div class="row"><button class="btn" data-addlane="${f.split.id}">Add another path</button><button class="btn danger" data-rmlane="${l.id}">Remove path</button></div></div>`;
     return;
   }
   const f = sel && find(sel);
   if(!f){
     el.innerHTML = `<div class="empty-ins"><p class="help">Select a block to edit it.</p><ol>`+
-      `<li>Start from the populated Supplier Invoice example or a blank definition in <b>New</b>, or import a definition export in <b>Open</b>.</li><li>Drag steps into order. Letters update on their own; mark a step as a sub-step to number it like a1.</li><li>Drop groups and conditions onto steps. Shared conditions become paths.</li><li>Compare cases in <b>Paths</b>, review <b>Definition</b>, then export.</li></ol>`+
-      `<p class="help"><span class="kbd">Del</span> removes the selected step, <span class="kbd">Ctrl/⌘ Z</span> undoes, <span class="kbd">Ctrl/⌘ S</span> saves.</p>`+
+      `<li>Start from the populated Supplier Invoice example, a blank definition, or an imported definition export (<b>New</b>).</li><li>Drag steps into order. Mark a step as a sub-step to number it like a1.</li><li>Use <b>Split into paths</b> for cases like Company A vs Company B. Steps in a path carry its condition.</li><li>Review the <b>Definition</b> tab, then export.</li></ol>`+
+      `<p class="help"><span class="kbd">Ctrl/⌘ D</span> duplicates, <span class="kbd">Ctrl/⌘ C</span> / <span class="kbd">V</span> copy and paste, <span class="kbd">Alt</span>-drag drags a copy, <span class="kbd">Del</span> removes, <span class="kbd">Ctrl/⌘ Z</span> undoes.</p>`+
       `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div></div>`;
     return;
   }
   const it = f.item;
-  if(it.kind==='par'){
-    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${PAR_COLOR}"></span><h3>Step ${om[it.id]} · Parallel</h3></div>`+
-      `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} share order ${om[it.id]} and run at the same time. The BP waits for all of them before moving on.</p>`+
-      `<div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn danger" id="p-del">Delete block</button></div></div>`;
+  if(it.kind==='par' || it.kind==='split'){
+    const isSplit = it.kind==='split';
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${isSplit?SPLIT_COLOR:PAR_COLOR}"></span><h3>${isSplit?'Split into paths':'Step '+om[it.id]+' · Parallel'}</h3></div>`+
+      (isSplit ? `<p class="help">${it.lanes.length} path${it.lanes.length===1?'':'s'} plus the default path. Each case starts at this block and rejoins below it. Click a path header to set its name and condition rule.</p>`+
+        `<div class="row"><button class="btn" data-addlane="${it.id}">Add path</button><button class="btn" data-copy="${it.id}">Duplicate</button></div>`+
+        `<div class="row"><button class="btn" id="sp-ungroup" title="Steps move to the main line and keep their path rule as their own condition">Remove split, keep steps</button><button class="btn danger" id="p-del">Delete split and steps</button></div>`
+      : `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} share order ${om[it.id]} and run at the same time.</p><div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn danger" id="p-del">Delete</button></div>`)+`</div>`;
     return;
   }
-  const T = TYPES[it.type];
+  const T = TYPES[it.type], lane = f.lane;
+  const cat = TASK_CATALOG[it.type];
+  const catItem = cat && cat.find(c=>c.name===it.specify);
+  const specReq = T.spec==='required' && !it.specify.trim();
   el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${T.color}"></span><h3>Step ${om[it.id]} · ${T.label}</h3></div>`+
     `<div class="grid2"><div class="sec"><label for="s-type">Type</label><select id="s-type">${Object.entries(TYPES).map(([k,t])=>`<option value="${k}"${k===it.type?' selected':''}>${t.label}</option>`).join('')}</select></div>`+
       `<div class="sec"><label for="s-due">Due date</label><input id="s-due" type="text" value="${esc(it.due)}" placeholder="e.g. 2 Days"></div></div>`+
     `<p class="help" style="margin-top:-8px">${T.desc}</p>`+
-    `<div class="sec"><label for="s-spec">Specify</label><input id="s-spec" type="text" value="${esc(it.specify)}" placeholder="${T.spec?'Task or process, e.g. Review Supplier Invoice':'Usually blank for this type'}"></div>`+
-    (it.type!=='service' ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('s-addgroup')}</div>` : '')+
+    `<div class="sec"><label for="s-spec">Specify${T.spec==='required'?' (required)':''}</label><input id="s-spec" type="text" value="${esc(it.specify)}"${cat?` list="dl-${it.type}"`:''} class="${specReq?'req':''}" placeholder="${it.type==='todo'?'What the person needs to do, e.g. Attach the signed W-9':cat?'Pick or type a task':'Usually blank for this type'}">`+
+      (specReq ? `<p class="req-note">To Do steps need text here. It's the instruction the person sees.</p>` : '')+
+      (catItem && catItem.desc ? `<p class="help">${esc(catItem.desc)}</p>` : '')+`</div>`+
+    (it.type!=='service' ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${groupKind(g)==='User'?'<small>user</small>':''}${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('s-addgroup')}</div>` : '')+
     `<div class="sec"><span class="lbl">If (conditions)</span>`+
-      (it.conds.length ? it.conds.map((c,i)=>{
-        if(c.t==='path'){ const a = axis(c.axis), o = outcome(c); if(!a||!o) return '';
-          return `<div class="crow" style="--h:${axisColor(c.axis)}"><div class="ct">${esc(a.name)} › ${esc(o.label)}</div><div class="cm">${o.rule?'Workday rule: '+esc(trunc(o.rule,80)):'<span style="color:var(--warn)">No Workday rule for this path yet</span>'}<button class="btn sm" data-crm="${i}">Remove</button></div></div>`; }
-        const n = ruleUsage(c.text).length;
-        return `<div class="crow"><div class="ct">${esc(c.text)}</div><div class="cm">Skipped when false${n>1?` · on ${n} steps`:''}<button class="btn sm" data-csplit="${i}" title="Design the case where this is false as its own path">Split into paths</button><button class="btn sm" data-crm="${i}">Remove</button></div></div>`;
-      }).join('') : '<span class="help">Always runs.</span>')+
-      condSelect(it)+
+      (lane ? `<div class="crow inh"><div class="ct">${esc(lane.rule || 'Path has no rule yet')}</div><div class="cm">From path "${esc(lane.name||'Unnamed')}". Move the step out of the path to drop it.</div></div>` : '')+
+      it.conds.map((c,i)=>`<div class="crow"><div class="ct">${esc(c)}</div><div class="cm">Skipped when false<button class="btn sm" data-crm="${i}">Remove</button></div></div>`).join('')+
+      (!lane && !it.conds.length ? '<span class="help">Always runs (default path).</span>' : '')+
+      ruleSelect('s-addcond', it.conds)+
       `<div class="addrow"><input id="s-cond-new" type="text" placeholder="Or type a new rule"><button class="btn" id="s-cond-set">Add</button></div></div>`+
     `<div class="sec"><span class="lbl">Routing restrictions (Additional Information)</span><div class="checks-col">`+
       ['Initiator','Approvers'].map(r=>`<label class="check-row"><input type="checkbox" data-restr="${r}"${it.restr.includes(r)?' checked':''}> Exclude ${r.toLowerCase()}</label>`).join('')+`</div></div>`+
@@ -628,204 +649,72 @@ function renderInspector(){
       `<label class="check-row"><input type="checkbox" data-opt="all"${it.all?' checked':''}> All (every group member must act)</label>`+
       `<label class="check-row"><input type="checkbox" data-opt="optional"${it.optional?' checked':''}> Optional</label>`+
       `<label class="check-row"><input type="checkbox" data-opt="doNotAdvance"${it.doNotAdvance?' checked':''}> Do not advance</label>`+
-      `<label class="check-row"><input type="checkbox" data-opt="complete"${it.complete?' checked':''}> Complete (BP completes here)</label>`+
-      (f.parent ? '' : `<label class="check-row"><input type="checkbox" data-opt="sub"${it.sub?' checked':''}> Number as sub-step (e.g. a1)</label>`)+
+      `<label class="check-row"><input type="checkbox" data-opt="complete"${it.complete?' checked':''}> Complete (BP completes after this step; later steps still run)</label>`+
+      (f.par ? '' : `<label class="check-row"><input type="checkbox" data-opt="sub"${it.sub?' checked':''}> Number as sub-step (e.g. a1)</label>`)+
     `</div></div>`+
     `<div class="grid2"><div class="sec"><label for="s-mod">Routing modifier</label><input id="s-mod" type="text" value="${esc(it.modifier)}"></div><div class="sec"><label for="s-runas">Run as user</label><input id="s-runas" type="text" value="${esc(it.runAs)}"></div></div>`+
     `<div class="sec"><label for="s-note">Design notes</label><textarea id="s-note" placeholder="Client decisions, thresholds, open questions">${esc(it.note)}</textarea></div>`+
-    `<div class="row"><button class="btn" id="s-dup">Duplicate</button><button class="btn danger" id="s-del">Delete step</button></div></div>`;
+    `<div class="row"><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn" id="s-copy">Copy</button><button class="btn danger" id="s-del">Delete step</button></div></div>`;
 }
 
 /* ---------- Checks ---------- */
 function runChecks(){
   const out = [], om = orderMap(), steps = allSteps();
   if(!wf.items.length) out.push({sev:'warn', id:null, msg:'No steps after initiation. The transaction would complete on submit.'});
-  wf.items.forEach(it=>{ if(it.kind==='par' && it.steps.length<2) out.push({sev:'warn', id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs two or more.`}); });
+  walk((it)=>{
+    if(it.kind==='par' && it.steps.length<2) out.push({sev:'warn', id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs two or more.`});
+    if(it.kind==='split') it.lanes.forEach(l=>{
+      if(!l.rule) out.push({sev:'warn', id:'lane:'+l.id, msg:`Path "${esc(l.name||'Unnamed')}" has no condition rule, so its steps would run for every case.`});
+      if(!l.steps.length) out.push({sev:'warn', id:'lane:'+l.id, msg:`Path "${esc(l.name||'Unnamed')}" has no steps yet.`});
+    });
+  });
   steps.forEach(s=>{
     const L = om[s.id], T = TYPES[s.type];
+    if(s.type==='todo' && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> To Do needs text in Specify. That's the instruction the person sees.`});
+    else if((T.spec==='catalog' || s.type==='integration') && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has nothing in Specify.`});
     if(s.type!=='service' && !s.groups.length) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} has no security group.`});
     if((s.type==='chain'||s.type==='cchain') && s.groups.some(g=>groupKind(g)!=='Role')) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Approval chains walk a hierarchy, so they need a role-based group.`});
-    if(T.spec && !s.specify && s.type!=='checklist') out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has nothing in Specify.`});
-    s.conds.forEach(c=>{ if(c.t==='path'){ const o = outcome(c), a = axis(c.axis); if(o && !o.rule) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> is on the "${esc(o.label)}" path, but that path has no Workday condition rule. In the tenant this step would run for every case. Add a rule under ${esc(a.name)} › Edit.`}); } });
   });
-  const shared = new Map();
-  steps.forEach(s=>s.conds.forEach(c=>{ if(c.t==='rule'){ shared.set(c.text, (shared.get(c.text)||0)+1); } }));
-  shared.forEach((n, text)=>{ if(n>=2 && n<steps.length) out.push({sev:'warn', id:null, split:text, msg:`"${esc(shortRule(text))}" is on ${n} steps but isn't a path yet.`}); });
-  steps.forEach(s=>{
-    const rules = s.conds.filter(c=>c.t==='rule' && (shared.get(c.text)||0)<2);
-    rules.forEach(c=>out.push({sev:'info', id:s.id, split:c.text, msg:`<b>${om[s.id]}</b> only runs if "${esc(shortRule(c.text))}". When that's false the step is skipped, which is effectively a separate process. Split it into paths if that case needs its own design.`}));
-  });
+  const done = steps.filter(s=>s.complete);
+  if(done.length>1) out.push({sev:'warn', id:done[1].id, msg:`${done.map(s=>'<b>'+om[s.id]+'</b>').join(', ')} are all marked Complete. Only the first one completes the BP.`});
+  steps.forEach(s=>s.conds.forEach(c=>out.push({sev:'info', id:s.id, msg:`<b>${om[s.id]}</b> only runs if "${esc(shortRule(c))}". When it's false the step is skipped.`})));
   return out;
 }
 function checksHTML(list){
-  if(!list.length) return `<ul class="checks"><li class="ok">No issues found.</li></ul>`;
   const warn = list.filter(c=>c.sev==='warn'), info = list.filter(c=>c.sev==='info');
-  const li = c => `<li class="${c.sev==='info'?'info':''}" data-goto="${c.id||''}"><span>${c.msg}</span>${c.split?`<button class="btn sm" data-dosplit="${esc(c.split)}">Split into paths</button>`:''}</li>`;
+  const li = c => `<li class="${c.sev==='info'?'info':''}" data-goto="${c.id||''}"><span>${c.msg}</span></li>`;
   return (warn.length ? `<ul class="checks">${warn.map(li).join('')}</ul>` : `<ul class="checks"><li class="ok">No issues to fix.</li></ul>`)+
-    (info.length ? `<details class="infos"><summary>${info.length} step${info.length===1?' has its':'s have their'} own condition (skipped when false)</summary><ul class="checks">${info.map(li).join('')}</ul></details>` : '');
+    (info.length ? `<details class="infos"><summary>${info.length} step-level condition${info.length===1?'':'s'} (step skipped when false)</summary><ul class="checks">${info.map(li).join('')}</ul></details>` : '');
 }
 
-/* ---------- Paths ---------- */
-function laneList(axIds){
-  let lanes = [{outs:[]}];
-  axIds.map(axis).filter(Boolean).forEach(a=>{
-    const next = []; lanes.forEach(l=>a.outcomes.forEach(o=>next.push({outs:[...l.outs, {axis:a.id, outcome:o.id, label:o.label}]}))); lanes = next;
-  });
-  lanes.forEach(l=>l.key = l.outs.map(o=>o.axis+':'+o.outcome).join('|') || 'all');
-  return lanes;
-}
-function computePaths(){
-  wf.split = (wf.split||[]).filter(id=>axis(id));
-  const lanes = laneList(wf.split), om = orderMap();
-  const rows = allSteps().map(s=>{
-    const on = lanes.map(l=>l.outs.every(o=>{ const c = s.conds.find(c=>c.t==='path' && c.axis===o.axis); return !c || c.outcome===o.outcome; }));
-    const otherConds = s.conds.filter(c=>c.t==='rule' || !wf.split.includes(c.axis));
-    return {s, letter:om[s.id], on, span:on.every(Boolean), otherConds, parallel:!!find(s.id).parent};
-  });
-  lanes.forEach((l,i)=>l.count = rows.filter(r=>r.on[i]).length);
-  return {lanes, rows};
-}
-function nodeLines(r){
-  const s = r.s, T = TYPES[s.type];
-  const title = T.label + (s.specify ? ': ' + s.specify : '');
-  const groups = s.type==='service' ? 'System step' : (s.groups.join(', ') || 'No security group');
-  const conds = r.otherConds.map(c=> c.t==='path' ? {t:outcome(c)?.label||'', h:axisColor(c.axis), p:true} : {t:shortRule(c.text), h:null});
-  const meta = [s.all?'All':'', s.restr.length?'Excl. '+s.restr.join(', ').toLowerCase():'', s.due?'Due '+s.due:'', r.parallel?'Parallel':''].filter(Boolean).join(' · ');
-  return {title, groups, conds, meta, color:T.color};
-}
-function nodeHTML(r, ghost){
-  const n = nodeLines(r);
-  return `<button class="node${sel===r.s.id?' sel':''}${ghost?' ghosted':''}" style="--c:${n.color}" data-pick="${r.s.id}">`+
-    `<span class="nt"><span class="o">${r.letter}</span>${esc(n.title)}</span><span class="g">${esc(n.groups)}</span>`+
-    n.conds.map(c=>`<span class="c${c.p?' p':''}"${c.p?` style="--h:${c.h}"`:''}>${c.p?'path':'if'} ${esc(c.t)}</span>`).join('')+
-    (n.meta?`<span class="m">${esc(n.meta)}</span>`:'')+`</button>`;
-}
-function renderPaths(){
-  const {lanes, rows} = computePaths();
-  const el = $('#paths');
-  let laneIdx = focusLane ? lanes.findIndex(l=>l.key===focusLane) : -1;
-  if(focusLane && laneIdx<0){ focusLane = null; }
-  const showLanes = laneIdx>=0 ? [laneIdx] : lanes.map((_,i)=>i);
-  const bar = `<div class="pbar"><span class="lbl">Split by</span>`+
-    (wf.axes.length ? wf.axes.map(a=>`<button class="axis-toggle" data-split="${a.id}" aria-pressed="${wf.split.includes(a.id)}"><span class="dot" style="background:${axisColor(a.id)}"></span>${esc(a.name)}</button>`).join('')
-      : `<span class="help">No paths yet. Drop a condition on two or more steps, or add a split in Conditions.</span>`)+
-    `<button class="btn sm" id="ax-new2">New split</button></div>`;
-  const segue = laneIdx>=0 ? `<div class="segue"><button class="btn sm" data-lane-step="-1"${laneIdx===0?' disabled':''}>‹ Previous</button><b>Path ${laneIdx+1} of ${lanes.length}</b><button class="btn sm" data-lane-step="1"${laneIdx===lanes.length-1?' disabled':''}>Next ›</button><button class="btn sm quiet" id="lane-all">Show all paths side by side</button></div>`
-    : (lanes.length>1 ? `<p class="help">${lanes.length} paths. They all start at Initiation and end at Complete. Click a path header to walk through it on its own.</p>` : '');
-  const n = showLanes.length;
-  let g = '';
-  if(lanes.length>1 || laneIdx>=0){
-    g += showLanes.map(i=>{ const l = lanes[i]; return `<button class="lane-h" data-lane="${l.key}">${l.outs.length?`<span class="tags">${l.outs.map(o=>`<span class="tag" style="--h:${axisColor(o.axis)}">${esc(o.label)}</span>`).join('')}</span>`:''}<small>${l.count} step${l.count===1?'':'s'} after initiation</small></button>`; }).join('');
-  }
-  g += `<div class="cell span"><div class="node endpt" style="--c:${INIT_COLOR}"><span class="nt"><span class="o">a</span>Initiation</span></div></div>`;
-  rows.forEach(r=>{
-    const vis = showLanes.map(i=>r.on[i]);
-    if(vis.every(Boolean) && (r.span || n===1)) g += `<div class="cell span">${nodeHTML(r)}</div>`;
-    else if(n===1 && !vis[0]) g += `<div class="cell span">${nodeHTML(r, true)}</div>`;
-    else g += vis.map(v=> v ? `<div class="cell">${nodeHTML(r)}</div>` : `<div class="cell skip"></div>`).join('');
-  });
-  g += `<div class="cell span"><div class="node endpt" style="--c:${END_COLOR}">Business process complete</div></div>`;
-  el.innerHTML = bar + segue + `<div class="lanes-wrap"><div class="lanes" style="--n:${n}">${g}</div></div>`;
-}
-
-/* SVG version for PNG / PDF export (fixed light palette, it's a document) */
-function wrapText(t, n){ const words = String(t).split(/\s+/), lines = []; let cur = ''; words.forEach(w=>{ if((cur+' '+w).trim().length>n && cur){ lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); }); if(cur) lines.push(cur); return lines; }
-function pathsSVG(){
-  const {lanes, rows} = computePaths();
-  const FONT = 'Helvetica, Arial, sans-serif';
-  const LW = 250, GX = 22, PAD = 36, HEAD = 92, N = lanes.length;
-  const multi = N > 1;
-  const width = Math.max(680, N*LW + (N-1)*GX + PAD*2);
-  const laneX = i => (width - (N*LW + (N-1)*GX))/2 + i*(LW+GX);
-  const laneCX = i => laneX(i) + LW/2;
-  const SPW = Math.min(360, width - PAD*2);
-  const nodeBox = (r, w) => {
-    const n = nodeLines(r), ch = Math.floor((w-26)/6.4);
-    const lines = [];
-    wrapText(n.title, Math.floor((w-56)/7.2)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
-    wrapText(n.groups, ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
-    n.conds.forEach(c=>wrapText((c.p?'Path: ':'If: ')+c.t, ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:c.p?c.h:'#1E8A5B'})));
-    if(n.meta) wrapText(n.meta, ch).forEach(l=>lines.push({t:l, s:11.5, w:'400', c:'#59647C'}));
-    return {n, lines, h: 18 + lines.length*16};
-  };
-  let y = PAD + HEAD, s = '', nodes = '';
-  // lane headers
-  if(multi){
-    lanes.forEach((l,i)=>{
-      const x = laneX(i); let tx = x + 10;
-      nodes += `<rect x="${x}" y="${y}" width="${LW}" height="44" rx="9" fill="#F3F5FA" stroke="#D4DAE6"/>`;
-      const label = l.outs.map(o=>o.label).join(' · ');
-      wrapText(label, 34).slice(0,2).forEach((t,k)=> nodes += `<text x="${tx}" y="${y+18+k*15}" font-family="${FONT}" font-size="12" font-weight="700" fill="#171E33">${esc(t)}</text>`);
-      l.outs.forEach((o,k)=> nodes += `<rect x="${x + k*LW/l.outs.length}" y="${y+40}" width="${LW/l.outs.length}" height="4" fill="${axisColor(o.axis)}"/>`);
-    });
-    y += 60;
-  }
-  const railTop = y;
-  const drawNode = (x, yy, w, box, color) => {
-    let out = `<rect x="${x}" y="${yy}" width="${w}" height="${box.h}" rx="9" fill="#FFFFFF" stroke="#D4DAE6"/><rect x="${x}" y="${yy}" width="5" height="${box.h}" rx="2.5" fill="${color}"/>`;
-    box.lines.forEach((l,i)=>{
-      const ly = yy + 22 + i*16;
-      if(l.head){ out += `<rect x="${x+13}" y="${ly-13}" width="${box.letterW}" height="18" rx="4" fill="${color}"/><text x="${x+13+box.letterW/2}" y="${ly}" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" font-weight="700" fill="#fff">${box.letter}</text>`; }
-      out += `<text x="${x + (l.head ? 19 + box.letterW : 13)}" y="${ly}" font-family="${FONT}" font-size="${l.s}" font-weight="${l.w}" fill="${l.c}">${esc(l.t)}</text>`;
-    });
-    return out;
-  };
-  // initiation
-  const endpt = (yy, label, color, letter) => { const w = 220, x = width/2 - w/2; return {svg:`<rect x="${x}" y="${yy}" width="${w}" height="36" rx="18" fill="${color}"/><text x="${width/2}" y="${yy+23}" text-anchor="middle" font-family="${FONT}" font-size="13" font-weight="700" fill="#fff">${letter?letter+'  ·  ':''}${esc(label)}</text>`, h:36}; };
-  const ini = endpt(y, 'Initiation', INIT_COLOR, 'a'); nodes += ini.svg; y += ini.h + 18;
-  rows.forEach(r=>{
-    if(r.span){
-      const box = nodeBox(r, SPW); box.letter = r.letter; box.letterW = 10 + r.letter.length*7;
-      nodes += drawNode(width/2 - SPW/2, y, SPW, box, box.n.color); y += box.h + 18;
-    } else {
-      let h = 0;
-      lanes.forEach((l,i)=>{ if(!r.on[i]) return; const box = nodeBox(r, LW); box.letter = r.letter; box.letterW = 10 + r.letter.length*7; nodes += drawNode(laneX(i), y, LW, box, box.n.color); h = Math.max(h, box.h); });
-      lanes.forEach((l,i)=>{ if(!r.on[i]) nodes += `<text x="${laneCX(i)}" y="${y+h/2+4}" text-anchor="middle" font-family="${FONT}" font-size="10.5" font-weight="700" fill="#8C98AB" letter-spacing=".5" style="paint-order:stroke" stroke="#FFFFFF" stroke-width="6">SKIPPED · ${r.letter}</text>`; });
-      y += h + 18;
-    }
-  });
-  const end = endpt(y, 'Business process complete', END_COLOR); nodes += end.svg;
-  const railBottom = y;
-  // rails behind everything
-  if(multi) lanes.forEach((l,i)=> s += `<line x1="${laneCX(i)}" y1="${railTop}" x2="${laneCX(i)}" y2="${railBottom}" stroke="#B4BED0" stroke-width="2"/>`);
-  else s += `<line x1="${width/2}" y1="${railTop}" x2="${width/2}" y2="${railBottom}" stroke="#B4BED0" stroke-width="2"/>`;
-  const height = y + end.h + PAD;
-  const title = wf.name || ((wf.bp||'Business process') + ' (' + (wf.def||'Default Definition') + ')');
-  const sub = [wf.client, wf.bp && (wf.bp + ' · ' + (wf.def||'Default Definition')), multi ? 'Split by ' + wf.split.map(id=>axis(id)?.name).join(' and ') : '', 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})].filter(Boolean).join('   |   ');
-  const head = `<image href="${LOGO}" x="${width-PAD-150}" y="${PAD-4}" width="150" height="45"/>`+
-    `<text x="${PAD}" y="${PAD+18}" font-family="${FONT}" font-size="19" font-weight="800" fill="#29357F">${esc(title)}</text>`+
-    `<text x="${PAD}" y="${PAD+40}" font-family="${FONT}" font-size="12" fill="#59647C">${esc(sub)}</text>`+
-    `<rect x="${PAD}" y="${PAD+58}" width="${width-PAD*2}" height="2" fill="#00AEEF"/>`;
-  return {svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${s}${nodes}</svg>`, width, height};
-}
-
-/* ---------- Definition table ---------- */
+/* ---------- Definition rows (table, Excel, PDF) ---------- */
 function defRows(){
   const om = orderMap(), bp = wf.bp || 'Business Process', def = wf.def || 'Default Definition';
-  const rows = [{id:'init', order:'a', ifs:'', type:'Initiation', specify:'', optional:'No', groups:'', addl:'', modifier:'', all:'', runAs:'', due:'', dna:'No', complete:'', note:wf.init.note, color:INIT_COLOR, step:`${bp} (${def}) step a - Initiation`}];
-  allSteps().forEach(s=>{
+  const rows = [{id:'init', order:'a', ifs:'', type:'Initiation', specify:'', optional:'No', groups:'', addl:'', modifier:'', all:'', runAs:'', due:'', dna:'No', complete:'', note:wf.init.note, color:INIT_COLOR, path:'', step:`${bp} (${def}) step a - Initiation`}];
+  let after = false;
+  walk((s, list, i, ctx)=>{
+    if(s.kind!=='step') return;
     const T = TYPES[s.type], L = om[s.id];
-    rows.push({id:s.id, order:L, ifs:s.conds.map(condWorkdayText).filter(Boolean).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
+    rows.push({id:s.id, order:L, ifs:effectiveConds(s).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
       groups:s.groups.join('\n'), addl:s.restr.length?'Restriction: '+s.restr.join(', '):'', modifier:s.modifier, all:s.all?'Yes':'', runAs:s.runAs, due:s.due,
-      dna:s.doNotAdvance?'Yes':'No', complete:s.complete?'Yes':'', note:s.note, color:T.color, parallel:!!find(s.id).parent,
-      paths:s.conds.filter(c=>c.t==='path').map(c=>`${axis(c.axis)?.name}: ${outcome(c)?.label}`).join('\n'),
+      dna:s.doNotAdvance?'Yes':'No', complete:s.complete?'Yes':'', note:s.note, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
       step:`${bp} (${def}) step ${L} - ${T.label}${s.type==='service'&&s.specify?' ['+s.specify+']':''}`});
+    if(s.complete) after = true;
   });
   return rows;
 }
 function renderConfig(){
-  const rows = defRows(), checks = runChecks();
-  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant, so this is what you'd configure. Click a row to edit that step.</p></div>`+
+  const rows = defRows();
+  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Steps in a path list the path's rule first in the If column. Greyed rows run after the business process completes. Click a row to edit that step.</p></div>`+
     `<div class="tbl-wrap"><table class="def"><thead><tr><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr data-goto="${r.id}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.paths||'')}</td></tr>`).join('')+
-    `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(checks)}</div>`;
+    rows.map(r=>`<tr data-goto="${r.id}" class="${r.after?'after':''}" title="${r.after?'Runs after the business process completes':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+    `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
 }
 
 /* ---------- Render orchestration ---------- */
 function renderBadges(){
-  const ch = runChecks(), w = ch.filter(c=>c.sev==='warn').length, b = $('#check-badge');
+  const w = runChecks().filter(c=>c.sev==='warn').length, b = $('#check-badge');
   b.textContent = w ? w : '✓'; b.className = 'badge' + (w ? '' : ' ok'); b.title = w ? `${w} design check${w===1?'':'s'} to review` : 'No issues';
-  const n = laneList((wf.split||[]).filter(id=>axis(id))).length; $('#path-badge').textContent = n; $('#path-badge').title = `${n} path${n===1?'':'s'} with the current split`;
 }
 function renderStatus(){
   const el = $('#status');
@@ -833,13 +722,10 @@ function renderStatus(){
   else { el.textContent = savedAt ? 'Saved ' + timeAgo(savedAt) : ''; el.className = 'status'; }
   $('#b-undo').disabled = !hist.length;
 }
-function renderMeta(){
-  [['f-name','name'],['f-client','client'],['f-bp','bp'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; });
-}
+function renderMeta(){ [['f-name','name'],['f-client','client'],['f-bp','bp'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; }); }
 function renderView(){
   document.querySelectorAll('.ctab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  $('#v-build').hidden = view!=='build'; $('#v-paths').hidden = view!=='paths'; $('#v-config').hidden = view!=='config';
-  if(view==='paths') renderPaths();
+  $('#v-build').hidden = view!=='build'; $('#v-config').hidden = view!=='config';
   if(view==='config') renderConfig();
 }
 function renderAll(keepInspector){ renderMeta(); renderBuild(); if(!keepInspector) renderInspector(); renderBadges(); renderStatus(); renderView(); }
@@ -847,26 +733,38 @@ function timeAgo(t){ const d = (Date.now()-t)/1000; if(d<60) return 'just now'; 
 
 /* ---------- Mutations ---------- */
 function change(fn, keepInspector){ snapshot(); fn(); markDirty(); renderAll(keepInspector); }
-function stepOf(id){ const f = find(id); return f && f.item.kind==='step' ? f.item : null; }
-function addGroupTo(id, name){ const s = stepOf(id); if(!s) return false; if(s.type==='service'){ toast('Service steps run as the system, so they take no group'); return false; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); return true; }
-function addRule(id, text){
-  const s = stepOf(id); if(!s) return false;
-  if(s.conds.some(c=>c.t==='rule' && c.text===text)) return true;
-  change(()=>{ s.conds.push(R(text)); autoSplit(text); }); renderPalette(); return true;
+function stepOf(id){ const f = id && find(id); return f && f.item.kind==='step' ? f.item : null; }
+function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(s.type==='service'){ toast('Service steps run as the system, so they take no group'); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
+function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
+function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else x.conds = x.conds.filter(c=>c!==text); }
+function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
+function removeItem(id){ const f = find(id); if(!f) return; change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); toast('Removed', 'Undo', undo); }
+function duplicate(id){
+  const f = find(id); if(!f) return;
+  const c = withNewIds(f.item); if(c.kind==='step') c.complete = false;
+  change(()=>{ f.list.splice(f.index+1, 0, c); sel = c.id; }); toast('Duplicated');
 }
-function addPath(id, ax, oc){
-  const s = stepOf(id); if(!s) return false;
-  change(()=>{ s.conds = s.conds.filter(c=>!(c.t==='path' && c.axis===ax)); s.conds.push(Pth(ax, oc)); }); return true;
+function pasteClip(){
+  if(!clip){ toast('Nothing copied yet'); return; }
+  const c = withNewIds(clip); if(c.kind==='step') c.complete = false;
+  let list = wf.items, idx = wf.items.length;
+  const f = sel && find(sel), l = sel && sel.startsWith('lane:') && findLane(sel);
+  if(f){
+    list = f.list; idx = f.index + 1;
+    if(c.kind==='split' && list!==wf.items){ list = wf.items; idx = wf.items.length; }
+    if(c.kind!=='step' && f.par){ const pf = find(f.par.id); list = pf.list; idx = pf.index+1; }
+  } else if(l && c.kind!=='split'){ list = l.lane.steps; idx = list.length; }
+  change(()=>{ list.splice(idx, 0, c); sel = c.id; }); toast('Pasted');
 }
-function removeItem(id){ const f = find(id); if(!f) return; change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); toast('Step removed', 'Undo', undo); }
 
-/* ---------- Drag and drop (pointer events: mouse, pen and touch) ---------- */
+/* ---------- Drag and drop (pointer events: mouse, pen and touch). Alt/Option-drag copies. ---------- */
 let drag = null, justDragged = 0;
 document.addEventListener('pointerdown', e=>{
   if(e.button!==0) return;
-  if(e.target.closest('.x, input, select, textarea, a, .btn')) return;
+  if(e.target.closest('.x, .cp, input, select, textarea, a, .btn, .lane-head')) return;
   const src = e.target.closest('[data-drag]'); if(!src) return;
-  drag = {src, x0:e.clientX, y0:e.clientY, started:false};
+  if(src.classList.contains('split') && e.target.closest('.lanes-row')) return;
+  drag = {src, x0:e.clientX, y0:e.clientY, started:false, copy:e.altKey};
 });
 document.addEventListener('pointermove', e=>{
   if(!drag) return;
@@ -882,18 +780,23 @@ function startDrag(e){
   let ghostHTML;
   if(kind==='block'){
     const id = src.dataset.id, f = find(id); if(!f){ drag=null; return; }
-    snapshot();
-    drag.payload = {kind:'item', item:f.item, fromList:f.parent?'par:'+f.parent.id:'root', fromIndex:f.index, isMove:true};
-    ghostHTML = src.outerHTML; f.list.splice(f.index,1); sel = id; renderBuild();
-  } else if(kind==='new' || kind==='newpar'){
-    const item = kind==='new' ? S(src.dataset.type) : P([]);
+    if(drag.copy){
+      const c = withNewIds(f.item); if(c.kind==='step') c.complete = false;
+      drag.payload = {kind:'item', item:c, isMove:false};
+    } else {
+      snapshot();
+      drag.payload = {kind:'item', item:f.item, fromList:f.par?'par:'+f.par.id:f.lane?'lane:'+f.lane.id:'root', fromIndex:f.index, isMove:true};
+      f.list.splice(f.index,1); sel = id; renderBuild();
+    }
+    ghostHTML = src.outerHTML;
+  } else if(kind==='new' || kind==='newpar' || kind==='newsplit'){
+    const item = kind==='new' ? S(src.dataset.type) : kind==='newpar' ? P([]) : Split();
     drag.payload = {kind:'item', item, isMove:false}; ghostHTML = itemHTML(item, {});
   } else {
-    drag.payload = {kind, value: src.dataset.name || src.dataset.label, axis:src.dataset.axis, outcome:src.dataset.outcome};
-    ghostHTML = src.outerHTML;
+    drag.payload = {kind, value: src.dataset.name || src.dataset.label}; ghostHTML = src.outerHTML;
   }
   drag.started = true;
-  const g = document.createElement('div'); g.className = 'drag-ghost'; g.innerHTML = ghostHTML;
+  const g = document.createElement('div'); g.className = 'drag-ghost' + (drag.copy && kind==='block' ? ' copying' : ''); g.innerHTML = ghostHTML;
   g.style.width = (drag.payload.kind==='item' ? Math.max(260, Math.min(rect.width, 460)) : rect.width) + 'px';
   document.body.appendChild(g); drag.ghost = g; document.body.classList.add('dragging');
   drag.ph = Object.assign(document.createElement('div'), {className:'ph'});
@@ -902,12 +805,14 @@ function overPalette(x,y){ const r = $('.palette').getBoundingClientRect(); retu
 function computeTarget(x,y){
   const cv = $('#v-build').getBoundingClientRect();
   if(view!=='build' || x<cv.left || x>cv.right || y<cv.top || y>cv.bottom) return null;
-  const isPar = drag.payload.item.kind==='par';
+  const k = drag.payload.item.kind;
   let best = null, bestArea = Infinity;
   document.querySelectorAll('#script .stack').forEach(st=>{
-    if(isPar && st.dataset.list!=='root') return;
-    const r = st.getBoundingClientRect(), root = st.dataset.list==='root';
-    const padX = root ? 400 : 10, padY = root ? 2000 : 6;
+    const key = st.dataset.list, root = key==='root';
+    if(k==='split' && !root) return;
+    if(k==='par' && key.startsWith('par:')) return;
+    const r = st.getBoundingClientRect();
+    const padX = root ? 600 : 8, padY = root ? 2000 : 8;
     if(x>=r.left-padX && x<=r.right+padX && y>=r.top-padY && y<=r.bottom+padY){
       const area = r.width*r.height + (root ? 1e9 : 0); if(area<bestArea){ bestArea = area; best = st; }
     }
@@ -921,8 +826,10 @@ function computeTarget(x,y){
 function clearDropOk(){ document.querySelectorAll('.drop-ok').forEach(n=>n.classList.remove('drop-ok')); }
 function pillTarget(x,y){
   drag.ghost.style.display = 'none'; const el = document.elementFromPoint(x,y); drag.ghost.style.display = '';
-  const bw = el && el.closest('#script .bw');
-  if(!bw || bw.classList.contains('par') || bw.dataset.id==='init') return null;
+  if(!el) return null;
+  if(drag.payload.kind==='rule'){ const lh = el.closest('.lane-head[data-lanesel]'); if(lh) return lh.closest('.lane'); }
+  const bw = el.closest('#script .bw');
+  if(!bw || bw.classList.contains('par') || bw.classList.contains('split') || bw.dataset.id==='init') return null;
   return bw;
 }
 function moveDrag(e){
@@ -935,9 +842,7 @@ function moveDrag(e){
     if(!t){ drag.ph.remove(); return; }
     const ref = t.kids[t.index] || null;
     if(drag.ph.parentNode!==t.stack || drag.ph.nextSibling!==ref) t.stack.insertBefore(drag.ph, ref);
-  } else {
-    clearDropOk(); const bw = pillTarget(x,y); drag.pillTarget = bw; if(bw) bw.classList.add('drop-ok');
-  }
+  } else { clearDropOk(); const tg = pillTarget(x,y); drag.pillTarget = tg; if(tg) tg.classList.add('drop-ok'); }
 }
 function finishDragUI(){ drag.ghost && drag.ghost.remove(); drag.ph && drag.ph.remove(); document.body.classList.remove('dragging','trash'); clearDropOk(); }
 function endDrag(e){
@@ -945,94 +850,68 @@ function endDrag(e){
   if(p.kind==='item'){
     const t = drag.target, onTrash = overPalette(x,y); finishDragUI();
     if(t){
-      const list = listFor(t.stack.dataset.list); if(!p.isMove) snapshot();
-      if(t.stack.dataset.list!=='root') p.item.sub = false;
+      const key = t.stack.dataset.list, list = listFor(key); if(!p.isMove) snapshot();
+      if(key.startsWith('par:')) p.item.sub = false;
+      if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(p.item, l.rule); }
       list.splice(t.index, 0, p.item); sel = p.item.id; markDirty(); renderAll();
-    } else if(p.isMove && onTrash){ if(sel===p.item.id) sel = null; markDirty(); renderAll(); toast('Step removed', 'Undo', undo); }
+      if(drag.copy) toast('Copied');
+    } else if(p.isMove && onTrash){ if(sel===p.item.id) sel = null; markDirty(); renderAll(); toast('Removed', 'Undo', undo); }
     else if(p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(Math.min(p.fromIndex, list.length), 0, p.item); hist.pop(); renderAll(); }
   } else {
-    const bw = drag.pillTarget; finishDragUI();
-    if(bw) applyPill(bw.dataset.id, p);
+    const tg = drag.pillTarget; finishDragUI(); if(!tg) return;
+    if(tg.classList.contains('lane')) setLaneRule(tg.dataset.lane, p.value);
+    else { sel = tg.dataset.id; p.kind==='group' ? addGroupTo(sel, p.value) : addRule(sel, p.value); }
   }
 }
 function cancelDrag(){ const p = drag.payload; finishDragUI(); if(p && p.kind==='item' && p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(p.fromIndex,0,p.item); hist.pop(); renderAll(); } }
-function applyPill(id, p){
-  sel = id;
-  if(p.kind==='group') addGroupTo(id, p.value);
-  else if(p.kind==='rule') addRule(id, p.value);
-  else if(p.kind==='path') addPath(id, p.axis, p.outcome);
-}
-
-/* ---------- Path (axis) editor ---------- */
-function editAxis(id){
-  const a = id ? axis(id) : {id:null, name:'', outcomes:[{id:uid(), label:'', rule:''},{id:uid(), label:'', rule:''}]};
-  const used = id ? allSteps().filter(s=>s.conds.some(c=>c.t==='path'&&c.axis===id)).length : 0;
-  openModal(id ? 'Edit path split' : 'New path split',
-    `<p class="help">A split is one decision the process branches on, like Invoice type or Company. Each case gets its own lane in Paths. Every case still starts at Initiation and ends at Complete. Put the condition rule Workday uses to detect each case next to it.</p>`+
-    `<div class="mf"><label for="ax-name">Split name</label><input id="ax-name" type="text" value="${esc(a.name)}" placeholder="e.g. Company"></div>`+
-    `<div class="ofields" id="ax-outs"><div class="orow"><span class="help"><b>Case</b></span><span class="help"><b>Workday condition rule</b></span><span></span></div>`+
-      a.outcomes.map(o=>outRow(o)).join('')+`</div>`+
-    `<div class="row"><button class="btn sm" id="ax-addout">Add a case</button></div>`+
-    `<div class="row"><button class="btn primary" id="ax-save" data-id="${id||''}">${id?'Save split':'Create split'}</button>${id?`<button class="btn danger" id="ax-del" data-id="${id}">Delete split${used?` (used on ${used} step${used===1?'':'s'})`:''}</button>`:''}</div>`);
-  setTimeout(()=>$('#ax-name').focus(), 30);
-}
-function outRow(o){ return `<div class="orow" data-oid="${o.id}"><input type="text" data-ol value="${esc(o.label)}" placeholder="e.g. Company A"><input type="text" data-or value="${esc(o.rule)}" placeholder="e.g. Company is Company A?"><button class="x" data-orm aria-label="Remove case" style="color:var(--muted)">×</button></div>`; }
-function saveAxis(id){
-  const name = $('#ax-name').value.trim();
-  const outs = [...document.querySelectorAll('#ax-outs .orow[data-oid]')].map(r=>({id:r.dataset.oid, label:r.querySelector('[data-ol]').value.trim(), rule:r.querySelector('[data-or]').value.trim()})).filter(o=>o.label);
-  if(!name){ $('#ax-name').focus(); toast('Give the split a name'); return; }
-  if(outs.length<2){ toast('A split needs at least two cases'); return; }
-  change(()=>{
-    if(id){ const a = axis(id); a.name = name; a.outcomes = outs; const ids = new Set(outs.map(o=>o.id)); allSteps().forEach(s=>s.conds = s.conds.filter(c=>!(c.t==='path'&&c.axis===id&&!ids.has(c.outcome)))); }
-    else { const a = {id:'ax-'+uid(), name, outcomes:outs}; wf.axes.push(a); if(wf.split.length<2) wf.split.push(a.id); }
-  });
-  closeModal(); renderPalette(); toast(id ? 'Split saved' : 'Split created. Drag its cases onto steps.');
-}
 
 /* ---------- Clicks ---------- */
 document.addEventListener('click', e=>{
   if(Date.now() - justDragged < 250) return;
   const t = e.target;
+  const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
   const x = t.closest('#script .x');
   if(x){
+    if(x.dataset.rmlane){ removeLane(x.dataset.rmlane); return; }
     const s = stepOf(x.closest('.bw').dataset.id); if(!s) return;
     if(x.dataset.rm==='group') change(()=>s.groups.splice(+x.dataset.i,1));
     if(x.dataset.rm==='cond') change(()=>s.conds.splice(+x.dataset.i,1));
     return;
   }
+  const al = t.closest('[data-addlane]'); if(al){ const sp = find(al.dataset.addlane).item; const l = Lane('Path '+(sp.lanes.length+1), ''); change(()=>{ sp.lanes.push(l); sel = 'lane:'+l.id; }); return; }
+  const rl = t.closest('[data-rmlane]'); if(rl){ removeLane(rl.dataset.rmlane); return; }
+  const lh = t.closest('[data-lanesel]'); if(lh){ sel = 'lane:'+lh.dataset.lanesel; renderBuild(); renderInspector(); return; }
   const pal = t.closest('#palette [data-drag]');
   if(pal){
     const k = pal.dataset.drag;
-    if(k==='new' || k==='newpar'){ const it = k==='new' ? S(pal.dataset.type) : P([]); change(()=>{ wf.items.push(it); sel = it.id; }); return; }
-    if(!sel || !stepOf(sel)){ toast('Select a step block first, or drag the pill onto one'); return; }
-    applyPill(sel, {kind:k, value:pal.dataset.name || pal.dataset.label, axis:pal.dataset.axis, outcome:pal.dataset.outcome}); return;
+    if(k==='new' || k==='newpar' || k==='newsplit'){ const it = k==='new' ? S(pal.dataset.type) : k==='newpar' ? P([]) : Split(); change(()=>{ wf.items.push(it); sel = it.kind==='split' ? 'lane:'+it.lanes[0].id : it.id; }); return; }
+    if(sel && sel.startsWith('lane:') && k==='rule'){ setLaneRule(sel, pal.dataset.label); return; }
+    if(!stepOf(sel)){ toast('Select a step first, or drag the pill onto one'); return; }
+    k==='group' ? addGroupTo(sel, pal.dataset.name) : addRule(sel, pal.dataset.label); return;
   }
-  const split = t.closest('[data-dosplit]'); if(split){ const text = split.dataset.dosplit; change(()=>splitRule(text)); renderPalette(); toast('Split into paths. Open Paths to compare.', 'View', ()=>{ view='paths'; renderView(); }); return; }
   const bw = t.closest('#script .bw');
   if(bw && !t.closest('.endw')){ sel = bw.dataset.id; renderBuild(); renderInspector(); return; }
   if(t.closest('#canvas') && !t.closest('.bw')){ if(sel){ sel = null; renderBuild(); renderInspector(); } return; }
-  const pick = t.closest('[data-pick]'); if(pick){ sel = pick.dataset.pick; renderBuild(); renderInspector(); renderPaths(); return; }
   const go = t.closest('[data-goto]');
-  if(go && go.dataset.goto){ sel = go.dataset.goto; view = 'build'; renderAll(); const n = document.querySelector(`#script [data-id="${sel}"]`); n && n.scrollIntoView({block:'center', behavior:'smooth'}); return; }
+  if(go && go.dataset.goto){ sel = go.dataset.goto; view = 'build'; renderAll(); const n = document.querySelector(sel.startsWith('lane:') ? `#script [data-lane="${sel.slice(5)}"]` : `#script [data-id="${sel}"]`); n && n.scrollIntoView({block:'center', inline:'center', behavior:'smooth'}); return; }
   const pt = t.closest('.ptab'); if(pt){ ptab = pt.dataset.ptab; renderPalette(); return; }
   const ct = t.closest('.ctab'); if(ct){ view = ct.dataset.view; renderView(); return; }
-  // paths view
-  const sp = t.closest('[data-split]');
-  if(sp){ const id = sp.dataset.split; const on = wf.split.includes(id);
-    if(!on && laneList([...wf.split, id]).length > 8){ toast('That would be more than 8 paths. Turn another split off first.'); return; }
-    change(()=>{ wf.split = on ? wf.split.filter(x=>x!==id) : [...wf.split, id]; }, true); focusLane = null; renderPaths(); return; }
-  const lh = t.closest('[data-lane]'); if(lh){ focusLane = focusLane===lh.dataset.lane ? null : lh.dataset.lane; renderPaths(); return; }
-  const ls = t.closest('[data-lane-step]'); if(ls){ const {lanes} = computePaths(); const i = lanes.findIndex(l=>l.key===focusLane) + (+ls.dataset.laneStep); if(lanes[i]){ focusLane = lanes[i].key; renderPaths(); } return; }
-  if(t.id==='lane-all'){ focusLane = null; renderPaths(); return; }
-  if(t.id==='ax-new' || t.id==='ax-new2'){ editAxis(null); return; }
-  const ae = t.closest('[data-axedit]'); if(ae){ editAxis(ae.dataset.axedit); return; }
-  // inspector
   if(t.id==='p-ungroup'){ const f = find(sel); change(()=>{ f.list.splice(f.index,1,...f.item.steps); sel=null; }); return; }
+  if(t.id==='sp-ungroup'){
+    const f = find(sel);
+    change(()=>{
+      const out = [];
+      f.item.lanes.forEach(l=>{
+        const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); };
+        l.steps.forEach(carry); out.push(...l.steps);
+      });
+      f.list.splice(f.index, 1, ...out); sel = null;
+    }); return;
+  }
   if(t.id==='p-del' || t.id==='s-del'){ removeItem(sel); return; }
-  if(t.id==='s-dup'){ const f = find(sel); const c = clone(f.item); c.id = uid(); change(()=>{ f.list.splice(f.index+1,0,c); sel=c.id; }); return; }
+  if(t.id==='s-copy'){ const f = find(sel); clip = clone(f.item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); return; }
   if(t.dataset.grm!==undefined){ const s = stepOf(sel); change(()=>s.groups.splice(+t.dataset.grm,1)); return; }
   if(t.dataset.crm!==undefined){ const s = stepOf(sel); change(()=>s.conds.splice(+t.dataset.crm,1)); return; }
-  if(t.dataset.csplit!==undefined){ const s = stepOf(sel); const text = s.conds[+t.dataset.csplit].text; change(()=>splitRule(text)); renderPalette(); toast('Split into paths. Open Paths to compare.', 'View', ()=>{ view='paths'; renderView(); }); return; }
   if(t.id==='s-cond-set'){ const v = $('#s-cond-new').value.trim(); if(v){ if(!wf.customRules.includes(v)) wf.customRules.push(v); addRule(sel, v); } return; }
   if(t.id==='g-add'){ addCustomGroup(); return; }
   if(t.id==='c-add'){ const v = $('#c-new').value.trim(); if(v && !ruleLibrary().includes(v)){ change(()=>wf.customRules.push(v), true); renderPalette(); } return; }
@@ -1040,37 +919,52 @@ document.addEventListener('click', e=>{
   if(t.closest('#b-export')){ const m = $('#export-menu'); m.hidden = !m.hidden; $('#b-export').setAttribute('aria-expanded', String(!m.hidden)); return; }
   if(!t.closest('.menu')) $('#export-menu').hidden = true;
 });
+function removeLane(id){
+  const f = findLane(id); if(!f) return;
+  change(()=>{ f.split.lanes = f.split.lanes.filter(l=>l.id!==f.lane.id); if(sel==='lane:'+f.lane.id) sel = null; if(!f.split.lanes.length){ const sf = find(f.split.id); sf.list.splice(sf.index,1); } });
+  toast('Path removed', 'Undo', undo);
+}
 function addCustomGroup(){
   const v = $('#g-new').value.trim(); if(!v) return;
-  if(groupKind(v)!=='Custom' || wf.customGroups.includes(v)){ toast('That group is already in the list'); return; }
-  change(()=>wf.customGroups.push(v), true); renderPalette();
+  if(BASE_GROUPS.includes(v) || v==='Initiator' || wf.customGroups.includes(v)){ toast('That group is already in the list'); return; }
+  change(()=>wf.customGroups.push(v), true); renderPalette(); toast(`Added as ${KIND_LABEL[groupKind(v)].toLowerCase()}`);
 }
 document.addEventListener('change', e=>{
-  const t = e.target, s = sel && stepOf(sel);
+  const t = e.target, s = stepOf(sel);
   if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(s.type==='service') s.groups = []; }); }
   else if(t.id==='s-addgroup' && t.value){ addGroupTo(sel, t.value); }
-  else if(t.id==='s-addcond' && t.value){ const v = t.value; if(v.startsWith('p:')){ const [, ax, oc] = v.split(':'); addPath(sel, ax, oc); } else addRule(sel, v.slice(2)); }
-  else if(t.dataset.restr && s){ const r = t.dataset.restr; change(()=>{ s.restr = t.checked ? [...new Set([...s.restr, r])].sort((a,b)=>a==='Initiator'?-1:1) : s.restr.filter(x=>x!==r); }); }
+  else if(t.id==='s-addcond' && t.value){ addRule(sel, t.value); }
+  else if(t.id==='l-pick' && t.value){ setLaneRule(sel, t.value); }
+  else if(t.id==='s-spec'){ renderInspector(); }
+  else if(t.dataset.restr && s){ const r = t.dataset.restr; change(()=>{ s.restr = t.checked ? ['Initiator','Approvers'].filter(x=>x===r || s.restr.includes(x)) : s.restr.filter(x=>x!==r); }); }
   else if(t.dataset.opt && s){ change(()=>s[t.dataset.opt] = t.checked); }
 });
 let typingSnap = false;
 document.addEventListener('focusin', e=>{ if(e.target.matches('input[type=text], textarea')) typingSnap = false; });
 document.addEventListener('input', e=>{
-  const t = e.target, s = sel && sel!=='init' && stepOf(sel);
+  const t = e.target, s = stepOf(sel), lf = sel && sel.startsWith('lane:') && findLane(sel);
   const map = {'s-spec':v=>s.specify=v, 's-due':v=>s.due=v, 's-mod':v=>s.modifier=v, 's-runas':v=>s.runAs=v, 's-note':v=>s.note=v, 'i-note':v=>wf.init.note=v,
+    'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v,
     'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-bp':v=>wf.bp=v, 'f-def':v=>wf.def=v};
-  if(map[t.id] && (s || !t.id.startsWith('s-'))){
+  const ok = t.id.startsWith('s-') ? !!s : t.id.startsWith('l-') ? !!lf : true;
+  if(map[t.id] && ok){
     if(!typingSnap){ snapshot(); typingSnap = true; }
     map[t.id](t.value); markDirty(); renderBuild(); renderBadges(); if(view!=='build') renderView();
+    if(t.id==='s-spec') t.classList.toggle('req', s.type==='todo' && !t.value.trim());
+    if(t.id==='l-rule') t.classList.toggle('req', !t.value.trim());
   }
   if(t.id==='g-search'){ groupFilter = t.value; renderPalette(); const g = $('#g-search'); g.focus(); g.setSelectionRange(g.value.length, g.value.length); }
 });
 document.addEventListener('keydown', e=>{
-  const typing = e.target.matches('input, textarea, select');
-  if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='z' && !typing){ e.preventDefault(); undo(); }
-  else if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); saveDesign(); }
-  else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init' && $('#modal').hidden){ e.preventDefault(); removeItem(sel); }
-  else if(e.key==='Escape'){ if(!$('#modal').hidden) closeModal(); else if(drag && drag.started){ cancelDrag(); drag=null; } }
+  const typing = e.target.matches('input, textarea, select'), mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); return; }
+  if(mod && k==='z' && !typing){ e.preventDefault(); undo(); }
+  else if(mod && k==='s'){ e.preventDefault(); saveDesign(); }
+  else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); duplicate(sel); }
+  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
+  else if(mod && k==='v' && !typing && clip){ e.preventDefault(); pasteClip(); }
+  else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); sel.startsWith('lane:') ? removeLane(sel) : removeItem(sel); }
+  else if(e.key==='Escape' && drag && drag.started){ cancelDrag(); drag=null; }
   else if(e.key==='Enter' && e.target.id==='g-new') addCustomGroup();
   else if(e.key==='Enter' && e.target.id==='c-new') $('#c-add').click();
   else if(e.key==='Enter' && e.target.id==='s-cond-new') $('#s-cond-set').click();
@@ -1085,37 +979,45 @@ function saveDesign(){
   const rec = {id:docId, name:wf.name, client:wf.client, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
   const i = list.findIndex(d=>d.id===docId); i>=0 ? list.splice(i,1,rec) : list.unshift(rec);
   if(!store.set('bpws2.designs', list)){ toast('Your browser blocked local saving. Use Export › Design file instead.'); return; }
-  dirty = false; savedAt = rec.updatedAt; store.set('bpws2.draft', {wf, docId, dirty:false, savedAt});
+  dirty = false; savedAt = rec.updatedAt; store.set('bpws3.draft', {wf, docId, dirty:false, savedAt});
   renderMeta(); renderStatus(); toast('Saved to this browser');
 }
+/* Older design files (v1, v2) load with their conditions as step-level rules */
 function normalize(w){
   const b = blankWf();
-  if(!w.v){ // v1 design files
-    w = {...b, name:w.name||'', client:w.client||'', bp:w.bp||'', items:(w.items||[]).map(it=>{
-      const conv = s => S(s.type==='approval'||TYPES[s.type]?s.type:'action', {groups:s.groups, specify:s.task, optional:s.optional, note:s.note, conds:s.condition?[R(s.condition)]:[]});
-      return it.kind==='par' ? P(it.steps.map(conv)) : conv(it); }), customGroups:w.customGroups||[], customRules:w.customConds||[]};
-  }
-  const out = Object.assign(b, w); out.init = Object.assign({note:''}, out.init);
-  out.items = out.items.map(it=> it.kind==='par' ? {...it, steps:it.steps.map(s=>Object.assign(S(s.type), s))} : Object.assign(S(it.type), it));
-  out.split = (out.split||[]).filter(id=>out.axes.some(a=>a.id===id));
+  const oldCond = (s, axes) => {
+    if(Array.isArray(s.conds)) return s.conds.map(c=> typeof c==='string' ? c : c.t==='rule' ? c.text : (((axes||[]).find(a=>a.id===c.axis)||{outcomes:[]}).outcomes.find(o=>o.id===c.outcome)||{}).rule).filter(Boolean);
+    return s.condition ? [s.condition] : [];
+  };
+  const fix = (it, axes) => {
+    if(it.kind==='par') return {kind:'par', id:it.id||uid(), steps:it.steps.map(s=>fix(s, axes))};
+    if(it.kind==='split') return {kind:'split', id:it.id||uid(), lanes:it.lanes.map(l=>({id:l.id||uid(), name:l.name||'', rule:l.rule||'', steps:l.steps.map(s=>fix(s, axes))}))};
+    const s = S(TYPES[it.type] ? it.type : 'action');
+    Object.assign(s, it, {kind:'step', type:TYPES[it.type] ? it.type : 'action', conds:oldCond(it, axes), specify:it.specify ?? it.task ?? '', restr:Array.isArray(it.restr)?it.restr:[], groups:Array.isArray(it.groups)?it.groups:[]});
+    delete s.condition; delete s.task; delete s.restrictions;
+    return s;
+  };
+  const out = Object.assign(b, {name:w.name||'', client:w.client||'', bp:w.bp||b.bp, def:w.def||b.def, init:{note:(w.init&&w.init.note)||''},
+    customGroups:w.customGroups||[], customRules:w.customRules||w.customConds||[]});
+  out.items = (w.items||[]).map(it=>fix(it, w.axes));
   return out;
 }
 function loadWf(w, id, saved){
-  wf = normalize(clone(w)); docId = id || null; sel = null; hist = []; focusLane = null;
-  dirty = !id; savedAt = saved || null; store.set('bpws2.draft', {wf, docId, dirty, savedAt});
+  wf = normalize(clone(w)); docId = id || null; sel = null; hist = [];
+  dirty = !id; savedAt = saved || null; store.set('bpws3.draft', {wf, docId, dirty, savedAt});
   renderAll(); renderPalette();
 }
 function openModal(title, html){ $('#modal-title').textContent = title; $('#modal-b').innerHTML = html; $('#modal').hidden = false; }
 function closeModal(){ $('#modal').hidden = true; }
 $('#modal-close').onclick = closeModal;
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
-function minis(w){ const cols=[INIT_COLOR]; (w.items||[]).forEach(it=> it.kind==='par' ? it.steps.forEach(s=>cols.push((TYPES[s.type]||TYPES.action).color)) : cols.push((TYPES[it.type]||TYPES.action).color)); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
+function minis(w){ const cols=[INIT_COLOR]; const add = it => { if(it.kind==='par') it.steps.forEach(add); else if(it.kind==='split'){ cols.push(SPLIT_COLOR); it.lanes.forEach(l=>l.steps.forEach(add)); } else cols.push((TYPES[it.type]||TYPES.action).color); }; (w.items||[]).forEach(add); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
 
 function showNew(){
-  const tpls = templates(), ex = exampleWf();
+  const tpls = templates();
   openModal('Start a new definition',
     (dirty ? `<p class="help" style="color:var(--warn)">You have unsaved changes. Save first if you need them.</p>` : '')+
-    `<div class="cards"><button class="card" data-new="example"><b>Supplier Invoice Event: Default Definition</b>${minis(ex)}<small>Populated example from the delivered default. Ten steps, three path splits (Invoice type, Recurring source, Project APR/WIP).</small></button>`+
+    `<div class="cards"><button class="card" data-new="example"><b>Supplier Invoice Event: Default Definition</b>${minis(exampleWf())}<small>Populated example from the delivered default, with the Non-PO approvals (c to e) laid out as a path.</small></button>`+
     `<button class="card" data-new="blank"><b>Blank Supplier Invoice Event</b>${minis(blankWf())}<small>Just Initiation. Build the client's definition from scratch.</small></button>`+
     `<button class="card" data-new="import"><b>Import a definition export</b><small>Workday BP definition .xlsx (Step, Order, If, Type, Specify, Group…) or a design .json.</small></button></div>`+
     `<h3>Your templates</h3>`+
@@ -1133,10 +1035,6 @@ function showOpen(){
 }
 $('#modal-b').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
-  if(t.id==='ax-save'){ saveAxis(t.dataset.id || null); return; }
-  if(t.id==='ax-del'){ if(t.dataset.armed){ const id = t.dataset.id; change(()=>{ wf.axes = wf.axes.filter(a=>a.id!==id); wf.split = wf.split.filter(x=>x!==id); allSteps().forEach(s=>s.conds = s.conds.filter(c=>!(c.t==='path'&&c.axis===id))); }); closeModal(); renderPalette(); } else { t.dataset.armed='1'; t.textContent='Confirm delete'; } return; }
-  if(t.id==='ax-addout'){ $('#ax-outs').insertAdjacentHTML('beforeend', outRow({id:uid(), label:'', rule:''})); return; }
-  if(t.hasAttribute('data-orm')){ if(document.querySelectorAll('#ax-outs .orow[data-oid]').length>2) t.closest('.orow').remove(); else toast('A split needs at least two cases'); return; }
   if(t.dataset.new){
     const v = t.dataset.new;
     if(v==='import'){ $('#import-file').click(); return; }
@@ -1162,11 +1060,12 @@ $('#import-file').addEventListener('change', async e=>{
     if(/\.xlsx?$/i.test(file.name)){ await loadLib('xlsx'); w = importWorkbook(await file.arrayBuffer()); }
     else { const d = JSON.parse(await file.text()); w = d.wf || d; if(!w.init || !Array.isArray(w.items)) throw new Error('shape'); }
     loadWf(w); closeModal();
-    toast(`Imported ${allSteps().length} steps${wf.axes.length?` and ${wf.axes.length} path split${wf.axes.length===1?'':'s'}`:''}`);
-  }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message && err.message.startsWith('nohdr') ? "Couldn't find the Order and Type columns in that workbook." : "That file isn't a definition export or design file I can read."); }
+    const nSplit = wf.items.filter(i=>i.kind==='split').length;
+    toast(`Imported ${allSteps().length} steps${nSplit?` and ${nSplit} path split${nSplit===1?'':'s'}`:''}`);
+  }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that workbook." : "That file isn't a definition export or design file I can read."); }
 });
 
-/* Workday BP definition export -> design */
+/* Workday BP definition export -> design. Consecutive steps that share a rule become a path. */
 function importWorkbook(buf){
   const wb = XLSX.read(buf, {type:'array'});
   for(const name of wb.SheetNames){
@@ -1174,10 +1073,9 @@ function importWorkbook(buf){
     const hi = rows.findIndex(r=>r.some(c=>String(c).trim().toLowerCase()==='order') && r.some(c=>String(c).trim().toLowerCase()==='type'));
     if(hi<0) continue;
     const H = rows[hi].map(c=>String(c).trim().toLowerCase());
-    const col = k => H.indexOf(k);
-    const get = (r,k) => { const i = col(k); return i<0 ? '' : String(r[i]??'').trim(); };
+    const get = (r,k) => { const i = H.indexOf(k); return i<0 ? '' : String(r[i]??'').trim(); };
     const yes = v => /^y(es)?$/i.test(v);
-    const w = blankWf(); w.customGroups = [];
+    const w = blankWf();
     const firstStep = rows.slice(hi+1).map(r=>get(r,'step')).find(Boolean) || '';
     const m = firstStep.match(/^(.*?)\s*\(([^)]+)\)\s*step/i);
     if(m){ w.bp = m[1].trim(); w.def = m[2].trim(); } else { const sn = name.split('|'); w.bp = sn[0].trim(); w.def = (sn[1]||'Default').trim(); if(!/definition/i.test(w.def)) w.def += ' Definition'; }
@@ -1185,77 +1083,151 @@ function importWorkbook(buf){
     let lastLetter = null, lastPar = null, lastItem = null;
     rows.slice(hi+1).forEach(r=>{
       const order = get(r,'order').toLowerCase(), typeRaw = get(r,'type');
-      if(!order || !typeRaw) return;
-      if(/^initiation$/i.test(typeRaw)) return;
+      if(!order || !typeRaw || /^initiation$/i.test(typeRaw)) return;
       const om = order.match(/^([a-z]+)(\d*)$/); if(!om) return;
       const type = TYPE_BY_LABEL[typeRaw.toLowerCase()] || 'action';
       const groups = get(r,'group').split(/\n|;/).map(g=>g.trim()).filter(Boolean);
-      groups.forEach(g=>{ if(groupKind(g)==='Custom' && !w.customGroups.includes(g)) w.customGroups.push(g); });
+      groups.forEach(g=>{ if(g!=='Initiator' && !BASE_GROUPS.includes(g) && !w.customGroups.includes(g)) w.customGroups.push(g); });
       const ifs = get(r,'if').split(/\n\s*\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
       const addl = get(r,'additional information');
       const restr = /restriction/i.test(addl) ? ['Initiator','Approvers'].filter(x=>new RegExp(x,'i').test(addl)) : [];
-      const s = S(type, {specify:get(r,'specify'), groups, conds:ifs.map(R), sub:!!om[2], optional:yes(get(r,'optional')), restr, all:yes(get(r,'all')),
+      const s = S(type, {specify:get(r,'specify'), groups, conds:ifs, sub:!!om[2], optional:yes(get(r,'optional')), restr, all:yes(get(r,'all')),
         due:get(r,'due date'), modifier:get(r,'routing modifier'), runAs:get(r,'run as user'), doNotAdvance:yes(get(r,'do not advance')), complete:yes(get(r,'complete')),
-        note: typeRaw && !TYPE_BY_LABEL[typeRaw.toLowerCase()] ? `Imported type: ${typeRaw}` : (addl && !restr.length ? addl : '')});
+        note: !TYPE_BY_LABEL[typeRaw.toLowerCase()] ? `Imported type: ${typeRaw}` : (addl && !restr.length ? addl : '')});
       if(!om[2] && om[1]===lastLetter && lastItem){
         if(lastPar) lastPar.steps.push(s);
         else { const idx = w.items.indexOf(lastItem); lastPar = P([lastItem, s]); lastItem.sub = false; w.items.splice(idx, 1, lastPar); }
       } else { w.items.push(s); lastPar = null; lastItem = s; }
       if(!om[2]) lastLetter = om[1];
     });
-    // a rule on 2+ steps (but not all) becomes its own path
-    wf = w; const counts = new Map();
-    allSteps().forEach(s=>s.conds.forEach(c=>c.t==='rule' && counts.set(c.text,(counts.get(c.text)||0)+1)));
-    counts.forEach((n,text)=>{ if(n>=2 && n<allSteps().length) splitRule(text); });
+    for(let i=0; i<w.items.length; i++){
+      const it = w.items[i]; if(it.kind!=='step') continue;
+      let best = null;
+      it.conds.forEach(rule=>{ let j = i; while(j+1<w.items.length && w.items[j+1].kind==='step' && !w.items[j+1].sub && w.items[j+1].conds.includes(rule)) j++; if(j>i && (!best || j-i > best.len)) best = {rule, len:j-i}; });
+      if(best){
+        const steps = w.items.splice(i, best.len+1, null);
+        steps.forEach(s=>{ s.conds = s.conds.filter(c=>c!==best.rule); s.sub = false; });
+        w.items[i] = Split([Lane(shortRule(best.rule), best.rule, steps)]);
+      }
+    }
     return w;
   }
   throw new Error('nohdr');
 }
 
+/* ---------- Flow diagram (SVG) for PNG / PDF ---------- */
+function wrapText(t, n){ const words = String(t).split(/\s+/), lines = []; let cur = ''; words.forEach(w=>{ if((cur+' '+w).trim().length>n && cur){ lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); }); if(cur) lines.push(cur); return lines; }
+function flowSVG(){
+  const om = orderMap(), FONT = 'Helvetica, Arial, sans-serif';
+  const NW = 330, LW = 270, DW = 150, GX = 18, PAD = 36, HEAD = 92, GAP = 22;
+  const box = (s, w) => {
+    const T = TYPES[s.type], ch = Math.floor((w-26)/6.3), lines = [];
+    wrapText(T.label + (s.specify ? ': ' + s.specify : ''), Math.floor((w-58)/7.1)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
+    s.conds.forEach(c=>wrapText('If: ' + shortRule(c), ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:'#1E8A5B'})));
+    wrapText(s.type==='service' ? 'System step' : (s.groups.join(', ') || 'No security group'), ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
+    const meta = [s.all?'All':'', s.restr.length?'Excl. '+s.restr.join(', ').toLowerCase():'', s.due?'Due '+s.due:''].filter(Boolean).join(' · ');
+    if(meta) wrapText(meta, ch).forEach(l=>lines.push({t:l, s:11.5, w:'400', c:'#59647C'}));
+    return {s, w, lines, h: 18 + lines.length*16, color:T.color, letter:om[s.id]};
+  };
+  const drawBox = (b, x, y) => {
+    const lw = 10 + b.letter.length*7;
+    let o = `<rect x="${x}" y="${y}" width="${b.w}" height="${b.h}" rx="9" fill="#FFFFFF" stroke="#D4DAE6"/><rect x="${x}" y="${y}" width="5" height="${b.h}" rx="2.5" fill="${b.color}"/>`;
+    b.lines.forEach((l,i)=>{ const ly = y + 22 + i*16;
+      if(l.head) o += `<rect x="${x+13}" y="${ly-13}" width="${lw}" height="18" rx="4" fill="${b.color}"/><text x="${x+13+lw/2}" y="${ly}" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" font-weight="700" fill="#fff">${b.letter}</text>`;
+      o += `<text x="${x + (l.head ? 19 + lw : 13)}" y="${ly}" font-family="${FONT}" font-size="${l.s}" font-weight="${l.w}" fill="${l.c}">${esc(l.t)}</text>`; });
+    return o;
+  };
+  const splitW = sp => sp.lanes.length*(LW+GX) + DW;
+  const parW = n => n*NW*0.82 + (n-1)*GX;
+  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split') maxW = Math.max(maxW, splitW(it)); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
+  const width = Math.max(700, maxW + PAD*2), cx = width/2;
+  let y = PAD + HEAD, body = '', rails = '';
+  const line = (x1,y1,x2,y2,dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#B4BED0" stroke-width="2"${dash?' stroke-dasharray="4 4"':''}/>`;
+  const pill = (label, color, w) => { const x = cx - w/2; const o = `<rect x="${x}" y="${y}" width="${w}" height="34" rx="17" fill="${color}"/><text x="${cx}" y="${y+22}" text-anchor="middle" font-family="${FONT}" font-size="13" font-weight="700" fill="#fff">${esc(label)}</text>`; y += 34; return o; };
+  const doneMark = () => { y += 14; body += `<line x1="${PAD}" y1="${y}" x2="${width-PAD}" y2="${y}" stroke="${DONE_COLOR}" stroke-width="1.6" stroke-dasharray="6 5"/><rect x="${cx-150}" y="${y-10}" width="300" height="20" rx="10" fill="#FFFFFF"/><text x="${cx}" y="${y+4}" text-anchor="middle" font-family="${FONT}" font-size="11.5" font-weight="700" fill="${DONE_COLOR}">BP completes here · steps below still run</text>`; y += 10; };
+  body += pill('a  ·  Initiation', INIT_COLOR, 200);
+  const stepRow = (steps, colW) => {
+    const bs = steps.map(s=>box(s, colW)), n = bs.length, rw = n*colW + (n-1)*GX, x0 = cx - rw/2, h = Math.max(...bs.map(b=>b.h));
+    rails += line(cx, y, cx, y + GAP - (n>1?10:0));
+    if(n>1){ const top = y + GAP - 10; rails += line(x0 + colW/2, top, x0 + rw - colW/2, top); bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, top, x0 + i*(colW+GX) + colW/2, top + 10)); }
+    y += GAP; bs.forEach((b,i)=> body += drawBox(b, x0 + i*(colW+GX), y));
+    if(n>1){ const bot = y + h + 10; bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, y + b.h, x0 + i*(colW+GX) + colW/2, bot)); rails += line(x0 + colW/2, bot, x0 + rw - colW/2, bot); y = bot; }
+    else y += h;
+    if(bs.some(b=>b.s.complete)) doneMark();
+  };
+  wf.items.forEach(it=>{
+    if(it.kind==='step') stepRow([it], NW);
+    else if(it.kind==='par') stepRow(it.steps, NW*0.82);
+    else {
+      const n = it.lanes.length, rw = splitW(it) - GX + GX, x0 = cx - (n*(LW+GX) + DW)/2;
+      const centers = it.lanes.map((l,i)=> x0 + i*(LW+GX) + LW/2).concat([x0 + n*(LW+GX) + DW/2]);
+      rails += line(cx, y, cx, y + 14); y += 14;
+      rails += line(Math.min(...centers, cx), y, Math.max(...centers, cx), y);
+      const top = y; y += 12;
+      const heads = it.lanes.map(l=>wrapText('If: ' + (l.rule ? shortRule(l.rule) : 'no rule yet'), 38).slice(0,2));
+      const hh = Math.max(44, ...heads.map(h=>26 + h.length*15));
+      it.lanes.forEach((l,i)=>{ const x = x0 + i*(LW+GX); body += `<rect x="${x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(l.name || 'Path ' + (i+1))}</text>`+
+        heads[i].map((t,k)=>`<text x="${x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join(''); });
+      const dx = x0 + n*(LW+GX);
+      body += `<rect x="${dx}" y="${y}" width="${DW}" height="${hh}" rx="8" fill="#FFFFFF" stroke="#B4BED0" stroke-dasharray="4 3"/><text x="${dx+DW/2}" y="${y+18}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="800" fill="#59647C">Default path</text><text x="${dx+DW/2}" y="${y+34}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#59647C">no condition</text>`;
+      centers.forEach(c=> rails += line(c, top, c, y));
+      y += hh;
+      let laneDone = false;
+      const ys = it.lanes.map((l,i)=>{
+        let ly = y; const x = x0 + i*(LW+GX);
+        const flat = []; l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
+        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, x, ly); ly += b.h; if(s.complete) laneDone = true; });
+        return ly;
+      });
+      const laneBottom = Math.max(y + 40, ...ys) + 16;
+      it.lanes.forEach((l,i)=> rails += line(centers[i], y, centers[i], laneBottom));
+      rails += line(centers[n], y, centers[n], laneBottom, true);
+      rails += line(Math.min(...centers, cx), laneBottom, Math.max(...centers, cx), laneBottom);
+      y = laneBottom;
+      if(laneDone) doneMark();
+    }
+  });
+  rails += line(cx, y, cx, y + GAP); y += GAP;
+  body += pill(completeStep() ? 'End of definition' : 'Business process complete', END_COLOR, 240);
+  const height = y + PAD;
+  const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
+  const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})].filter(Boolean).join('   |   ');
+  const head = `<image href="${LOGO}" x="${width-PAD-150}" y="${PAD-4}" width="150" height="45"/>`+
+    `<text x="${PAD}" y="${PAD+18}" font-family="${FONT}" font-size="19" font-weight="800" fill="#29357F">${esc(title)}</text>`+
+    `<text x="${PAD}" y="${PAD+40}" font-family="${FONT}" font-size="12" fill="#59647C">${esc(sub)}</text>`+
+    `<rect x="${PAD}" y="${PAD+58}" width="${width-PAD*2}" height="2" fill="#00AEEF"/>`;
+  return {svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${rails}${body}</svg>`, width, height};
+}
+
 /* ---------- Exports ---------- */
 const LIBS = {xlsx:'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js', pdf:'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'};
 const loaded = {};
-function loadLib(k){
-  if(!loaded[k]) loaded[k] = new Promise((res, rej)=>{ const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = ()=>{ loaded[k]=null; rej(new Error('load')); }; document.head.appendChild(s); });
-  return loaded[k];
-}
+function loadLib(k){ if(!loaded[k]) loaded[k] = new Promise((res, rej)=>{ const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = ()=>{ loaded[k]=null; rej(new Error('load')); }; document.head.appendChild(s); }); return loaded[k]; }
 function fileBase(){ return (wf.name || [wf.client, wf.bp].filter(Boolean).join(' ') || 'definition').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_').slice(0,80) || 'definition'; }
 function saveFile(blob, filename){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
 function svgToCanvas(scale){
-  const {svg, width, height} = pathsSVG();
-  return new Promise((res, rej)=>{
-    const img = new Image();
-    img.onload = ()=>{ const c = document.createElement('canvas'); c.width = width*scale; c.height = height*scale; const ctx = c.getContext('2d'); ctx.scale(scale, scale); ctx.drawImage(img,0,0); res({canvas:c, width, height}); };
-    img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  });
+  const {svg, width, height} = flowSVG();
+  return new Promise((res, rej)=>{ const img = new Image(); img.onload = ()=>{ const c = document.createElement('canvas'); c.width = width*scale; c.height = height*scale; const ctx = c.getContext('2d'); ctx.scale(scale, scale); ctx.drawImage(img,0,0); res({canvas:c, width, height}); }; img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
 }
 async function doExport(kind){
   try{
-    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:2, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
-    if(kind==='png'){ const {canvas} = await svgToCanvas(2); canvas.toBlob(b=>{ saveFile(b, fileBase()+'_paths.png'); toast('PNG downloaded'); }, 'image/png'); return; }
+    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:3, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
+    if(kind==='png'){ const {canvas} = await svgToCanvas(2); canvas.toBlob(b=>{ saveFile(b, fileBase()+'_flow.png'); toast('PNG downloaded'); }, 'image/png'); return; }
     if(kind==='xlsx'){
       toast('Building Excel file…'); await loadLib('xlsx');
-      const rows = defRows(), wb = XLSX.utils.book_new();
+      const rows = defRows(), wb = XLSX.utils.book_new(), om = orderMap();
       const hdr = ['Step','Order','If','Type','Specify','Optional','Group','Additional Information','Routing Modifier','All','Run As User','Due Date','Due Date Is Based On Effective Date','Do Not Advance','Complete','Subprocess Definitions'];
-      const def = [['Business Process Steps'], hdr].concat(rows.map(r=>[r.step, r.order, r.ifs, r.type, r.specify, r.optional, r.groups, r.addl, r.modifier, r.all, r.runAs, r.due, '', r.dna, r.complete, '']));
-      const ws = XLSX.utils.aoa_to_sheet(def);
+      const ws = XLSX.utils.aoa_to_sheet([['Business Process Steps'], hdr].concat(rows.map(r=>[r.step, r.order, r.ifs, r.type, r.specify, r.optional, r.groups, r.addl, r.modifier, r.all, r.runAs, r.due, '', r.dna, r.complete, ''])));
       ws['!cols'] = [{wch:58},{wch:7},{wch:60},{wch:14},{wch:36},{wch:9},{wch:34},{wch:30},{wch:16},{wch:6},{wch:12},{wch:10},{wch:14},{wch:12},{wch:10},{wch:18}];
-      const sheetName = `${wf.bp||'Definition'} |${(wf.def||'Default').replace(/\s*Definition$/i,'')}`.replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-      const {lanes, rows:pr} = computePaths();
-      const laneNames = lanes.map(l=>l.outs.map(o=>o.label).join(' + ') || 'All cases');
-      const paths = [['Order','Type','Specify','Group', ...laneNames]].concat(pr.map(r=>[r.letter, TYPES[r.s.type].label, r.s.specify, r.s.groups.join(', '), ...r.on.map(v=> v ? (r.otherConds.length ? 'Runs if: ' + r.otherConds.map(c=>c.t==='rule'?shortRule(c.text):outcome(c)?.label).join('; ') : 'Runs') : 'Skipped')]));
-      const pws = XLSX.utils.aoa_to_sheet(paths); pws['!cols'] = [{wch:7},{wch:14},{wch:34},{wch:30}, ...laneNames.map(()=>({wch:36}))];
+      XLSX.utils.book_append_sheet(wb, ws, `${wf.bp||'Definition'} |${(wf.def||'Default').replace(/\s*Definition$/i,'')}`.replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31));
+      const paths = [['Split at','Path','Condition rule','Steps']];
+      wf.items.forEach(it=>{ if(it.kind!=='split') return; it.lanes.forEach(l=>{ const ids = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ids.push(om[x.id]); l.steps.forEach(add); paths.push([om[it.id], l.name, l.rule, ids.join(', ')]); }); paths.push([om[it.id], 'Default path', '(no condition)', 'continues to the next step']); });
+      const pws = XLSX.utils.aoa_to_sheet(paths.length>1 ? paths : [['No path splits in this design']]); pws['!cols'] = [{wch:9},{wch:26},{wch:60},{wch:24}];
       XLSX.utils.book_append_sheet(wb, pws, 'Paths');
-      const splits = [['Split','Case','Workday condition rule','Steps on this case']];
-      wf.axes.forEach(a=>a.outcomes.forEach(o=>splits.push([a.name, o.label, o.rule, allSteps().filter(s=>s.conds.some(c=>c.t==='path'&&c.axis===a.id&&c.outcome===o.id)).map(s=>orderMap()[s.id]).join(', ')])));
-      const sws = XLSX.utils.aoa_to_sheet(splits); sws['!cols'] = [{wch:26},{wch:26},{wch:60},{wch:20}];
-      XLSX.utils.book_append_sheet(wb, sws, 'Path Splits');
       const ch = runChecks().map(c=>[c.sev==='warn'?'Review':'Info', c.msg.replace(/<[^>]+>/g,'').replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#39;/g,"'")]);
       const cws = XLSX.utils.aoa_to_sheet([['Level','Design check']].concat(ch.length?ch:[['','No issues found']])); cws['!cols'] = [{wch:9},{wch:120}];
       XLSX.utils.book_append_sheet(wb, cws, 'Design Checks');
-      const notes = [['Order','Design notes']].concat(rows.filter(r=>r.note).map(r=>[r.order, r.note]));
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(notes), 'Design Notes');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Order','Design notes']].concat(rows.filter(r=>r.note).map(r=>[r.order, r.note]))), 'Design Notes');
       saveFile(new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), fileBase()+'.xlsx');
       toast('Excel file downloaded'); return;
     }
@@ -1268,11 +1240,10 @@ async function doExport(kind){
       const sc = Math.min((pw-2*m)/width, (ph-2*m)/height);
       doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (pw-width*sc)/2, m, width*sc, height*sc);
       doc.addPage('letter','landscape');
-      const W2 = doc.internal.pageSize.getWidth(), H2 = doc.internal.pageSize.getHeight();
-      const logoW = 110, logoH = logoW*222/738;
+      const W2 = doc.internal.pageSize.getWidth(), H2 = doc.internal.pageSize.getHeight(), logoW = 110, logoH = logoW*222/738;
       const pageHead = ()=>{ doc.addImage(LOGO, 'PNG', W2-m-logoW, m-6, logoW, logoH); doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(41,53,127); doc.text('Business process definition', m, m+8); doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(89,100,124); doc.text([wf.client, `${wf.bp} (${wf.def})`].filter(Boolean).join('   |   '), m, m+23); doc.setFillColor(0,174,239); doc.rect(m, m+32, W2-2*m, 1.5, 'F'); };
-      const cols = [{h:'Order',w:40,k:'order'},{h:'If',w:190,k:'ifs'},{h:'Type',w:70,k:'type'},{h:'Specify',w:120,k:'specify'},{h:'Group',w:120,k:'groups'},{h:'Addl. info',w:90,k:'addl'},{h:'All',w:28,k:'all'},{h:'Due',w:44,k:'due'}];
-      const used = cols.reduce((a,c)=>a+c.w,0); cols.push({h:'Path',w:W2-2*m-used,k:'paths'});
+      const cols = [{h:'Order',w:40,k:'order'},{h:'If',w:200,k:'ifs'},{h:'Type',w:70,k:'type'},{h:'Specify',w:120,k:'specify'},{h:'Group',w:120,k:'groups'},{h:'Addl. info',w:90,k:'addl'},{h:'All',w:28,k:'all'},{h:'Due',w:44,k:'due'}];
+      cols.push({h:'Path',w:W2-2*m-cols.reduce((a,c)=>a+c.w,0),k:'path'});
       let y;
       const header = ()=>{ doc.setFillColor(238,241,247); doc.rect(m, y-11, W2-2*m, 17, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(89,100,124); let x=m+5; cols.forEach(c=>{ doc.text(c.h.toUpperCase(), x, y); x+=c.w; }); y += 17; };
       pageHead(); y = m + 56; header();
@@ -1282,8 +1253,9 @@ async function doExport(kind){
         const h = Math.max(...cells.map(c=>c.length))*10.5 + 8;
         if(y + h > H2 - m){ doc.addPage('letter','landscape'); pageHead(); y = m+56; header(); doc.setFontSize(8.5); }
         let x = m+5;
-        cells.forEach((c,i)=>{ doc.setFont('helvetica', i===0 ? 'bold' : 'normal'); doc.setTextColor(23,30,51); doc.text(c, x, y); x += cols[i].w; });
+        cells.forEach((c,i)=>{ doc.setFont('helvetica', i===0 ? 'bold' : 'normal'); if(r.after) doc.setTextColor(110,118,135); else doc.setTextColor(23,30,51); doc.text(c, x, y); x += cols[i].w; });
         y += h; doc.setDrawColor(222,227,235); doc.line(m, y-9, W2-m, y-9);
+        if(r.complete==='Yes'){ doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.text('BP completes here. Steps below still run.', m+5, y); y += 12; }
       });
       saveFile(doc.output('blob'), fileBase()+'.pdf'); toast('PDF downloaded'); return;
     }
@@ -1302,8 +1274,10 @@ function toast(msg, actLabel, act){
 
 /* ---------- Boot ---------- */
 $('#b-new').onclick = showNew; $('#b-open').onclick = showOpen; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo;
+$('#dl-action').innerHTML = TASK_CATALOG.action.map(t=>`<option value="${esc(t.name)}">${esc(t.desc)}</option>`).join('');
+$('#dl-service').innerHTML = TASK_CATALOG.service.map(t=>`<option value="${esc(t.name)}">${esc(t.desc)}</option>`).join('');
 (function boot(){
-  const d = store.get('bpws2.draft', null);
+  const d = store.get('bpws3.draft', null);
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
   else { wf = exampleWf(); dirty = true; }
   renderPalette(); renderAll();
