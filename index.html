@@ -10,13 +10,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: header bar, then three panes: block palette | Build / Definition views | step details. One column on phones. */
+/* Layout: header bar, then three panes: block palette | Build / Definition views | recommendations or step details. One column on phones. */
 :root{
   --bg:#E9ECF3; --panel:#FFFFFF; --panel-2:#F3F5FA; --ink:#171E33; --muted:#59647C; --line:#D4DAE6;
   --brand:#29357F; --brand-ink:#FFFFFF; --sky:#00AEEF; --accent:#0B7FB8;
   --canvas:#F7F9FC; --dot:#C8D0DE; --sel:#0F1733; --rail:#B4BED0; --lane-bg:rgba(255,255,255,.72);
   --warn:#A8560A; --warn-bg:#FCEFDD; --info:#205E9C; --info-bg:#E4EFFA; --ok:#1F7A4D; --ok-bg:#E3F4EA; --danger:#B42318;
   --rule:#1E8A5B; --par:#55657D; --split:#34405E; --done:#1F7A4D;
+  --main-w:640px;
   --ui:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme:light;
@@ -62,7 +63,9 @@ code{font-family:var(--mono);font-size:.9em}
 .meta{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 480px;min-width:0}
 .field{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 130px}
 .field label{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.field input{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0;width:100%}
+.field input,.field select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0;width:100%}
+.field .pair{display:flex;gap:6px}
+.field.bp{flex:1.3 1 190px}
 .actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
@@ -80,10 +83,11 @@ code{font-family:var(--mono);font-size:.9em}
 .menu-list small{color:var(--muted);font-size:11.5px}
 
 /* Panes */
-.main{display:grid;grid-template-columns:262px minmax(0,1fr) 320px;gap:12px;min-height:0}
+.main{display:grid;grid-template-columns:262px minmax(0,1fr) 330px;gap:12px;min-height:0}
 .pane{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative}
 .pane-h{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .pane-h h2{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.pane-h .btn{margin-left:auto}
 .pane-b{overflow:auto;padding:12px;flex:1;min-height:0}
 
 /* Palette */
@@ -93,6 +97,7 @@ code{font-family:var(--mono);font-size:.9em}
 .pal-list{display:flex;flex-direction:column;gap:12px}
 .pal-item{display:flex;flex-direction:column;gap:4px}
 .pal-item p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.35}
+.pal-item.off{opacity:.5}
 .pal-group{display:flex;flex-direction:column;gap:6px}
 .pal-group h3{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;font-weight:700}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
@@ -112,9 +117,9 @@ code{font-family:var(--mono);font-size:.9em}
 .badge{font-size:11px;font-weight:700;border-radius:999px;padding:0 7px;line-height:18px;background:var(--warn-bg);color:var(--warn)}
 .badge.ok{background:var(--ok-bg);color:var(--ok)}
 .view{flex:1;min-height:0;overflow:auto}
-.canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;min-height:100%;padding:24px 28px 80px;position:relative;width:max-content;min-width:100%}
-.script{min-width:340px;width:max-content}
-.legend{font-size:11.5px;color:var(--muted);margin:0 0 14px;max-width:72ch}
+.canvas{background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);background-size:18px 18px;min-height:100%;padding:20px 28px 80px;position:relative;width:max-content;min-width:100%;display:flex;flex-direction:column;align-items:center}
+.legend{font-size:11.5px;color:var(--muted);margin:0 0 16px;max-width:72ch;text-align:center}
+.script{display:flex;flex-direction:column;align-items:center}
 
 /* Scratch-style blocks */
 .block{--c:#1F78C8;position:relative;background:var(--c);color:#fff;padding:13px 12px 17px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:48px;font-weight:600;font-size:13px;user-select:none;
@@ -122,7 +127,9 @@ code{font-family:var(--mono);font-size:.9em}
 .block.hat{clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px));border-radius:22px 22px 0 0;padding-top:16px;--c:#29357F}
 .block.hat small{font-weight:500;opacity:.8;font-size:11.5px}
 .block.end{clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);border-radius:0 0 10px 10px;--c:#3D4757;min-height:40px;padding-bottom:10px;font-weight:700}
-[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="block"]>.sblock>.shead,[data-drag="new"]>.block,[data-drag="newpar"] .block,[data-drag="newsplit"] .block{cursor:grab;touch-action:none}
+.block.compl{--c:var(--done)}
+.block.compl .hint{font-size:11.5px;font-weight:500;opacity:.9;flex-basis:100%}
+[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="block"]>.sblock>.shead,[data-drag="new"]>.block,[data-drag="rec"]>.block,[data-drag="newcomp"]>.block,[data-drag="newpar"] .block,[data-drag="newsplit"] .block{cursor:grab;touch-action:none}
 .ord{font-family:var(--mono);font-weight:700;font-size:12px;background:rgba(0,0,0,.24);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
 .verb{font-weight:800}
 .spec{font-weight:700;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
@@ -132,7 +139,7 @@ code{font-family:var(--mono);font-size:.9em}
 .hex{--h:var(--rule);display:inline-flex;align-items:center;gap:4px;background:var(--h);color:#fff;padding:4px 10px 4px 15px;font-size:12px;font-weight:700;max-width:100%;
   clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%)}
 .hex i{font-style:normal;opacity:.82;font-weight:600}
-.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
 .hex.inh{background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
 .hex.empty{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rule);color:var(--rule)}
 .slot{border:1.5px dashed rgba(255,255,255,.75);border-radius:999px;padding:2px 10px;font-weight:500;font-size:12px;opacity:.95}
@@ -140,27 +147,23 @@ code{font-family:var(--mono);font-size:.9em}
 .flag{font-size:11.5px;background:rgba(0,0,0,.2);border-radius:6px;padding:2px 7px;font-weight:600}
 .x{width:18px;height:18px;border-radius:50%;border:0;background:transparent;color:inherit;display:inline-grid;place-items:center;font-size:14px;line-height:1;opacity:.55;padding:0;flex:none}
 .x:hover{opacity:1;background:rgba(0,0,0,.15)}
-.cp{margin-left:auto;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:6px;font-size:11.5px;font-weight:700;padding:3px 8px;opacity:0;transition:opacity .12s}
-.bw:hover>.block>.cp,.bw.sel>.block>.cp,.bw:hover>.cblock>.chead>.cp,.bw:hover>.sblock>.shead>.cp,.bw.sel>.cblock>.chead>.cp,.bw.sel>.sblock>.shead>.cp{opacity:1}
-.cp:hover{background:rgba(255,255,255,.3)}
-@media (hover:none){.cp{opacity:1}}
+.tools{margin-left:auto;display:inline-flex;gap:4px;opacity:0;transition:opacity .12s}
+.tools button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:6px;font-size:11.5px;font-weight:700;padding:3px 8px}
+.tools button:hover{background:rgba(255,255,255,.32)}
+.tools .dl:hover{background:#B42318}
+.bw:hover>.block>.tools,.bw.sel>.block>.tools,.bw:hover>.cblock>.chead>.tools,.bw.sel>.cblock>.chead>.tools,.bw:hover>.sblock>.shead>.tools,.bw.sel>.sblock>.shead>.tools{opacity:1}
+@media (hover:none){.tools{opacity:1}}
 
 .stack{display:flex;flex-direction:column;position:relative}
 .stack>*{margin-top:-6px}
-.stack.root>.bw:not(.split){max-width:760px}
+.stack.root{align-items:center;min-width:var(--main-w)}
+.stack.root>.bw:not(.split),.script>.hatw,.script>.endw{width:var(--main-w)}
 .stack.root:empty{min-height:70px}
-.stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600;max-width:760px}
+.stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;width:var(--main-w);margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600}
 .script>.stack,.script>.endw{margin-top:-6px}
-.script>.endw{max-width:760px}
 .stack.root:empty + .endw{margin-top:8px}
 .bw.sub{padding-left:22px}
 .bw.sub::before{content:"";position:absolute;left:8px;top:-2px;bottom:6px;width:3px;border-radius:2px;background:var(--rail)}
-
-/* completion marker */
-.cmark{margin:10px 0 12px!important;display:flex;align-items:center;gap:10px;color:var(--done);font-size:12px;font-weight:700;max-width:760px}
-.cmark::before,.cmark::after{content:"";flex:1;border-top:2px dashed var(--done)}
-.cmark span{white-space:nowrap}
-.cmark + .bw{margin-top:0}
 
 /* parallel C-block */
 .cblock{display:flex;flex-direction:column}
@@ -174,46 +177,58 @@ code{font-family:var(--mono);font-size:.9em}
 .stack.inner:empty::after{content:"Drop 2+ steps here";display:grid;place-items:center;height:46px;color:var(--muted);font-size:12px;font-weight:600}
 .cfoot{height:22px;background:var(--par);margin-top:-6px;clip-path:polygon(0 0,32px 0,38px 6px,56px 6px,62px 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px))}
 
-/* path split block: lanes side by side, all start and end at the same point */
-.sblock{display:flex;flex-direction:column}
-.shead{--c:var(--split);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);padding-bottom:12px}
+/* path split: default path runs straight down the middle, condition paths branch left and right */
+.sblock{display:flex;flex-direction:column;align-items:center}
+.shead,.sfoot{width:var(--main-w)}
+.shead{--c:var(--split);padding-bottom:16px}
 .shead .btn{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
 .shead .btn:hover{background:rgba(255,255,255,.26)}
-.sbody{display:flex;background:var(--split);padding:0 10px 0 16px}
-.lanes-row{display:flex;gap:10px;align-items:stretch;background:var(--canvas);padding:12px;border-radius:8px 8px 0 0;flex:1}
-.lane{width:340px;flex:none;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--line);border-radius:10px;background:var(--lane-bg);padding:8px}
+.sfan{position:relative;height:22px;align-self:stretch}
+.sfan::before{content:"";position:absolute;left:50%;top:0;height:10px;width:2px;margin-left:-1px;background:var(--split)}
+.sfan::after{content:"";position:absolute;left:var(--fl,170px);right:var(--fr,170px);top:10px;height:2px;background:var(--split);border-radius:2px}
+.sfan.bottom::before{top:auto;bottom:0}
+.sfan.bottom::after{top:auto;bottom:10px}
+.lanes-row{display:flex;gap:14px;align-items:stretch;justify-content:center;padding:0 4px}
+.lane{width:300px;flex:none;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--line);border-radius:10px;background:var(--lane-bg);padding:8px;position:relative}
+.lane::before,.lane::after{content:"";position:absolute;left:50%;width:2px;margin-left:-1px;background:var(--split);height:12px}
+.lane::before{top:-12px}
+.lane::after{bottom:-12px}
+.lane.spacer::before,.lane.spacer::after{display:none}
 .lane.selected{border-color:var(--sel);box-shadow:0 0 0 1px var(--sel)}
 .lane.drop-ok{border-color:var(--sky);box-shadow:0 0 0 2px var(--sky)}
 .lane-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;cursor:pointer;padding:2px}
-.lane-head .lname{font-size:13px;font-weight:800;color:var(--ink);flex:1;min-width:0}
+.lane-head .lname{font-size:13px;font-weight:800;color:var(--ink);flex:1 1 auto;width:calc(100% - 30px);min-width:0}
 .lane-head .lsub{font-size:11px;color:var(--muted);font-weight:600;flex-basis:100%}
 .lane-head .x{color:var(--muted)}
 .stack.lane-stack{min-height:56px;padding-top:6px}
 .stack.lane-stack>*:first-child{margin-top:0}
 .stack.lane-stack:empty{border:2px dashed var(--line);border-radius:8px}
 .stack.lane-stack:empty::after{content:"Drop steps for this path";display:grid;place-items:center;height:52px;color:var(--muted);font-size:12px;font-weight:600}
-.lane.def{width:190px;border-style:dashed;background:transparent}
-.lane.def .lane-head{cursor:default}
-.passthru{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:600;text-align:center;min-height:56px;position:relative}
-.passthru::before{content:"";width:2px;flex:1;min-height:20px;background:var(--rail)}
-.passthru::after{content:"";width:2px;flex:1;min-height:20px;background:var(--rail)}
-.sfoot{--c:var(--split);background:var(--c);color:#fff;font-size:12px;font-weight:700;padding:8px 14px 14px;clip-path:polygon(0 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px));opacity:.95}
+.lane.def{width:170px;border-style:dashed;background:transparent;align-items:center;text-align:center}
+.lane.def .lane-head{cursor:default;justify-content:center}
+.lane.def .lane-head .lname{flex:none;width:auto}
+.lane.spacer{border-style:dashed;border-color:transparent;background:transparent;align-items:center;justify-content:center}
+.lane.spacer:hover{border-color:var(--line)}
+.passthru{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:600;min-height:56px}
+.passthru::before,.passthru::after{content:"";width:2px;flex:1;min-height:20px;background:var(--split)}
+.sfoot{--c:var(--split);background:var(--c);color:#fff;font-size:12px;font-weight:700;padding:9px 14px 15px;text-align:center;clip-path:polygon(0 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px));border-radius:8px 8px 0 0}
 
 .bw{position:relative}
 .bw.sel{filter:drop-shadow(2px 0 0 var(--sel)) drop-shadow(-2px 0 0 var(--sel)) drop-shadow(0 2px 0 var(--sel)) drop-shadow(0 -2px 0 var(--sel));z-index:2}
 .bw.split.sel{filter:none}
 .bw.split.sel>.sblock>.shead,.bw.split.sel>.sblock>.sfoot{box-shadow:inset 0 0 0 2px var(--sel)}
 .bw.drop-ok{filter:drop-shadow(3px 0 0 var(--sky)) drop-shadow(-3px 0 0 var(--sky)) drop-shadow(0 3px 0 var(--sky)) drop-shadow(0 -3px 0 var(--sky));z-index:3}
-.ph{height:44px;border:2px dashed var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);margin-top:2px!important;margin-bottom:8px}
+.ph{height:44px;border:2px dashed var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);margin-top:2px!important;margin-bottom:8px;align-self:stretch}
+.stack.root>.ph{width:var(--main-w);align-self:center}
 .drag-ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:1000;opacity:.92;max-width:460px;transform-origin:0 0;overflow:hidden;max-height:240px}
-.drag-ghost .bw{filter:drop-shadow(0 10px 18px rgba(10,20,40,.3))}
+.drag-ghost .bw{filter:drop-shadow(0 10px 18px rgba(10,20,40,.3));width:auto!important}
 .drag-ghost.copying::after{content:"+ copy";position:absolute;right:6px;top:6px;background:var(--sky);color:#06202E;font-size:11px;font-weight:800;border-radius:6px;padding:2px 6px}
 body.dragging,body.dragging *{cursor:grabbing!important}
 body.trash .palette{outline:2px dashed var(--danger);outline-offset:-2px}
 .trash-note{display:none;position:absolute;inset:auto 12px 12px 12px;background:var(--danger);color:#fff;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12.5px;text-align:center}
 body.trash .trash-note{display:block}
 
-/* Inspector */
+/* Right pane: recommendations and details */
 .ins{display:flex;flex-direction:column;gap:16px}
 .ins-h{display:flex;align-items:center;gap:8px}
 .ins-h .sw{width:14px;height:14px;border-radius:4px;flex:none}
@@ -221,7 +236,7 @@ body.trash .trash-note{display:block}
 .sec{display:flex;flex-direction:column;gap:6px}
 .sec>label,.sec>.lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .sec select,.sec input[type=text],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
-.sec input.req{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.sec .req{border-color:var(--warn)!important;box-shadow:0 0 0 1px var(--warn)}
 .sec .req-note{font-size:11.5px;color:var(--warn);font-weight:600;margin:0}
 .sec textarea{min-height:64px;resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -238,13 +253,19 @@ body.trash .trash-note{display:block}
 .check-row input{accent-color:var(--brand);width:16px;height:16px;margin:0}
 .row{display:flex;gap:6px;flex-wrap:wrap}
 .help{font-size:12px;color:var(--muted);margin:0;line-height:1.45}
-.empty-ins{display:flex;flex-direction:column;gap:12px}
-.empty-ins ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px}
 .kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--panel-2)}
+.recs{display:flex;flex-direction:column;gap:10px}
+.rec{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+.rec .block{min-height:40px;padding:11px 10px 15px;font-size:12.5px}
+.rec p{margin:0;font-size:12px;color:var(--muted);line-height:1.4}
+.rec .rr{display:flex;align-items:center;gap:8px}
+.rec .rr small{font-size:11px;color:var(--muted);flex:1}
+.rec-empty{padding:14px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;text-align:center}
+.shortcuts{font-size:12px;color:var(--muted);line-height:1.9}
 
 /* Checks */
 .checks{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
-.checks li{font-size:12.5px;padding:7px 10px;border-radius:8px;background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.checks li{font-size:12.5px;padding:7px 10px;border-radius:8px;background:var(--warn-bg);color:var(--ink);border-left:3px solid var(--warn);cursor:pointer}
 .checks li.info{background:var(--info-bg);border-left-color:var(--info)}
 .checks li.ok{background:var(--ok-bg);border-left-color:var(--ok);cursor:default}
 .checks b{font-family:var(--mono)}
@@ -263,6 +284,7 @@ table.def td.o{font-family:var(--mono);font-weight:700}
 table.def tbody tr{cursor:pointer}
 table.def tbody tr:hover td{background:var(--panel-2)}
 table.def tr.after td{color:var(--muted)}
+table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;cursor:default}
 .tdot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
 
 /* Modal */
@@ -290,15 +312,16 @@ table.def tr.after td{color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;z-index:300;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
 .toast button{background:none;border:0;color:var(--sky);font-weight:800;padding:0}
 
-@media (max-width:1180px){ .main{grid-template-columns:230px minmax(0,1fr) 280px} }
+@media (max-width:1180px){ .main{grid-template-columns:230px minmax(0,1fr) 290px} }
 @media (max-width:900px){
+  :root{--main-w:min(640px, calc(100vw - 80px))}
   html,body{height:auto}
   .app{height:auto}
   .main{grid-template-columns:minmax(0,1fr)}
   .palette .pane-b{max-height:300px}
   .view{min-height:62vh}
   .canvas{padding:20px 14px 60px}
-  .lane{width:280px}
+  .lane{width:260px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -311,10 +334,10 @@ table.def tr.after td{color:var(--muted)}
       <div class="brand-txt"><h1>BP Workflow Studio</h1><span>Commit Consulting</span></div>
     </div>
     <div class="meta">
+      <div class="field bp"><label for="f-bp">Business process</label><div class="pair"><select id="f-bp"></select><input id="f-bp-other" type="text" placeholder="Process name" hidden></div></div>
+      <div class="field"><label for="f-def">Definition</label><input id="f-def" type="text" placeholder="Default Definition"></div>
       <div class="field"><label for="f-name">Design name</label><input id="f-name" type="text" placeholder="e.g. AP invoice approvals v2"></div>
       <div class="field"><label for="f-client">Client</label><input id="f-client" type="text" placeholder="e.g. Aprio"></div>
-      <div class="field"><label for="f-bp">Business process</label><input id="f-bp" type="text" placeholder="Supplier Invoice Event"></div>
-      <div class="field"><label for="f-def">Definition</label><input id="f-def" type="text" placeholder="Default Definition"></div>
     </div>
     <div class="actions">
       <span class="status" id="status"></span>
@@ -349,14 +372,14 @@ table.def tr.after td{color:var(--muted)}
       <div class="ctabs" role="tablist">
         <button class="ctab" role="tab" data-view="build" aria-selected="true">Build</button>
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
-        <span class="hint">Copy a step: ⧉ on the block, Alt-drag, or Ctrl/⌘ D</span>
+        <span class="hint">Hover a block to copy or delete it</span>
       </div>
-      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps from the left into order. The main line is the default path and has no conditions. Use <b>Split into paths</b> to lay out cases side by side: each path has a condition rule, and any step dropped into it carries that rule. Drop a security group or condition onto a step to attach it.</p><div class="script" id="script"></div></div></div>
+      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">The main line is the default path and has no conditions. Use <b>Split into paths</b> to branch cases left and right of it; every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
       <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
     </section>
 
-    <aside class="pane" aria-label="Step details">
-      <div class="pane-h"><h2>Step details</h2></div>
+    <aside class="pane" aria-label="Recommendations and step details">
+      <div class="pane-h"><h2 id="pane-title">Recommended</h2><button class="btn sm quiet" id="b-recs" hidden>Back to recommended</button></div>
       <div class="pane-b" id="inspector"></div>
     </aside>
   </main>
@@ -364,7 +387,6 @@ table.def tr.after td{color:var(--muted)}
 
 <div class="modal-bg" id="modal" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-h"><h2 id="modal-title"></h2><button class="btn quiet" id="modal-close">Close</button></div><div class="modal-b" id="modal-b"></div></div></div>
 <input type="file" id="import-file" accept=".json,.xlsx,.xls,application/json" hidden>
-<datalist id="dl-action"></datalist><datalist id="dl-service"></datalist>
 
 <script>
 "use strict";
@@ -386,27 +408,54 @@ const TYPE_BY_LABEL = Object.fromEntries(Object.entries(TYPES).map(([k,t])=>[t.l
 TYPE_BY_LABEL['review documents'] = 'review';
 const INIT_COLOR = '#29357F', PAR_COLOR = '#55657D', SPLIT_COLOR = '#34405E', END_COLOR = '#3D4757', DONE_COLOR = '#1F7A4D';
 
-/* Task catalogs for the Specify dropdowns on Action and Service steps.
-   Add {name, desc} entries here; desc shows under the field when picked. */
-const TASK_CATALOG = {
-  action: [
-    {name:'Supplier Accounts Match Process', desc:''},
-    {name:'Review Supplier Invoice', desc:''},
-    {name:'Review Trackable Invoice Lines', desc:''},
-    {name:'Initiate Supplier Invoice Intercompany Event', desc:''},
-    {name:'Assign Asset Accounting Information from Invoice', desc:''}
-  ],
-  service: [
-    {name:'Initiate Asset Registration Events from Invoice', desc:''}
-  ]
-};
-
 /* Security groups: anything with "admin" in the name is user-based, everything else is role-based (constrained). */
-const BASE_GROUPS = ['Accounts Payable Data Entry Specialist','Accounts Payable Specialist','Accounts Payable Manager','Accountant','Accounting Manager','Business Asset Accountant','Controller','Cost Center Manager','Project Manager','Manager','Procurement Specialist','Buyer','Region Manager','Grant Manager',
-  'Finance Administrator','Business Process Administrator','Supplier Data Administrator','Security Administrator'];
 function groupKind(n){ if(n==='Initiator') return 'Special'; return /admin/i.test(n) ? 'User' : 'Role'; }
 const KIND_LABEL = {Special:'Special', Role:'Role-based (constrained)', User:'User-based'};
-const DEFAULT_RULES = ['Non-PO Supplier Invoice?','Supplier Invoice not from Recurring Supplier Invoice?','Supplier Total Invoice Amount >= $10,000 USD?','Is Project Transaction?','Is Direct Intercompany?','Not Related to Project APR/WIP alternative setup?'];
+const ADMIN_GROUPS = ['Finance Administrator','Business Process Administrator'];
+
+/* Business process catalog. The selected process decides which Action and Service tasks,
+   security groups, condition rules and recommended blocks are offered. Add tasks as {name, desc}. */
+const R_NONPO = 'Non-PO Supplier Invoice?', R_NOTREC = 'Supplier Invoice not from Recurring Supplier Invoice?', R_FROMREC = 'Supplier Invoice from variable Recurring Supplier Invoice?';
+const R_10K = 'Supplier Total Invoice Amount >= $10,000 USD?', R_PROJ = 'Is Project Transaction?', R_IC = 'Is Direct Intercompany?', R_APR = 'Not Related to Project APR/WIP alternative setup?';
+const R_MATCH = 'Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)';
+const R_TRACK = "The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)";
+const R_ICEV = 'Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)';
+const R_ASSET = "The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)";
+const R_ACCT = 'Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)';
+const RESTR = ['Initiator','Approvers'];
+const BP_CATALOG = {
+  'Supplier Invoice Event': {
+    loaded: true,
+    actions: [
+      {name:'Supplier Accounts Match Process', desc:''},
+      {name:'Review Supplier Invoice', desc:''},
+      {name:'Review Trackable Invoice Lines', desc:''},
+      {name:'Initiate Supplier Invoice Intercompany Event', desc:''},
+      {name:'Assign Asset Accounting Information from Invoice', desc:''}
+    ],
+    services: [{name:'Initiate Asset Registration Events from Invoice', desc:''}],
+    groups: ['Accounts Payable Data Entry Specialist','Accounts Payable Specialist','Accounts Payable Manager','Cost Center Manager','Project Manager','Controller','Business Asset Accountant','Accountant','Accounting Manager','Procurement Specialist','Buyer','Manager', ...ADMIN_GROUPS, 'Supplier Data Administrator'],
+    rules: [R_NONPO, R_NOTREC, R_FROMREC, R_10K, R_PROJ, R_IC, R_APR, R_MATCH, R_TRACK, R_ICEV, R_ASSET, R_ACCT],
+    recs: [
+      {key:'match', why:'Delivered a1 step. Runs the match process on procurement invoices right after initiation.', make:()=>S('action',{sub:true, specify:'Supplier Accounts Match Process', groups:['Initiator'], due:'1 Day', conds:[R_MATCH]})},
+      {key:'recur', why:'Lets AP review invoices that were created from a recurring supplier invoice.', make:()=>S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'2 Days', conds:[R_FROMREC]})},
+      {key:'ccm', why:'Standard Non-PO approval by the cost center owner. Excludes the initiator and prior approvers.', make:()=>S('approval',{groups:['Cost Center Manager'], restr:RESTR, all:true, due:'2 Days', conds:[R_NONPO, R_NOTREC]})},
+      {key:'pm', why:'Adds project owner sign-off on invoices charged to a project.', make:()=>S('approval',{groups:['Project Manager'], restr:RESTR, all:true, due:'2 Days', conds:[R_PROJ, R_NONPO]})},
+      {key:'ctrl', why:'Threshold approval for Non-PO invoices at or above $10,000.', make:()=>S('approval',{groups:['Controller'], restr:RESTR, due:'2 Days', conds:[R_NONPO, R_NOTREC, R_10K]})},
+      {key:'track', why:'Asset accountant reviews trackable lines that may need assets.', make:()=>S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_APR, R_TRACK]})},
+      {key:'icrev', why:'AP reviews direct intercompany invoices.', make:()=>S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:[R_IC]})},
+      {key:'icev', why:'Starts the intercompany event when IC companies are on the lines.', make:()=>S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', conds:[R_ICEV]})},
+      {key:'asset', why:'After completion: creates asset registration events from trackable lines.', after:true, make:()=>S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R_ASSET]})},
+      {key:'acct', why:'After completion: assigns asset accounting on lines that need it.', after:true, make:()=>S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_ACCT, R_APR]})}
+    ]
+  },
+  'Expense Report Event':   {loaded:false, actions:[], services:[], groups:['Expense Partner','Manager','Cost Center Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Requisition Event':      {loaded:false, actions:[], services:[], groups:['Procurement Specialist','Buyer','Cost Center Manager','Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Purchase Order Event':   {loaded:false, actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Supplier Contract Event':{loaded:false, actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Accounting Journal Event':{loaded:false, actions:[], services:[], groups:['Accountant','Accounting Manager','Controller', ...ADMIN_GROUPS], rules:[], recs:[]}
+};
+const OTHER_BP = {loaded:false, actions:[], services:[], groups:['Manager','Cost Center Manager', ...ADMIN_GROUPS], rules:[], recs:[]};
 
 /* ---------- Helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -424,31 +473,34 @@ const store = {
 /* ---------- Model ---------- */
 function S(type, o={}){
   return {kind:'step', id:uid(), type, specify:o.specify||'', groups:o.groups?[...o.groups]:[], conds:o.conds?[...o.conds]:[],
-    sub:!!o.sub, optional:!!o.optional, restr:o.restr||[], all:!!o.all, due:o.due||'', modifier:o.modifier||'', runAs:o.runAs||'',
-    doNotAdvance:!!o.doNotAdvance, complete:!!o.complete, note:o.note||''};
+    sub:!!o.sub, optional:!!o.optional, restr:o.restr?[...o.restr]:[], all:!!o.all, due:o.due||'', modifier:o.modifier||'', runAs:o.runAs||'',
+    doNotAdvance:!!o.doNotAdvance, note:o.note||''};
 }
 function P(steps){ return {kind:'par', id:uid(), steps}; }
 function Lane(name, rule, steps){ return {id:uid(), name:name||'', rule:rule||'', steps:steps||[]}; }
 function Split(lanes){ return {kind:'split', id:uid(), lanes:lanes||[Lane('Path 1','')]}; }
-function blankWf(){ return {v:3, name:'', client:'', bp:'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
+function Comp(){ return {kind:'complete', id:uid()}; }
+function blankWf(bp){ return {v:4, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
+function bpCat(){ return BP_CATALOG[wf.bp] || OTHER_BP; }
+function tasksFor(type){ const c = bpCat(); return type==='action' ? c.actions : type==='service' ? c.services : null; }
 
 function exampleWf(){
-  const w = blankWf();
+  const w = blankWf('Supplier Invoice Event');
   w.name = 'Supplier Invoice Event: Default Definition';
-  const restr = ['Initiator','Approvers'];
   w.items = [
-    S('action',{sub:true, specify:'Supplier Accounts Match Process', groups:['Initiator'], due:'1 Day', conds:['Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)']}),
-    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'2 Days', conds:['Supplier Invoice from variable Recurring Supplier Invoice?']}),
-    Split([Lane('Non-PO invoice', 'Non-PO Supplier Invoice?', [
-      S('approval',{groups:['Cost Center Manager'], restr, all:true, due:'2 Days', conds:['Supplier Invoice not from Recurring Supplier Invoice?']}),
-      S('approval',{groups:['Project Manager'], restr, all:true, due:'2 Days', conds:['Is Project Transaction?']}),
-      S('approval',{groups:['Controller'], restr, due:'2 Days', conds:['Supplier Invoice not from Recurring Supplier Invoice?','Supplier Total Invoice Amount >= $10,000 USD?']})
+    S('action',{sub:true, specify:'Supplier Accounts Match Process', groups:['Initiator'], due:'1 Day', conds:[R_MATCH]}),
+    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'2 Days', conds:[R_FROMREC]}),
+    Split([Lane('Non-PO invoice', R_NONPO, [
+      S('approval',{groups:['Cost Center Manager'], restr:RESTR, all:true, due:'2 Days', conds:[R_NOTREC]}),
+      S('approval',{groups:['Project Manager'], restr:RESTR, all:true, due:'2 Days', conds:[R_PROJ]}),
+      S('approval',{groups:['Controller'], restr:RESTR, due:'2 Days', conds:[R_NOTREC, R_10K]})
     ])]),
-    S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:['Not Related to Project APR/WIP alternative setup?', "The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)"]}),
-    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:['Is Direct Intercompany?']}),
-    S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', complete:true, conds:['Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)']}),
-    S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:["The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)"]}),
-    S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:['Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)', 'Not Related to Project APR/WIP alternative setup?']})
+    S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_APR, R_TRACK]}),
+    S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:[R_IC]}),
+    S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', conds:[R_ICEV]}),
+    Comp(),
+    S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R_ASSET]}),
+    S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_ACCT, R_APR]})
   ];
   return w;
 }
@@ -457,13 +509,14 @@ function exampleWf(){
 let wf, docId = null, savedAt = null, dirty = false;
 let sel = null, view = 'build', ptab = 'steps', groupFilter = '', clip = null;
 let hist = [];
+const customSpec = new Set();
 function snapshot(){ hist.push(JSON.stringify({wf, docId})); if(hist.length > 80) hist.shift(); }
 function undo(){
   const h = hist.pop(); if(!h){ toast('Nothing to undo'); return; }
   const o = JSON.parse(h); wf = o.wf; docId = o.docId; if(sel && sel!=='init' && !find(sel) && !findLane(sel)) sel = null;
   markDirty(); renderAll(); renderPalette();
 }
-function markDirty(){ dirty = true; store.set('bpws3.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
+function markDirty(){ dirty = true; store.set('bpws4.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
 
 /* Walk every item: fn(item, list, index, ctx) where ctx = {par, lane, split} */
 function walk(fn){
@@ -480,16 +533,20 @@ function allSteps(){ const out=[]; walk(it=>{ if(it.kind==='step') out.push(it);
 function listFor(key){
   if(key==='root') return wf.items;
   if(key.startsWith('par:')){ const f = find(key.slice(4)); return f ? f.item.steps : null; }
-  if(key.startsWith('lane:')){ const f = findLane(key.slice(5)); return f ? f.lane.steps : null; }
+  if(key.startsWith('lane:')){ const f = findLane(key); return f ? f.lane.steps : null; }
   return null;
 }
 function laneOf(id){ const f = find(id); return f ? f.lane || null : null; }
 function effectiveConds(s){ const l = laneOf(s.id); return [...(l && l.rule ? [l.rule] : []), ...s.conds]; }
+function hasCompletion(){ return wf.items.some(i=>i.kind==='complete'); }
+function groupsForBP(){ const used = []; allSteps().forEach(s=>s.groups.forEach(g=>used.push(g))); return [...new Set([...bpCat().groups, ...(wf.customGroups||[]), ...used])].filter(g=>g!=='Initiator'); }
+function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s]; }
 
 /* Order letters run down the main line and through each path in turn; sub-steps number off the previous letter. */
 function orderMap(){
   const m = {init:'a'}; let li = 0, sub = 0;
   const seq = list => list.forEach(it=>{
+    if(it.kind==='complete'){ m[it.id] = ''; return; }
     if(it.kind==='split'){ const start = li; it.lanes.forEach(l=>seq(l.steps)); m[it.id] = li>start ? (li-start>1 ? `${letters(start+1)}-${letters(li)}` : letters(li)) : '·'; return; }
     if(it.kind==='step' && it.sub){ sub++; m[it.id] = letters(li) + sub; return; }
     li++; sub = 0; const L = letters(li); m[it.id] = L;
@@ -498,14 +555,11 @@ function orderMap(){
   seq(wf.items);
   return m;
 }
-function completeStep(){ return allSteps().find(s=>s.complete) || null; }
-function ruleLibrary(){ const s = new Set([...DEFAULT_RULES, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s]; }
 function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
 
 /* ---------- Build canvas ---------- */
-function groupChip(g, i){
-  return `<span class="gp">${groupKind(g)==='User'?'<span class="kk">user</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`;
-}
+const tools = id => `<span class="tools"><button class="cp" data-copy="${id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button><button class="dl" data-del="${id}" title="Delete (Del)">✕ Delete</button></span>`;
+function groupChip(g, i){ return `<span class="gp">${groupKind(g)==='User'?'<span class="kk">user</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`; }
 function condHex(text, i){ return `<span class="hex" title="${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span><button class="x" data-rm="cond" data-i="${i}" aria-label="Remove condition">×</button></span>`; }
 function stepHTML(s, om, lane){
   const T = TYPES[s.type] || TYPES.action;
@@ -522,120 +576,170 @@ function stepHTML(s, om, lane){
     s.conds.map(condHex).join('')+
     `<span class="verb">${T.label}</span>${specSlot}`+
     (s.type!=='service' ? `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>') : '')+
-    flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+
-    `<button class="cp" data-copy="${s.id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button>`+
-  `</div></div>` + (s.complete ? `<div class="cmark"><span>✓ Business process completes here · steps below still run</span></div>` : '');
+    flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+ tools(s.id) +
+  `</div></div>`;
 }
 function parHTML(p, om, lane){
   return `<div class="bw par${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
-    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">steps inside share order ${om[p.id]}</span><button class="cp" data-copy="${p.id}">⧉ Copy</button></div>`+
+    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">steps inside share order ${om[p.id]}</span>${tools(p.id)}</div>`+
     `<div class="cmid"><div class="carm"></div><div class="stack inner" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om,lane)).join('')}</div></div>`+
     `<div class="cfoot"></div></div></div>`;
 }
-function splitHTML(sp, om){
-  return `<div class="bw split${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="sblock">`+
-    `<div class="block shead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">every path starts here and rejoins below</span><button class="btn sm" data-addlane="${sp.id}">+ Add path</button><button class="cp" data-copy="${sp.id}">⧉ Copy</button></div>`+
-    `<div class="sbody"><div class="lanes-row">`+
-      sp.lanes.map(l=>`<div class="lane${sel==='lane:'+l.id?' selected':''}" data-lane="${l.id}"><div class="lane-head" data-lanesel="${l.id}">`+
-        `<span class="lname">${esc(l.name||'Unnamed path')}</span><button class="x" data-rmlane="${l.id}" aria-label="Remove path" title="Remove path">×</button>`+
-        (l.rule ? `<span class="hex" title="${esc(l.rule)}"><i>if</i><span class="tr">${esc(shortRule(l.rule))}</span></span>` : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+
-        `<span class="lsub">${l.steps.length} step${l.steps.length===1?' carries':'s carry'} this condition</span></div>`+
-        `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`).join('')+
-      `<div class="lane def"><div class="lane-head"><span class="lname">Default path</span><span class="lsub">No condition</span></div><div class="passthru">continues to the next step</div></div>`+
-    `</div></div><div class="sfoot">Paths rejoin</div></div></div>`;
+function laneHTML(l, om){
+  return `<div class="lane${sel==='lane:'+l.id?' selected':''}" data-lane="${l.id}"><div class="lane-head" data-lanesel="${l.id}">`+
+    `<span class="lname">${esc(l.name||'Unnamed path')}</span><button class="x" data-rmlane="${l.id}" aria-label="Remove path" title="Remove path">×</button>`+
+    (l.rule ? `<span class="hex" title="${esc(l.rule)}"><i>if</i><span class="tr">${esc(shortRule(l.rule))}</span></span>` : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+
+    `<span class="lsub">${l.steps.length} step${l.steps.length===1?' carries':'s carry'} this condition</span></div>`+
+    `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`;
 }
-function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : stepHTML(it, om); }
+/* Paths split around the default path: first half on the left, the rest on the right, padded so the default path stays centered */
+function laneLayout(sp){
+  const n = sp.lanes.length, left = sp.lanes.slice(0, Math.ceil(n/2)), right = sp.lanes.slice(Math.ceil(n/2));
+  return {left, right, pad: left.length - right.length};
+}
+function splitHTML(sp, om){
+  const {left, right, pad} = laneLayout(sp);
+  const LW = 300, DW = 170, GAP = 14;
+  const leftW = left.length*(LW+GAP), rightW = (right.length+pad)*(LW+GAP);
+  const firstC = left.length ? LW/2 + 4 : leftW + DW/2 + 4, lastC = right.length ? 4 + leftW + DW + GAP + (right.length-1)*(LW+GAP) + LW/2 : 4 + leftW + DW/2;
+  const total = leftW + DW + rightW + 8;
+  const fan = `--fl:${firstC}px;--fr:${total - lastC}px`;
+  return `<div class="bw split${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="sblock">`+
+    `<div class="block shead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">every path starts here and rejoins below</span><button class="btn sm" data-addlane="${sp.id}">+ Add path</button>${tools(sp.id)}</div>`+
+    `<div class="sfan" style="${fan}"></div>`+
+    `<div class="lanes-row">`+
+      left.map(l=>laneHTML(l, om)).join('')+
+      `<div class="lane def"><div class="lane-head"><span class="lname">Default path</span><span class="lsub">No condition</span></div><div class="passthru">continues to the next step</div></div>`+
+      right.map(l=>laneHTML(l, om)).join('')+
+      (pad>0 ? `<div class="lane spacer"><button class="btn sm" data-addlane="${sp.id}">+ Add path</button></div>` : '')+
+    `</div><div class="sfan bottom" style="${fan}"></div><div class="sfoot">Paths rejoin</div></div></div>`;
+}
+function compHTML(c){
+  return `<div class="bw comp${sel===c.id?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Business process complete</span>${tools(c.id).replace(/<button class="cp"[^>]*>[^<]*<\/button>/,'')}<span class="hint">The document is approved here. Remaining steps below still run after completion.</span></div></div>`;
+}
+function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : it.kind==='complete' ? compHTML(it) : stepHTML(it, om); }
 function renderBuild(){
-  const om = orderMap(), done = completeStep();
+  const om = orderMap();
   $('#script').innerHTML =
-    `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init" style="max-width:760px"><div class="block hat"><span class="ord">a</span><span class="verb">Initiation</span><small>${esc(wf.bp||'')}</small></div></div>`+
+    `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init"><div class="block hat"><span class="ord">a</span><span class="verb">Initiation</span><small>${esc(wf.bp||'')}</small></div></div>`+
     `<div class="stack root" data-list="root">${wf.items.map(it=>itemHTML(it,om)).join('')}</div>`+
-    `<div class="endw"><div class="block end">${done ? 'End of definition' : 'Business process complete'}</div></div>`;
+    `<div class="endw"><div class="block end">End of definition</div></div>`;
 }
 
 /* ---------- Palette ---------- */
 function renderPalette(){
   document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.ptab===ptab)));
-  const el = $('#palette');
+  const el = $('#palette'), done = hasCompletion();
   if(ptab==='steps'){
     el.innerHTML = `<div class="pal-list">`+
-      Object.entries(TYPES).map(([k,T])=>`<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add at the end"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`).join('')+
-      `<div class="pal-item"><div data-drag="newsplit" title="Drag onto the canvas"><div class="block shead" style="min-height:40px"><span class="verb">Split into paths</span></div><div class="sfoot" style="padding:6px 14px 12px">Paths rejoin</div></div><p>Side-by-side paths that start and end at the same point. Each path has a condition rule that every step in it carries.</p></div>`+
+      `<div class="pal-item${done?' off':''}"><div ${done?'':'data-drag="newcomp"'} title="${done?'Already on the canvas':'Drag onto the canvas'}"><div class="block compl" style="min-height:40px"><span class="verb">✓ Business process complete</span></div></div><p>${done?'Already placed. There can only be one.':'Where the document is approved. Steps below it still run after completion. Only one per definition.'}</p></div>`+
+      Object.entries(TYPES).map(([k,T])=>`<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`).join('')+
+      `<div class="pal-item"><div data-drag="newsplit" title="Drag onto the canvas"><div class="block shead" style="min-height:40px;width:auto"><span class="verb">Split into paths</span></div><div class="sfoot" style="padding:6px 14px 12px;width:auto">Paths rejoin</div></div><p>Branch cases off the default path. Each path has a condition rule that every step in it carries.</p></div>`+
       `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Steps inside share one order letter and run at the same time.</p></div>`+
     `</div>`;
   } else if(ptab==='groups'){
-    const f = groupFilter.trim().toLowerCase();
-    const names = [...new Set([...BASE_GROUPS, ...(wf.customGroups||[])])];
-    const cats = ['Special','Role','User'].map(k=>({k, names: (k==='Special' ? ['Initiator'] : names.filter(n=>groupKind(n)===k)).filter(n=>!f || n.toLowerCase().includes(f))}));
-    el.innerHTML = `<div class="pal-list"><input class="search" id="g-search" type="text" placeholder="Search groups" value="${esc(groupFilter)}">`+
+    const f = groupFilter.trim().toLowerCase(), names = groupsForBP();
+    const cats = ['Special','Role','User'].map(k=>({k, names:(k==='Special' ? ['Initiator'] : names.filter(n=>groupKind(n)===k)).filter(n=>!f || n.toLowerCase().includes(f))}));
+    el.innerHTML = `<div class="pal-list"><input class="search" id="g-search" type="text" placeholder="Search ${esc(wf.bp)} groups" value="${esc(groupFilter)}">`+
       cats.map(c=> c.names.length ? `<div class="pal-group"><h3>${KIND_LABEL[c.k]}</h3><div class="pills">${c.names.map(n=>`<span class="pill" data-drag="group" data-name="${esc(n)}">${esc(n)}</span>`).join('')}</div></div>` : '').join('')+
       `<div class="pal-group"><h3>Add a client-specific group</h3><div class="addrow"><input id="g-new" type="text" placeholder="e.g. CFO Approver"><button class="btn" id="g-add">Add</button></div></div>`+
-      `<p class="tip">Groups with "admin" in the name are user-based. Everything else is role-based (constrained).</p></div>`;
+      `<p class="tip">Groups for ${esc(wf.bp)}. Anything with "admin" in the name is user-based; everything else is role-based (constrained).</p></div>`;
   } else {
     el.innerHTML = `<div class="pal-list"><div class="pills">`+
       ruleLibrary().map(c=>`<span class="pill hexp" data-drag="rule" data-label="${esc(c)}" title="${esc(c)}"><span class="tr">${esc(shortRule(c))}</span></span>`).join('')+
       `</div><div class="pal-group"><h3>New condition rule</h3><div class="addrow"><input id="c-new" type="text" placeholder="e.g. Company is Company B?"><button class="btn" id="c-add">Add</button></div></div>`+
-      `<p class="tip">Drop a rule on a step to make that one step conditional. Drop it on a path header to set the path's condition, and every step in the path carries it.</p></div>`;
+      `<p class="tip">Drop a rule on a step to make that one step conditional. Drop it on a path header to set the path's condition.</p></div>`;
   }
 }
 
-/* ---------- Inspector ---------- */
+/* ---------- Right pane: recommendations when nothing is selected, details otherwise ---------- */
+function recPresent(item){ const key = c => c.filter(x=>!wf.items.some(i=>i.kind==='split' && i.lanes.some(l=>l.rule===x))).sort().join('|'); return allSteps().some(s=>s.type===item.type && s.specify===item.specify && s.groups.join('|')===item.groups.join('|') && key(effectiveConds(s))===key(item.conds)); }
+function recList(){
+  const out = [];
+  if(!hasCompletion()) out.push({key:'__comp', why:'Marks where the document is approved. Steps placed below it still run after completion.', comp:true});
+  bpCat().recs.forEach(r=>{ const it = r.make(); if(!recPresent(it)) out.push({...r, sample:it}); });
+  return out;
+}
+function recBlockHTML(r){
+  if(r.comp) return `<div data-drag="rec" data-rec="${r.key}"><div class="block compl"><span class="verb">✓ Business process complete</span></div></div>`;
+  const s = r.sample, T = TYPES[s.type];
+  return `<div data-drag="rec" data-rec="${r.key}"><div class="block" style="--c:${T.color}">${s.conds.length?`<span class="hex" title="${esc(s.conds.join('\n'))}"><i>if</i><span class="tr">${esc(shortRule(s.conds[0]))}${s.conds.length>1?' +'+(s.conds.length-1):''}</span></span>`:''}<span class="verb">${T.label}</span>${s.specify?`<span class="spec">${esc(s.specify)}</span>`:''}${s.groups.length?`<span class="by">by</span><span class="gp" style="padding-right:10px">${esc(s.groups.join(', '))}</span>`:''}</div></div>`;
+}
+function renderRecs(el){
+  const recs = recList(), c = bpCat();
+  el.innerHTML = `<div class="ins"><div class="sec"><span class="lbl">Recommended for ${esc(wf.bp)}</span>`+
+    (recs.length ? `<div class="recs">${recs.map(r=>`<div class="rec">${recBlockHTML(r)}<p>${esc(r.why)}</p><div class="rr"><small>Drag onto the canvas or</small><button class="btn sm" data-recadd="${r.key}">Add</button></div></div>`).join('')}</div>`
+      : `<div class="rec-empty">${c.loaded ? 'Everything recommended for this process is already on the canvas.' : `Recommendations for ${esc(wf.bp)} aren't loaded yet.`}</div>`)+`</div>`+
+    `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div>`+
+    `<div class="sec"><span class="lbl">Shortcuts</span><div class="shortcuts">Hover a block for <b>Copy</b> and <b>Delete</b><br><span class="kbd">Del</span> delete selected · <span class="kbd">Ctrl/⌘ D</span> duplicate<br><span class="kbd">Ctrl/⌘ C</span> <span class="kbd">V</span> copy and paste · <span class="kbd">Alt</span>-drag drags a copy<br><span class="kbd">Ctrl/⌘ Z</span> undo · <span class="kbd">Ctrl/⌘ S</span> save</div></div></div>`;
+}
 function groupSelect(id){
-  const names = [...new Set([...BASE_GROUPS, ...(wf.customGroups||[])])];
+  const names = groupsForBP();
   return `<select id="${id}"><option value="">Add a security group…</option><optgroup label="Special"><option>Initiator</option></optgroup>`+
     ['Role','User'].map(k=>`<optgroup label="${KIND_LABEL[k]}">${names.filter(n=>groupKind(n)===k).map(n=>`<option>${esc(n)}</option>`).join('')}</optgroup>`).join('')+`</select>`;
 }
 function ruleSelect(id, exclude){
   return `<select id="${id}"><option value="">Pick a condition rule…</option>${ruleLibrary().filter(r=>!exclude.includes(r)).map(r=>`<option value="${esc(r)}">${esc(trunc(r,70))}</option>`).join('')}</select>`;
 }
+function specField(it, T){
+  const tasks = tasksFor(it.type);
+  if(!tasks){
+    const req = T.spec==='required' && !it.specify.trim();
+    return `<div class="sec"><label for="s-spec">Specify${T.spec==='required'?' (required)':''}</label><input id="s-spec" type="text" value="${esc(it.specify)}" class="${req?'req':''}" placeholder="${it.type==='todo'?'What the person needs to do, e.g. Attach the signed W-9':'Usually blank for this type'}">${req?`<p class="req-note">To Do steps need text here. It's the instruction the person sees.</p>`:''}</div>`;
+  }
+  const inList = tasks.some(t=>t.name===it.specify), custom = customSpec.has(it.id) || (it.specify && !inList);
+  const picked = tasks.find(t=>t.name===it.specify);
+  return `<div class="sec"><label for="s-spec-sel">Specify (${T.label.toLowerCase()} task for ${esc(wf.bp)})</label>`+
+    `<select id="s-spec-sel" class="${!it.specify && !custom?'req':''}"><option value="">Pick a task…</option>${tasks.map(t=>`<option${t.name===it.specify?' selected':''}>${esc(t.name)}</option>`).join('')}<option value="__custom"${custom?' selected':''}>Custom task…</option></select>`+
+    (custom ? `<input id="s-spec" type="text" value="${esc(it.specify)}" placeholder="Task name">` : '')+
+    (!tasks.length ? `<p class="help">No ${T.label.toLowerCase()} tasks are loaded for ${esc(wf.bp)} yet, so type a custom one.</p>` : '')+
+    (picked && picked.desc ? `<p class="help">${esc(picked.desc)}</p>` : '')+`</div>`;
+}
 function renderInspector(){
   const el = $('#inspector'), om = orderMap();
+  const showRecs = !sel || (!find(sel) && !findLane(sel) && sel!=='init');
+  $('#pane-title').textContent = showRecs ? 'Recommended' : 'Step details';
+  $('#b-recs').hidden = showRecs;
+  if(showRecs){ sel = null; renderRecs(el); return; }
   if(sel==='init'){
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${INIT_COLOR}"></span><h3>Step a · Initiation</h3></div>`+
       `<p class="help">Initiation is always step a. Who can start ${esc(wf.bp||'the business process')} comes from the business process security policy.</p>`+
       `<div class="sec"><label for="i-note">Design notes</label><textarea id="i-note" placeholder="Entry points, open questions">${esc(wf.init.note)}</textarea></div></div>`;
     return;
   }
-  if(sel && sel.startsWith('lane:')){
-    const f = findLane(sel); if(!f){ sel = null; return renderInspector(); }
-    const l = f.lane;
+  if(sel.startsWith('lane:')){
+    const f = findLane(sel), l = f.lane;
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Path: ${esc(l.name||'Unnamed')}</h3></div>`+
-      `<p class="help">Every step in this path carries its condition rule. It's combined with each step's own conditions in the If column.</p>`+
+      `<p class="help">Every step in this path carries its condition rule. It's listed first in each step's If column.</p>`+
       `<div class="sec"><label for="l-name">Path name</label><input id="l-name" type="text" value="${esc(l.name)}" placeholder="e.g. Company B"></div>`+
-      `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}">${l.rule?'':'<p class="req-note">A path needs a rule, otherwise its steps run for every case.</p>'}${ruleSelect('l-pick', [l.rule])}</div>`+
+      `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}"><p class="req-note" id="l-rule-note"${l.rule?' hidden':''}>A path needs a rule, otherwise its steps run for every case.</p>${ruleSelect('l-pick', [l.rule])}</div>`+
       `<p class="help">${l.steps.length} step${l.steps.length===1?'':'s'} in this path.</p>`+
       `<div class="row"><button class="btn" data-addlane="${f.split.id}">Add another path</button><button class="btn danger" data-rmlane="${l.id}">Remove path</button></div></div>`;
     return;
   }
-  const f = sel && find(sel);
-  if(!f){
-    el.innerHTML = `<div class="empty-ins"><p class="help">Select a block to edit it.</p><ol>`+
-      `<li>Start from the populated Supplier Invoice example, a blank definition, or an imported definition export (<b>New</b>).</li><li>Drag steps into order. Mark a step as a sub-step to number it like a1.</li><li>Use <b>Split into paths</b> for cases like Company A vs Company B. Steps in a path carry its condition.</li><li>Review the <b>Definition</b> tab, then export.</li></ol>`+
-      `<p class="help"><span class="kbd">Ctrl/⌘ D</span> duplicates, <span class="kbd">Ctrl/⌘ C</span> / <span class="kbd">V</span> copy and paste, <span class="kbd">Alt</span>-drag drags a copy, <span class="kbd">Del</span> removes, <span class="kbd">Ctrl/⌘ Z</span> undoes.</p>`+
-      `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div></div>`;
+  const f = find(sel), it = f.item;
+  if(it.kind==='complete'){
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${DONE_COLOR}"></span><h3>Business process complete</h3></div>`+
+      `<p class="help">Everything above this block finishes before the document is approved and the business process completes. Steps below it still run afterward, like asset registration. In the export, the step right above it gets Complete = Yes.</p>`+
+      `<p class="help">There can only be one per definition, and it sits on the main line.</p>`+
+      `<div class="row"><button class="btn danger" data-del="${it.id}">Delete</button></div></div>`;
     return;
   }
-  const it = f.item;
   if(it.kind==='par' || it.kind==='split'){
     const isSplit = it.kind==='split';
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${isSplit?SPLIT_COLOR:PAR_COLOR}"></span><h3>${isSplit?'Split into paths':'Step '+om[it.id]+' · Parallel'}</h3></div>`+
-      (isSplit ? `<p class="help">${it.lanes.length} path${it.lanes.length===1?'':'s'} plus the default path. Each case starts at this block and rejoins below it. Click a path header to set its name and condition rule.</p>`+
+      (isSplit ? `<p class="help">${it.lanes.length} path${it.lanes.length===1?'':'s'} branch off the default path, which runs down the middle. Every case starts at this block and rejoins below it. Click a path header to set its name and rule.</p>`+
         `<div class="row"><button class="btn" data-addlane="${it.id}">Add path</button><button class="btn" data-copy="${it.id}">Duplicate</button></div>`+
-        `<div class="row"><button class="btn" id="sp-ungroup" title="Steps move to the main line and keep their path rule as their own condition">Remove split, keep steps</button><button class="btn danger" id="p-del">Delete split and steps</button></div>`
-      : `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} share order ${om[it.id]} and run at the same time.</p><div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn danger" id="p-del">Delete</button></div>`)+`</div>`;
+        `<div class="row"><button class="btn" id="sp-ungroup" title="Steps move to the main line and keep their path rule as their own condition">Remove split, keep steps</button><button class="btn danger" data-del="${it.id}">Delete split and steps</button></div>`
+      : `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} share order ${om[it.id]} and run at the same time.</p><div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn danger" data-del="${it.id}">Delete</button></div>`)+`</div>`;
     return;
   }
   const T = TYPES[it.type], lane = f.lane;
-  const cat = TASK_CATALOG[it.type];
-  const catItem = cat && cat.find(c=>c.name===it.specify);
-  const specReq = T.spec==='required' && !it.specify.trim();
   el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${T.color}"></span><h3>Step ${om[it.id]} · ${T.label}</h3></div>`+
     `<div class="grid2"><div class="sec"><label for="s-type">Type</label><select id="s-type">${Object.entries(TYPES).map(([k,t])=>`<option value="${k}"${k===it.type?' selected':''}>${t.label}</option>`).join('')}</select></div>`+
       `<div class="sec"><label for="s-due">Due date</label><input id="s-due" type="text" value="${esc(it.due)}" placeholder="e.g. 2 Days"></div></div>`+
     `<p class="help" style="margin-top:-8px">${T.desc}</p>`+
-    `<div class="sec"><label for="s-spec">Specify${T.spec==='required'?' (required)':''}</label><input id="s-spec" type="text" value="${esc(it.specify)}"${cat?` list="dl-${it.type}"`:''} class="${specReq?'req':''}" placeholder="${it.type==='todo'?'What the person needs to do, e.g. Attach the signed W-9':cat?'Pick or type a task':'Usually blank for this type'}">`+
-      (specReq ? `<p class="req-note">To Do steps need text here. It's the instruction the person sees.</p>` : '')+
-      (catItem && catItem.desc ? `<p class="help">${esc(catItem.desc)}</p>` : '')+`</div>`+
+    specField(it, T)+
     (it.type!=='service' ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${groupKind(g)==='User'?'<small>user</small>':''}${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('s-addgroup')}</div>` : '')+
     `<div class="sec"><span class="lbl">If (conditions)</span>`+
       (lane ? `<div class="crow inh"><div class="ct">${esc(lane.rule || 'Path has no rule yet')}</div><div class="cm">From path "${esc(lane.name||'Unnamed')}". Move the step out of the path to drop it.</div></div>` : '')+
@@ -644,23 +748,23 @@ function renderInspector(){
       ruleSelect('s-addcond', it.conds)+
       `<div class="addrow"><input id="s-cond-new" type="text" placeholder="Or type a new rule"><button class="btn" id="s-cond-set">Add</button></div></div>`+
     `<div class="sec"><span class="lbl">Routing restrictions (Additional Information)</span><div class="checks-col">`+
-      ['Initiator','Approvers'].map(r=>`<label class="check-row"><input type="checkbox" data-restr="${r}"${it.restr.includes(r)?' checked':''}> Exclude ${r.toLowerCase()}</label>`).join('')+`</div></div>`+
+      RESTR.map(r=>`<label class="check-row"><input type="checkbox" data-restr="${r}"${it.restr.includes(r)?' checked':''}> Exclude ${r.toLowerCase()}</label>`).join('')+`</div></div>`+
     `<div class="sec"><span class="lbl">Options</span><div class="checks-col">`+
       `<label class="check-row"><input type="checkbox" data-opt="all"${it.all?' checked':''}> All (every group member must act)</label>`+
       `<label class="check-row"><input type="checkbox" data-opt="optional"${it.optional?' checked':''}> Optional</label>`+
       `<label class="check-row"><input type="checkbox" data-opt="doNotAdvance"${it.doNotAdvance?' checked':''}> Do not advance</label>`+
-      `<label class="check-row"><input type="checkbox" data-opt="complete"${it.complete?' checked':''}> Complete (BP completes after this step; later steps still run)</label>`+
       (f.par ? '' : `<label class="check-row"><input type="checkbox" data-opt="sub"${it.sub?' checked':''}> Number as sub-step (e.g. a1)</label>`)+
     `</div></div>`+
     `<div class="grid2"><div class="sec"><label for="s-mod">Routing modifier</label><input id="s-mod" type="text" value="${esc(it.modifier)}"></div><div class="sec"><label for="s-runas">Run as user</label><input id="s-runas" type="text" value="${esc(it.runAs)}"></div></div>`+
     `<div class="sec"><label for="s-note">Design notes</label><textarea id="s-note" placeholder="Client decisions, thresholds, open questions">${esc(it.note)}</textarea></div>`+
-    `<div class="row"><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn" id="s-copy">Copy</button><button class="btn danger" id="s-del">Delete step</button></div></div>`;
+    `<div class="row"><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn" id="s-copy">Copy</button><button class="btn danger" data-del="${it.id}">Delete step</button></div></div>`;
 }
 
 /* ---------- Checks ---------- */
 function runChecks(){
   const out = [], om = orderMap(), steps = allSteps();
-  if(!wf.items.length) out.push({sev:'warn', id:null, msg:'No steps after initiation. The transaction would complete on submit.'});
+  if(!steps.length) out.push({sev:'warn', id:null, msg:'No steps after initiation. The transaction would complete on submit.'});
+  if(!hasCompletion() && steps.length) out.push({sev:'warn', id:null, msg:'No completion block yet. Add one to show where the document is approved.'});
   walk((it)=>{
     if(it.kind==='par' && it.steps.length<2) out.push({sev:'warn', id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs two or more.`});
     if(it.kind==='split') it.lanes.forEach(l=>{
@@ -669,45 +773,47 @@ function runChecks(){
     });
   });
   steps.forEach(s=>{
-    const L = om[s.id], T = TYPES[s.type];
+    const L = om[s.id], T = TYPES[s.type], tasks = tasksFor(s.type);
     if(s.type==='todo' && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> To Do needs text in Specify. That's the instruction the person sees.`});
-    else if((T.spec==='catalog' || s.type==='integration') && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has nothing in Specify.`});
+    else if((T.spec==='catalog' || s.type==='integration') && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has no task picked in Specify.`});
+    else if(tasks && tasks.length && s.specify && !tasks.some(t=>t.name===s.specify)) out.push({sev:'info', id:s.id, msg:`<b>${L}</b> "${esc(s.specify)}" isn't in the ${esc(wf.bp)} task list.`});
     if(s.type!=='service' && !s.groups.length) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} has no security group.`});
     if((s.type==='chain'||s.type==='cchain') && s.groups.some(g=>groupKind(g)!=='Role')) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Approval chains walk a hierarchy, so they need a role-based group.`});
   });
-  const done = steps.filter(s=>s.complete);
-  if(done.length>1) out.push({sev:'warn', id:done[1].id, msg:`${done.map(s=>'<b>'+om[s.id]+'</b>').join(', ')} are all marked Complete. Only the first one completes the BP.`});
   steps.forEach(s=>s.conds.forEach(c=>out.push({sev:'info', id:s.id, msg:`<b>${om[s.id]}</b> only runs if "${esc(shortRule(c))}". When it's false the step is skipped.`})));
   return out;
 }
 function checksHTML(list){
   const warn = list.filter(c=>c.sev==='warn'), info = list.filter(c=>c.sev==='info');
-  const li = c => `<li class="${c.sev==='info'?'info':''}" data-goto="${c.id||''}"><span>${c.msg}</span></li>`;
+  const li = c => `<li class="${c.sev==='info'?'info':''}" data-goto="${c.id||''}">${c.msg}</li>`;
   return (warn.length ? `<ul class="checks">${warn.map(li).join('')}</ul>` : `<ul class="checks"><li class="ok">No issues to fix.</li></ul>`)+
-    (info.length ? `<details class="infos"><summary>${info.length} step-level condition${info.length===1?'':'s'} (step skipped when false)</summary><ul class="checks">${info.map(li).join('')}</ul></details>` : '');
+    (info.length ? `<details class="infos"><summary>${info.length} note${info.length===1?'':'s'} (mostly step-level conditions)</summary><ul class="checks">${info.map(li).join('')}</ul></details>` : '');
 }
 
 /* ---------- Definition rows (table, Excel, PDF) ---------- */
 function defRows(){
   const om = orderMap(), bp = wf.bp || 'Business Process', def = wf.def || 'Default Definition';
   const rows = [{id:'init', order:'a', ifs:'', type:'Initiation', specify:'', optional:'No', groups:'', addl:'', modifier:'', all:'', runAs:'', due:'', dna:'No', complete:'', note:wf.init.note, color:INIT_COLOR, path:'', step:`${bp} (${def}) step a - Initiation`}];
-  let after = false;
+  let after = false, last = rows[0];
   walk((s, list, i, ctx)=>{
+    if(s.kind==='complete'){ last.complete = 'Yes'; rows.push({cmp:true, id:s.id}); after = true; return; }
     if(s.kind!=='step') return;
     const T = TYPES[s.type], L = om[s.id];
-    rows.push({id:s.id, order:L, ifs:effectiveConds(s).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
+    last = {id:s.id, order:L, ifs:effectiveConds(s).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
       groups:s.groups.join('\n'), addl:s.restr.length?'Restriction: '+s.restr.join(', '):'', modifier:s.modifier, all:s.all?'Yes':'', runAs:s.runAs, due:s.due,
-      dna:s.doNotAdvance?'Yes':'No', complete:s.complete?'Yes':'', note:s.note, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
-      step:`${bp} (${def}) step ${L} - ${T.label}${s.type==='service'&&s.specify?' ['+s.specify+']':''}`});
-    if(s.complete) after = true;
+      dna:s.doNotAdvance?'Yes':'No', complete:'', note:s.note, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
+      step:`${bp} (${def}) step ${L} - ${T.label}${s.type==='service'&&s.specify?' ['+s.specify+']':''}`};
+    rows.push(last);
   });
   return rows;
 }
+const stepRows = () => defRows().filter(r=>!r.cmp);
 function renderConfig(){
   const rows = defRows();
   $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Steps in a path list the path's rule first in the If column. Greyed rows run after the business process completes. Click a row to edit that step.</p></div>`+
     `<div class="tbl-wrap"><table class="def"><thead><tr><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
-    rows.map(r=>`<tr data-goto="${r.id}" class="${r.after?'after':''}" title="${r.after?'Runs after the business process completes':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="12">✓ Business process completes here. Steps below still run.</td></tr>` :
+      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
     `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
 }
 
@@ -722,7 +828,13 @@ function renderStatus(){
   else { el.textContent = savedAt ? 'Saved ' + timeAgo(savedAt) : ''; el.className = 'status'; }
   $('#b-undo').disabled = !hist.length;
 }
-function renderMeta(){ [['f-name','name'],['f-client','client'],['f-bp','bp'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; }); }
+function renderMeta(){
+  [['f-name','name'],['f-client','client'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; });
+  const known = !!BP_CATALOG[wf.bp];
+  $('#f-bp').innerHTML = Object.keys(BP_CATALOG).map(n=>`<option${n===wf.bp?' selected':''}>${esc(n)}</option>`).join('') + `<option value="__other"${known?'':' selected'}>Other process…</option>`;
+  $('#f-bp-other').hidden = known;
+  if(!known && document.activeElement !== $('#f-bp-other')) $('#f-bp-other').value = wf.bp || '';
+}
 function renderView(){
   document.querySelectorAll('.ctab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.view===view)));
   $('#v-build').hidden = view!=='build'; $('#v-config').hidden = view!=='config';
@@ -736,17 +848,22 @@ function change(fn, keepInspector){ snapshot(); fn(); markDirty(); renderAll(kee
 function stepOf(id){ const f = id && find(id); return f && f.item.kind==='step' ? f.item : null; }
 function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(s.type==='service'){ toast('Service steps run as the system, so they take no group'); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
 function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
-function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else x.conds = x.conds.filter(c=>c!==text); }
+function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else if(x.conds) x.conds = x.conds.filter(c=>c!==text); }
 function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
-function removeItem(id){ const f = find(id); if(!f) return; change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); toast('Removed', 'Undo', undo); }
+function removeItem(id){
+  const f = find(id); if(!f) return;
+  const label = f.item.kind==='complete' ? 'Completion block' : f.item.kind==='split' ? 'Split' : 'Step';
+  change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); renderPalette(); toast(`${label} deleted`, 'Undo', undo);
+}
 function duplicate(id){
   const f = find(id); if(!f) return;
-  const c = withNewIds(f.item); if(c.kind==='step') c.complete = false;
+  if(f.item.kind==='complete'){ toast('There can only be one completion block'); return; }
+  const c = withNewIds(f.item);
   change(()=>{ f.list.splice(f.index+1, 0, c); sel = c.id; }); toast('Duplicated');
 }
 function pasteClip(){
   if(!clip){ toast('Nothing copied yet'); return; }
-  const c = withNewIds(clip); if(c.kind==='step') c.complete = false;
+  const c = withNewIds(clip);
   let list = wf.items, idx = wf.items.length;
   const f = sel && find(sel), l = sel && sel.startsWith('lane:') && findLane(sel);
   if(f){
@@ -756,12 +873,28 @@ function pasteClip(){
   } else if(l && c.kind!=='split'){ list = l.lane.steps; idx = list.length; }
   change(()=>{ list.splice(idx, 0, c); sel = c.id; }); toast('Pasted');
 }
+function insertBeforeCompletion(item){
+  const ci = wf.items.findIndex(i=>i.kind==='complete');
+  return ci<0 ? wf.items.length : ci;
+}
+function addRec(key){
+  const r = recList().find(x=>x.key===key); if(!r) return;
+  if(r.comp){ const c = Comp(); change(()=>{ wf.items.push(c); sel = c.id; }); renderPalette(); toast('Completion block added'); return; }
+  const it = r.make();
+  change(()=>{ const idx = r.after ? wf.items.length : insertBeforeCompletion(); wf.items.splice(idx, 0, it); sel = it.id; });
+  toast('Added. Drag it to adjust the order.');
+}
+function setBP(name){
+  if(!name || name===wf.bp) return;
+  change(()=>{ wf.bp = name; }); renderPalette();
+  if(!BP_CATALOG[name] || !BP_CATALOG[name].loaded) toast(`Task list for ${name} isn't loaded yet. Custom tasks still work.`);
+}
 
 /* ---------- Drag and drop (pointer events: mouse, pen and touch). Alt/Option-drag copies. ---------- */
 let drag = null, justDragged = 0;
 document.addEventListener('pointerdown', e=>{
   if(e.button!==0) return;
-  if(e.target.closest('.x, .cp, input, select, textarea, a, .btn, .lane-head')) return;
+  if(e.target.closest('.x, .tools, input, select, textarea, a, .btn, .lane-head')) return;
   const src = e.target.closest('[data-drag]'); if(!src) return;
   if(src.classList.contains('split') && e.target.closest('.lanes-row')) return;
   drag = {src, x0:e.clientX, y0:e.clientY, started:false, copy:e.altKey};
@@ -780,18 +913,20 @@ function startDrag(e){
   let ghostHTML;
   if(kind==='block'){
     const id = src.dataset.id, f = find(id); if(!f){ drag=null; return; }
-    if(drag.copy){
-      const c = withNewIds(f.item); if(c.kind==='step') c.complete = false;
-      drag.payload = {kind:'item', item:c, isMove:false};
+    if(drag.copy && f.item.kind!=='complete'){
+      drag.payload = {kind:'item', item:withNewIds(f.item), isMove:false};
     } else {
-      snapshot();
+      drag.copy = false; snapshot();
       drag.payload = {kind:'item', item:f.item, fromList:f.par?'par:'+f.par.id:f.lane?'lane:'+f.lane.id:'root', fromIndex:f.index, isMove:true};
       f.list.splice(f.index,1); sel = id; renderBuild();
     }
     ghostHTML = src.outerHTML;
-  } else if(kind==='new' || kind==='newpar' || kind==='newsplit'){
-    const item = kind==='new' ? S(src.dataset.type) : kind==='newpar' ? P([]) : Split();
+  } else if(kind==='new' || kind==='newpar' || kind==='newsplit' || kind==='newcomp'){
+    const item = kind==='new' ? S(src.dataset.type) : kind==='newpar' ? P([]) : kind==='newsplit' ? Split() : Comp();
     drag.payload = {kind:'item', item, isMove:false}; ghostHTML = itemHTML(item, {});
+  } else if(kind==='rec'){
+    const r = recList().find(x=>x.key===src.dataset.rec); if(!r){ drag=null; return; }
+    drag.payload = {kind:'item', item: r.comp ? Comp() : r.make(), isMove:false}; ghostHTML = src.outerHTML;
   } else {
     drag.payload = {kind, value: src.dataset.name || src.dataset.label}; ghostHTML = src.outerHTML;
   }
@@ -809,10 +944,10 @@ function computeTarget(x,y){
   let best = null, bestArea = Infinity;
   document.querySelectorAll('#script .stack').forEach(st=>{
     const key = st.dataset.list, root = key==='root';
-    if(k==='split' && !root) return;
+    if((k==='split' || k==='complete') && !root) return;
     if(k==='par' && key.startsWith('par:')) return;
     const r = st.getBoundingClientRect();
-    const padX = root ? 600 : 8, padY = root ? 2000 : 8;
+    const padX = root ? 900 : 8, padY = root ? 3000 : 8;
     if(x>=r.left-padX && x<=r.right+padX && y>=r.top-padY && y<=r.bottom+padY){
       const area = r.width*r.height + (root ? 1e9 : 0); if(area<bestArea){ bestArea = area; best = st; }
     }
@@ -829,7 +964,7 @@ function pillTarget(x,y){
   if(!el) return null;
   if(drag.payload.kind==='rule'){ const lh = el.closest('.lane-head[data-lanesel]'); if(lh) return lh.closest('.lane'); }
   const bw = el.closest('#script .bw');
-  if(!bw || bw.classList.contains('par') || bw.classList.contains('split') || bw.dataset.id==='init') return null;
+  if(!bw || !stepOf(bw.dataset.id)) return null;
   return bw;
 }
 function moveDrag(e){
@@ -850,12 +985,13 @@ function endDrag(e){
   if(p.kind==='item'){
     const t = drag.target, onTrash = overPalette(x,y); finishDragUI();
     if(t){
+      if(!p.isMove && p.item.kind==='complete' && hasCompletion()){ toast('There can only be one completion block'); return; }
       const key = t.stack.dataset.list, list = listFor(key); if(!p.isMove) snapshot();
       if(key.startsWith('par:')) p.item.sub = false;
       if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(p.item, l.rule); }
-      list.splice(t.index, 0, p.item); sel = p.item.id; markDirty(); renderAll();
+      list.splice(t.index, 0, p.item); sel = p.item.id; markDirty(); renderAll(); renderPalette();
       if(drag.copy) toast('Copied');
-    } else if(p.isMove && onTrash){ if(sel===p.item.id) sel = null; markDirty(); renderAll(); toast('Removed', 'Undo', undo); }
+    } else if(p.isMove && onTrash){ if(sel===p.item.id) sel = null; markDirty(); renderAll(); renderPalette(); toast('Deleted', 'Undo', undo); }
     else if(p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(Math.min(p.fromIndex, list.length), 0, p.item); hist.pop(); renderAll(); }
   } else {
     const tg = drag.pillTarget; finishDragUI(); if(!tg) return;
@@ -869,7 +1005,10 @@ function cancelDrag(){ const p = drag.payload; finishDragUI(); if(p && p.kind===
 document.addEventListener('click', e=>{
   if(Date.now() - justDragged < 250) return;
   const t = e.target;
+  const del = t.closest('[data-del]'); if(del){ removeItem(del.dataset.del); return; }
   const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
+  const ra = t.closest('[data-recadd]'); if(ra){ addRec(ra.dataset.recadd); return; }
+  if(t.id==='b-recs'){ sel = null; renderBuild(); renderInspector(); return; }
   const x = t.closest('#script .x');
   if(x){
     if(x.dataset.rmlane){ removeLane(x.dataset.rmlane); return; }
@@ -884,7 +1023,8 @@ document.addEventListener('click', e=>{
   const pal = t.closest('#palette [data-drag]');
   if(pal){
     const k = pal.dataset.drag;
-    if(k==='new' || k==='newpar' || k==='newsplit'){ const it = k==='new' ? S(pal.dataset.type) : k==='newpar' ? P([]) : Split(); change(()=>{ wf.items.push(it); sel = it.kind==='split' ? 'lane:'+it.lanes[0].id : it.id; }); return; }
+    if(k==='newcomp'){ addRec('__comp'); return; }
+    if(k==='new' || k==='newpar' || k==='newsplit'){ const it = k==='new' ? S(pal.dataset.type) : k==='newpar' ? P([]) : Split(); change(()=>{ wf.items.splice(insertBeforeCompletion(), 0, it); sel = it.kind==='split' ? 'lane:'+it.lanes[0].id : it.id; }); return; }
     if(sel && sel.startsWith('lane:') && k==='rule'){ setLaneRule(sel, pal.dataset.label); return; }
     if(!stepOf(sel)){ toast('Select a step first, or drag the pill onto one'); return; }
     k==='group' ? addGroupTo(sel, pal.dataset.name) : addRule(sel, pal.dataset.label); return;
@@ -901,14 +1041,10 @@ document.addEventListener('click', e=>{
     const f = find(sel);
     change(()=>{
       const out = [];
-      f.item.lanes.forEach(l=>{
-        const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); };
-        l.steps.forEach(carry); out.push(...l.steps);
-      });
+      f.item.lanes.forEach(l=>{ const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); }; l.steps.forEach(carry); out.push(...l.steps); });
       f.list.splice(f.index, 1, ...out); sel = null;
     }); return;
   }
-  if(t.id==='p-del' || t.id==='s-del'){ removeItem(sel); return; }
   if(t.id==='s-copy'){ const f = find(sel); clip = clone(f.item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); return; }
   if(t.dataset.grm!==undefined){ const s = stepOf(sel); change(()=>s.groups.splice(+t.dataset.grm,1)); return; }
   if(t.dataset.crm!==undefined){ const s = stepOf(sel); change(()=>s.conds.splice(+t.dataset.crm,1)); return; }
@@ -926,17 +1062,19 @@ function removeLane(id){
 }
 function addCustomGroup(){
   const v = $('#g-new').value.trim(); if(!v) return;
-  if(BASE_GROUPS.includes(v) || v==='Initiator' || wf.customGroups.includes(v)){ toast('That group is already in the list'); return; }
+  if(groupsForBP().includes(v) || v==='Initiator'){ toast('That group is already in the list'); return; }
   change(()=>wf.customGroups.push(v), true); renderPalette(); toast(`Added as ${KIND_LABEL[groupKind(v)].toLowerCase()}`);
 }
 document.addEventListener('change', e=>{
   const t = e.target, s = stepOf(sel);
-  if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(s.type==='service') s.groups = []; }); }
+  if(t.id==='f-bp'){ if(t.value==='__other'){ $('#f-bp-other').hidden = false; $('#f-bp-other').focus(); } else setBP(t.value); }
+  else if(t.id==='f-bp-other'){ setBP(t.value.trim()); }
+  else if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(s.type==='service') s.groups = []; }); }
+  else if(t.id==='s-spec-sel'){ if(t.value==='__custom'){ customSpec.add(s.id); change(()=>{ s.specify=''; }); setTimeout(()=>$('#s-spec') && $('#s-spec').focus(), 0); } else { customSpec.delete(s.id); change(()=>{ s.specify = t.value; }); } }
   else if(t.id==='s-addgroup' && t.value){ addGroupTo(sel, t.value); }
   else if(t.id==='s-addcond' && t.value){ addRule(sel, t.value); }
   else if(t.id==='l-pick' && t.value){ setLaneRule(sel, t.value); }
-  else if(t.id==='s-spec'){ renderInspector(); }
-  else if(t.dataset.restr && s){ const r = t.dataset.restr; change(()=>{ s.restr = t.checked ? ['Initiator','Approvers'].filter(x=>x===r || s.restr.includes(x)) : s.restr.filter(x=>x!==r); }); }
+  else if(t.dataset.restr && s){ const r = t.dataset.restr; change(()=>{ s.restr = t.checked ? RESTR.filter(x=>x===r || s.restr.includes(x)) : s.restr.filter(x=>x!==r); }); }
   else if(t.dataset.opt && s){ change(()=>s[t.dataset.opt] = t.checked); }
 });
 let typingSnap = false;
@@ -944,14 +1082,13 @@ document.addEventListener('focusin', e=>{ if(e.target.matches('input[type=text],
 document.addEventListener('input', e=>{
   const t = e.target, s = stepOf(sel), lf = sel && sel.startsWith('lane:') && findLane(sel);
   const map = {'s-spec':v=>s.specify=v, 's-due':v=>s.due=v, 's-mod':v=>s.modifier=v, 's-runas':v=>s.runAs=v, 's-note':v=>s.note=v, 'i-note':v=>wf.init.note=v,
-    'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v,
-    'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-bp':v=>wf.bp=v, 'f-def':v=>wf.def=v};
+    'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v, 'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-def':v=>wf.def=v};
   const ok = t.id.startsWith('s-') ? !!s : t.id.startsWith('l-') ? !!lf : true;
   if(map[t.id] && ok){
     if(!typingSnap){ snapshot(); typingSnap = true; }
     map[t.id](t.value); markDirty(); renderBuild(); renderBadges(); if(view!=='build') renderView();
-    if(t.id==='s-spec') t.classList.toggle('req', s.type==='todo' && !t.value.trim());
-    if(t.id==='l-rule') t.classList.toggle('req', !t.value.trim());
+    if(t.id==='s-spec' && s.type==='todo') t.classList.toggle('req', !t.value.trim());
+    if(t.id==='l-rule'){ t.classList.toggle('req', !t.value.trim()); $('#l-rule-note').hidden = !!t.value.trim(); }
   }
   if(t.id==='g-search'){ groupFilter = t.value; renderPalette(); const g = $('#g-search'); g.focus(); g.setSelectionRange(g.value.length, g.value.length); }
 });
@@ -961,13 +1098,14 @@ document.addEventListener('keydown', e=>{
   if(mod && k==='z' && !typing){ e.preventDefault(); undo(); }
   else if(mod && k==='s'){ e.preventDefault(); saveDesign(); }
   else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); duplicate(sel); }
-  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
+  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ if(find(sel).item.kind==='complete'){ toast('There can only be one completion block'); return; } clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
   else if(mod && k==='v' && !typing && clip){ e.preventDefault(); pasteClip(); }
   else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); sel.startsWith('lane:') ? removeLane(sel) : removeItem(sel); }
-  else if(e.key==='Escape' && drag && drag.started){ cancelDrag(); drag=null; }
+  else if(e.key==='Escape'){ if(drag && drag.started){ cancelDrag(); drag=null; } else if(sel){ sel = null; renderBuild(); renderInspector(); } }
   else if(e.key==='Enter' && e.target.id==='g-new') addCustomGroup();
   else if(e.key==='Enter' && e.target.id==='c-new') $('#c-add').click();
   else if(e.key==='Enter' && e.target.id==='s-cond-new') $('#s-cond-set').click();
+  else if(e.key==='Enter' && e.target.id==='f-bp-other') e.target.blur();
 });
 
 /* ---------- Save / open / import ---------- */
@@ -979,46 +1117,54 @@ function saveDesign(){
   const rec = {id:docId, name:wf.name, client:wf.client, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
   const i = list.findIndex(d=>d.id===docId); i>=0 ? list.splice(i,1,rec) : list.unshift(rec);
   if(!store.set('bpws2.designs', list)){ toast('Your browser blocked local saving. Use Export › Design file instead.'); return; }
-  dirty = false; savedAt = rec.updatedAt; store.set('bpws3.draft', {wf, docId, dirty:false, savedAt});
+  dirty = false; savedAt = rec.updatedAt; store.set('bpws4.draft', {wf, docId, dirty:false, savedAt});
   renderMeta(); renderStatus(); toast('Saved to this browser');
 }
-/* Older design files (v1, v2) load with their conditions as step-level rules */
+/* Older design files load too: v1/v2 conditions become step rules, and a step marked Complete becomes a completion block after it */
 function normalize(w){
-  const b = blankWf();
+  const b = blankWf(w.bp);
   const oldCond = (s, axes) => {
     if(Array.isArray(s.conds)) return s.conds.map(c=> typeof c==='string' ? c : c.t==='rule' ? c.text : (((axes||[]).find(a=>a.id===c.axis)||{outcomes:[]}).outcomes.find(o=>o.id===c.outcome)||{}).rule).filter(Boolean);
     return s.condition ? [s.condition] : [];
   };
+  let completeId = null;
   const fix = (it, axes) => {
+    if(it.kind==='complete') return {kind:'complete', id:it.id||uid()};
     if(it.kind==='par') return {kind:'par', id:it.id||uid(), steps:it.steps.map(s=>fix(s, axes))};
     if(it.kind==='split') return {kind:'split', id:it.id||uid(), lanes:it.lanes.map(l=>({id:l.id||uid(), name:l.name||'', rule:l.rule||'', steps:l.steps.map(s=>fix(s, axes))}))};
     const s = S(TYPES[it.type] ? it.type : 'action');
     Object.assign(s, it, {kind:'step', type:TYPES[it.type] ? it.type : 'action', conds:oldCond(it, axes), specify:it.specify ?? it.task ?? '', restr:Array.isArray(it.restr)?it.restr:[], groups:Array.isArray(it.groups)?it.groups:[]});
-    delete s.condition; delete s.task; delete s.restrictions;
+    if(it.complete && !completeId) completeId = s.id;
+    delete s.condition; delete s.task; delete s.restrictions; delete s.complete;
     return s;
   };
   const out = Object.assign(b, {name:w.name||'', client:w.client||'', bp:w.bp||b.bp, def:w.def||b.def, init:{note:(w.init&&w.init.note)||''},
     customGroups:w.customGroups||[], customRules:w.customRules||w.customConds||[]});
   out.items = (w.items||[]).map(it=>fix(it, w.axes));
+  if(completeId && !out.items.some(i=>i.kind==='complete')) placeCompletionAfter(out.items, completeId);
   return out;
 }
+function placeCompletionAfter(items, stepId){
+  const holds = it => it.id===stepId || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds));
+  const i = items.findIndex(holds); if(i>=0) items.splice(i+1, 0, Comp());
+}
 function loadWf(w, id, saved){
-  wf = normalize(clone(w)); docId = id || null; sel = null; hist = [];
-  dirty = !id; savedAt = saved || null; store.set('bpws3.draft', {wf, docId, dirty, savedAt});
+  wf = normalize(clone(w)); docId = id || null; sel = null; hist = []; customSpec.clear();
+  dirty = !id; savedAt = saved || null; store.set('bpws4.draft', {wf, docId, dirty, savedAt});
   renderAll(); renderPalette();
 }
 function openModal(title, html){ $('#modal-title').textContent = title; $('#modal-b').innerHTML = html; $('#modal').hidden = false; }
 function closeModal(){ $('#modal').hidden = true; }
 $('#modal-close').onclick = closeModal;
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
-function minis(w){ const cols=[INIT_COLOR]; const add = it => { if(it.kind==='par') it.steps.forEach(add); else if(it.kind==='split'){ cols.push(SPLIT_COLOR); it.lanes.forEach(l=>l.steps.forEach(add)); } else cols.push((TYPES[it.type]||TYPES.action).color); }; (w.items||[]).forEach(add); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
+function minis(w){ const cols=[INIT_COLOR]; const add = it => { if(it.kind==='par') it.steps.forEach(add); else if(it.kind==='split'){ cols.push(SPLIT_COLOR); it.lanes.forEach(l=>l.steps.forEach(add)); } else if(it.kind==='complete') cols.push(DONE_COLOR); else cols.push((TYPES[it.type]||TYPES.action).color); }; (w.items||[]).forEach(add); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
 
 function showNew(){
   const tpls = templates();
   openModal('Start a new definition',
     (dirty ? `<p class="help" style="color:var(--warn)">You have unsaved changes. Save first if you need them.</p>` : '')+
-    `<div class="cards"><button class="card" data-new="example"><b>Supplier Invoice Event: Default Definition</b>${minis(exampleWf())}<small>Populated example from the delivered default, with the Non-PO approvals (c to e) laid out as a path.</small></button>`+
-    `<button class="card" data-new="blank"><b>Blank Supplier Invoice Event</b>${minis(blankWf())}<small>Just Initiation. Build the client's definition from scratch.</small></button>`+
+    `<div class="cards"><button class="card" data-new="example"><b>Supplier Invoice Event: Default Definition</b>${minis(exampleWf())}<small>Populated example from the delivered default, with the Non-PO approvals laid out as a path.</small></button>`+
+    `<button class="card" data-new="blank"><b>Blank ${esc(wf.bp)}</b>${minis(blankWf())}<small>Just Initiation. Use the recommendations on the right to build it out.</small></button>`+
     `<button class="card" data-new="import"><b>Import a definition export</b><small>Workday BP definition .xlsx (Step, Order, If, Type, Specify, Group…) or a design .json.</small></button></div>`+
     `<h3>Your templates</h3>`+
     (tpls.length ? `<div class="list">${tpls.map(t=>`<div class="li"><div class="t"><b>${esc(t.name)}</b><small>${esc(t.bp||'')}</small></div>${minis(t.wf)}<button class="btn" data-new="t:${t.id}">Use</button><button class="btn danger" data-tdel="${t.id}">Delete</button></div>`).join('')}</div>`
@@ -1039,7 +1185,7 @@ $('#modal-b').addEventListener('click', e=>{
     const v = t.dataset.new;
     if(v==='import'){ $('#import-file').click(); return; }
     if(v==='example') loadWf(exampleWf());
-    else if(v==='blank') loadWf(blankWf());
+    else if(v==='blank') loadWf(blankWf(wf.bp));
     else { const tp = templates().find(x=>x.id===v.slice(2)); if(tp){ const w = clone(tp.wf); w.name=''; w.client=''; loadWf(w); } }
     closeModal(); toast('New definition ready'); return;
   }
@@ -1065,7 +1211,7 @@ $('#import-file').addEventListener('change', async e=>{
   }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that workbook." : "That file isn't a definition export or design file I can read."); }
 });
 
-/* Workday BP definition export -> design. Consecutive steps that share a rule become a path. */
+/* Workday BP definition export -> design. Consecutive steps that share a rule become a path; Complete = Yes becomes the completion block. */
 function importWorkbook(buf){
   const wb = XLSX.read(buf, {type:'array'});
   for(const name of wb.SheetNames){
@@ -1080,6 +1226,7 @@ function importWorkbook(buf){
     const m = firstStep.match(/^(.*?)\s*\(([^)]+)\)\s*step/i);
     if(m){ w.bp = m[1].trim(); w.def = m[2].trim(); } else { const sn = name.split('|'); w.bp = sn[0].trim(); w.def = (sn[1]||'Default').trim(); if(!/definition/i.test(w.def)) w.def += ' Definition'; }
     w.name = `${w.bp}: ${w.def}`;
+    const known = (BP_CATALOG[w.bp] || OTHER_BP).groups;
     let lastLetter = null, lastPar = null, lastItem = null;
     rows.slice(hi+1).forEach(r=>{
       const order = get(r,'order').toLowerCase(), typeRaw = get(r,'type');
@@ -1087,13 +1234,14 @@ function importWorkbook(buf){
       const om = order.match(/^([a-z]+)(\d*)$/); if(!om) return;
       const type = TYPE_BY_LABEL[typeRaw.toLowerCase()] || 'action';
       const groups = get(r,'group').split(/\n|;/).map(g=>g.trim()).filter(Boolean);
-      groups.forEach(g=>{ if(g!=='Initiator' && !BASE_GROUPS.includes(g) && !w.customGroups.includes(g)) w.customGroups.push(g); });
+      groups.forEach(g=>{ if(g!=='Initiator' && !known.includes(g) && !w.customGroups.includes(g)) w.customGroups.push(g); });
       const ifs = get(r,'if').split(/\n\s*\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
       const addl = get(r,'additional information');
-      const restr = /restriction/i.test(addl) ? ['Initiator','Approvers'].filter(x=>new RegExp(x,'i').test(addl)) : [];
+      const restr = /restriction/i.test(addl) ? RESTR.filter(x=>new RegExp(x,'i').test(addl)) : [];
       const s = S(type, {specify:get(r,'specify'), groups, conds:ifs, sub:!!om[2], optional:yes(get(r,'optional')), restr, all:yes(get(r,'all')),
-        due:get(r,'due date'), modifier:get(r,'routing modifier'), runAs:get(r,'run as user'), doNotAdvance:yes(get(r,'do not advance')), complete:yes(get(r,'complete')),
+        due:get(r,'due date'), modifier:get(r,'routing modifier'), runAs:get(r,'run as user'), doNotAdvance:yes(get(r,'do not advance')),
         note: !TYPE_BY_LABEL[typeRaw.toLowerCase()] ? `Imported type: ${typeRaw}` : (addl && !restr.length ? addl : '')});
+      if(yes(get(r,'complete'))) s.complete = true;
       if(!om[2] && om[1]===lastLetter && lastItem){
         if(lastPar) lastPar.steps.push(s);
         else { const idx = w.items.indexOf(lastItem); lastPar = P([lastItem, s]); lastItem.sub = false; w.items.splice(idx, 1, lastPar); }
@@ -1122,8 +1270,8 @@ function flowSVG(){
   const NW = 330, LW = 270, DW = 150, GX = 18, PAD = 36, HEAD = 92, GAP = 22;
   const box = (s, w) => {
     const T = TYPES[s.type], ch = Math.floor((w-26)/6.3), lines = [];
-    wrapText(T.label + (s.specify ? ': ' + s.specify : ''), Math.floor((w-58)/7.1)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
     s.conds.forEach(c=>wrapText('If: ' + shortRule(c), ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:'#1E8A5B'})));
+    wrapText(T.label + (s.specify ? ': ' + s.specify : ''), Math.floor((w-58)/7.1)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
     wrapText(s.type==='service' ? 'System step' : (s.groups.join(', ') || 'No security group'), ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
     const meta = [s.all?'All':'', s.restr.length?'Excl. '+s.restr.join(', ').toLowerCase():'', s.due?'Due '+s.due:''].filter(Boolean).join(' · ');
     if(meta) wrapText(meta, ch).forEach(l=>lines.push({t:l, s:11.5, w:'400', c:'#59647C'}));
@@ -1137,14 +1285,14 @@ function flowSVG(){
       o += `<text x="${x + (l.head ? 19 + lw : 13)}" y="${ly}" font-family="${FONT}" font-size="${l.s}" font-weight="${l.w}" fill="${l.c}">${esc(l.t)}</text>`; });
     return o;
   };
-  const splitW = sp => sp.lanes.length*(LW+GX) + DW;
+  const cols = sp => { const {left, right, pad} = laneLayout(sp); return [...left.map(l=>({l})), {def:true}, ...right.map(l=>({l})), ...Array(Math.max(0,pad)).fill({spacer:true})]; };
+  const colsW = cs => cs.reduce((a,c)=>a + (c.def ? DW : LW), 0) + GX*(cs.length-1);
   const parW = n => n*NW*0.82 + (n-1)*GX;
-  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split') maxW = Math.max(maxW, splitW(it)); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
+  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split') maxW = Math.max(maxW, colsW(cols(it))); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
   const width = Math.max(700, maxW + PAD*2), cx = width/2;
   let y = PAD + HEAD, body = '', rails = '';
   const line = (x1,y1,x2,y2,dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#B4BED0" stroke-width="2"${dash?' stroke-dasharray="4 4"':''}/>`;
-  const pill = (label, color, w) => { const x = cx - w/2; const o = `<rect x="${x}" y="${y}" width="${w}" height="34" rx="17" fill="${color}"/><text x="${cx}" y="${y+22}" text-anchor="middle" font-family="${FONT}" font-size="13" font-weight="700" fill="#fff">${esc(label)}</text>`; y += 34; return o; };
-  const doneMark = () => { y += 14; body += `<line x1="${PAD}" y1="${y}" x2="${width-PAD}" y2="${y}" stroke="${DONE_COLOR}" stroke-width="1.6" stroke-dasharray="6 5"/><rect x="${cx-150}" y="${y-10}" width="300" height="20" rx="10" fill="#FFFFFF"/><text x="${cx}" y="${y+4}" text-anchor="middle" font-family="${FONT}" font-size="11.5" font-weight="700" fill="${DONE_COLOR}">BP completes here · steps below still run</text>`; y += 10; };
+  const pill = (label, color, w, sub) => { const x = cx - w/2, h = sub ? 46 : 34; let o = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h/2}" fill="${color}"/><text x="${cx}" y="${y+22}" text-anchor="middle" font-family="${FONT}" font-size="13" font-weight="700" fill="#fff">${esc(label)}</text>`; if(sub) o += `<text x="${cx}" y="${y+37}" text-anchor="middle" font-family="${FONT}" font-size="10.5" fill="#E3F4EA">${esc(sub)}</text>`; y += h; return o; };
   body += pill('a  ·  Initiation', INIT_COLOR, 200);
   const stepRow = (steps, colW) => {
     const bs = steps.map(s=>box(s, colW)), n = bs.length, rw = n*colW + (n-1)*GX, x0 = cx - rw/2, h = Math.max(...bs.map(b=>b.h));
@@ -1153,42 +1301,42 @@ function flowSVG(){
     y += GAP; bs.forEach((b,i)=> body += drawBox(b, x0 + i*(colW+GX), y));
     if(n>1){ const bot = y + h + 10; bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, y + b.h, x0 + i*(colW+GX) + colW/2, bot)); rails += line(x0 + colW/2, bot, x0 + rw - colW/2, bot); y = bot; }
     else y += h;
-    if(bs.some(b=>b.s.complete)) doneMark();
   };
   wf.items.forEach(it=>{
     if(it.kind==='step') stepRow([it], NW);
     else if(it.kind==='par') stepRow(it.steps, NW*0.82);
+    else if(it.kind==='complete'){ rails += line(cx, y, cx, y + GAP); y += GAP; body += pill('✓  Business process complete', DONE_COLOR, 300, 'Document approved · steps below still run'); }
     else {
-      const n = it.lanes.length, rw = splitW(it) - GX + GX, x0 = cx - (n*(LW+GX) + DW)/2;
-      const centers = it.lanes.map((l,i)=> x0 + i*(LW+GX) + LW/2).concat([x0 + n*(LW+GX) + DW/2]);
+      const cs = cols(it), tw = colsW(cs); let xx = cx - tw/2;
+      cs.forEach(c=>{ c.x = xx; c.w = c.def ? DW : LW; c.c = xx + c.w/2; xx += c.w + GX; });
+      const live = cs.filter(c=>!c.spacer), centers = live.map(c=>c.c);
       rails += line(cx, y, cx, y + 14); y += 14;
-      rails += line(Math.min(...centers, cx), y, Math.max(...centers, cx), y);
+      rails += line(Math.min(...centers), y, Math.max(...centers), y);
       const top = y; y += 12;
-      const heads = it.lanes.map(l=>wrapText('If: ' + (l.rule ? shortRule(l.rule) : 'no rule yet'), 38).slice(0,2));
+      const heads = cs.map(c=> c.l ? wrapText('If: ' + (c.l.rule ? shortRule(c.l.rule) : 'no rule yet'), 38).slice(0,2) : []);
       const hh = Math.max(44, ...heads.map(h=>26 + h.length*15));
-      it.lanes.forEach((l,i)=>{ const x = x0 + i*(LW+GX); body += `<rect x="${x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(l.name || 'Path ' + (i+1))}</text>`+
-        heads[i].map((t,k)=>`<text x="${x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join(''); });
-      const dx = x0 + n*(LW+GX);
-      body += `<rect x="${dx}" y="${y}" width="${DW}" height="${hh}" rx="8" fill="#FFFFFF" stroke="#B4BED0" stroke-dasharray="4 3"/><text x="${dx+DW/2}" y="${y+18}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="800" fill="#59647C">Default path</text><text x="${dx+DW/2}" y="${y+34}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#59647C">no condition</text>`;
+      cs.forEach((c,i)=>{
+        if(c.spacer) return;
+        if(c.def){ body += `<rect x="${c.x}" y="${y}" width="${DW}" height="${hh}" rx="8" fill="#FFFFFF" stroke="#B4BED0" stroke-dasharray="4 3"/><text x="${c.c}" y="${y+18}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="800" fill="#59647C">Default path</text><text x="${c.c}" y="${y+34}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#59647C">no condition</text>`; return; }
+        body += `<rect x="${c.x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${c.x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(c.l.name || 'Path')}</text>`+
+          heads[i].map((t,k)=>`<text x="${c.x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join('');
+      });
       centers.forEach(c=> rails += line(c, top, c, y));
       y += hh;
-      let laneDone = false;
-      const ys = it.lanes.map((l,i)=>{
-        let ly = y; const x = x0 + i*(LW+GX);
-        const flat = []; l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
-        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, x, ly); ly += b.h; if(s.complete) laneDone = true; });
+      const ys = cs.map(c=>{
+        if(!c.l) return y;
+        let ly = y; const flat = []; c.l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
+        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, c.x, ly); ly += b.h; });
         return ly;
       });
       const laneBottom = Math.max(y + 40, ...ys) + 16;
-      it.lanes.forEach((l,i)=> rails += line(centers[i], y, centers[i], laneBottom));
-      rails += line(centers[n], y, centers[n], laneBottom, true);
-      rails += line(Math.min(...centers, cx), laneBottom, Math.max(...centers, cx), laneBottom);
+      live.forEach(c=> rails += line(c.c, y, c.c, laneBottom, c.def));
+      rails += line(Math.min(...centers), laneBottom, Math.max(...centers), laneBottom);
       y = laneBottom;
-      if(laneDone) doneMark();
     }
   });
   rails += line(cx, y, cx, y + GAP); y += GAP;
-  body += pill(completeStep() ? 'End of definition' : 'Business process complete', END_COLOR, 240);
+  body += pill('End of definition', END_COLOR, 220);
   const height = y + PAD;
   const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
   const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})].filter(Boolean).join('   |   ');
@@ -1211,11 +1359,11 @@ function svgToCanvas(scale){
 }
 async function doExport(kind){
   try{
-    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:3, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
+    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:4, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
     if(kind==='png'){ const {canvas} = await svgToCanvas(2); canvas.toBlob(b=>{ saveFile(b, fileBase()+'_flow.png'); toast('PNG downloaded'); }, 'image/png'); return; }
     if(kind==='xlsx'){
       toast('Building Excel file…'); await loadLib('xlsx');
-      const rows = defRows(), wb = XLSX.utils.book_new(), om = orderMap();
+      const rows = stepRows(), wb = XLSX.utils.book_new(), om = orderMap();
       const hdr = ['Step','Order','If','Type','Specify','Optional','Group','Additional Information','Routing Modifier','All','Run As User','Due Date','Due Date Is Based On Effective Date','Do Not Advance','Complete','Subprocess Definitions'];
       const ws = XLSX.utils.aoa_to_sheet([['Business Process Steps'], hdr].concat(rows.map(r=>[r.step, r.order, r.ifs, r.type, r.specify, r.optional, r.groups, r.addl, r.modifier, r.all, r.runAs, r.due, '', r.dna, r.complete, ''])));
       ws['!cols'] = [{wch:58},{wch:7},{wch:60},{wch:14},{wch:36},{wch:9},{wch:34},{wch:30},{wch:16},{wch:6},{wch:12},{wch:10},{wch:14},{wch:12},{wch:10},{wch:18}];
@@ -1248,6 +1396,7 @@ async function doExport(kind){
       const header = ()=>{ doc.setFillColor(238,241,247); doc.rect(m, y-11, W2-2*m, 17, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(89,100,124); let x=m+5; cols.forEach(c=>{ doc.text(c.h.toUpperCase(), x, y); x+=c.w; }); y += 17; };
       pageHead(); y = m + 56; header();
       defRows().forEach(r=>{
+        if(r.cmp){ doc.setFillColor(227,244,234); doc.rect(m, y-10, W2-2*m, 16, 'F'); doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.text('Business process completes here. Steps below still run.', m+5, y); y += 18; return; }
         doc.setFontSize(8.5);
         const cells = cols.map(c=>doc.splitTextToSize(String(r[c.k]||'').replace(/\n\n/g,'\n'), c.w-8));
         const h = Math.max(...cells.map(c=>c.length))*10.5 + 8;
@@ -1255,7 +1404,6 @@ async function doExport(kind){
         let x = m+5;
         cells.forEach((c,i)=>{ doc.setFont('helvetica', i===0 ? 'bold' : 'normal'); if(r.after) doc.setTextColor(110,118,135); else doc.setTextColor(23,30,51); doc.text(c, x, y); x += cols[i].w; });
         y += h; doc.setDrawColor(222,227,235); doc.line(m, y-9, W2-m, y-9);
-        if(r.complete==='Yes'){ doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.text('BP completes here. Steps below still run.', m+5, y); y += 12; }
       });
       saveFile(doc.output('blob'), fileBase()+'.pdf'); toast('PDF downloaded'); return;
     }
@@ -1274,10 +1422,8 @@ function toast(msg, actLabel, act){
 
 /* ---------- Boot ---------- */
 $('#b-new').onclick = showNew; $('#b-open').onclick = showOpen; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo;
-$('#dl-action').innerHTML = TASK_CATALOG.action.map(t=>`<option value="${esc(t.name)}">${esc(t.desc)}</option>`).join('');
-$('#dl-service').innerHTML = TASK_CATALOG.service.map(t=>`<option value="${esc(t.name)}">${esc(t.desc)}</option>`).join('');
 (function boot(){
-  const d = store.get('bpws3.draft', null);
+  const d = store.get('bpws4.draft', null);
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
   else { wf = exampleWf(); dirty = true; }
   renderPalette(); renderAll();
