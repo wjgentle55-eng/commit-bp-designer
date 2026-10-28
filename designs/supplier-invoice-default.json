@@ -1,9 +1,9 @@
 {
   "app": "bp-workflow-studio",
-  "version": 4,
-  "exportedAt": "2026-10-28T19:27:13.349Z",
+  "version": 5,
+  "exportedAt": "2026-10-28T19:53:59.474Z",
   "wf": {
-    "v": 4,
+    "v": 5,
     "name": "Supplier Invoice Event: Default Definition",
     "client": "",
     "bp": "Supplier Invoice Event",
@@ -14,7 +14,7 @@
     "items": [
       {
         "kind": "step",
-        "id": "wn3ewcb",
+        "id": "bf01zy7",
         "type": "action",
         "specify": "Supplier Accounts Match Process",
         "groups": [
@@ -31,11 +31,13 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "step",
-        "id": "2ggoreb",
+        "id": "ez6h63g",
         "type": "action",
         "specify": "Review Supplier Invoice",
         "groups": [
@@ -52,20 +54,22 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "split",
-        "id": "kjl2wny",
+        "id": "3aakj1c",
         "lanes": [
           {
-            "id": "p359hgn",
+            "id": "8vefucc",
             "name": "Non-PO invoice",
             "rule": "Non-PO Supplier Invoice?",
             "steps": [
               {
                 "kind": "step",
-                "id": "vjswe6i",
+                "id": "x1scvv0",
                 "type": "approval",
                 "specify": "",
                 "groups": [
@@ -85,11 +89,13 @@
                 "modifier": "",
                 "runAs": "",
                 "doNotAdvance": false,
-                "note": ""
+                "note": "",
+                "help": "",
+                "items": []
               },
               {
                 "kind": "step",
-                "id": "aqx2pa6",
+                "id": "6gquwsm",
                 "type": "approval",
                 "specify": "",
                 "groups": [
@@ -109,11 +115,13 @@
                 "modifier": "",
                 "runAs": "",
                 "doNotAdvance": false,
-                "note": ""
+                "note": "",
+                "help": "",
+                "items": []
               },
               {
                 "kind": "step",
-                "id": "ldhuhjn",
+                "id": "xev3lt0",
                 "type": "approval",
                 "specify": "",
                 "groups": [
@@ -134,7 +142,9 @@
                 "modifier": "",
                 "runAs": "",
                 "doNotAdvance": false,
-                "note": ""
+                "note": "",
+                "help": "",
+                "items": []
               }
             ]
           }
@@ -142,7 +152,7 @@
       },
       {
         "kind": "step",
-        "id": "a8wlf5i",
+        "id": "wc7azn9",
         "type": "action",
         "specify": "Review Trackable Invoice Lines",
         "groups": [
@@ -160,11 +170,13 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "step",
-        "id": "3ugqpiw",
+        "id": "1hzqifv",
         "type": "action",
         "specify": "Review Supplier Invoice",
         "groups": [
@@ -181,11 +193,13 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "step",
-        "id": "q8bb6si",
+        "id": "zdto0va",
         "type": "action",
         "specify": "Initiate Supplier Invoice Intercompany Event",
         "groups": [
@@ -202,15 +216,17 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "complete",
-        "id": "gnkzs0j"
+        "id": "vydlcft"
       },
       {
         "kind": "step",
-        "id": "c2yzgsy",
+        "id": "875f7b4",
         "type": "service",
         "specify": "Initiate Asset Registration Events from Invoice",
         "groups": [],
@@ -225,11 +241,13 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       },
       {
         "kind": "step",
-        "id": "mdaoz8c",
+        "id": "dbvkx4s",
         "type": "action",
         "specify": "Assign Asset Accounting Information from Invoice",
         "groups": [
@@ -247,7 +265,9 @@
         "modifier": "",
         "runAs": "",
         "doNotAdvance": false,
-        "note": ""
+        "note": "",
+        "help": "",
+        "items": []
       }
     ],
     "customGroups": [],
