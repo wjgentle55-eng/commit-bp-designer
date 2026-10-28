@@ -98,6 +98,13 @@ code{font-family:var(--mono);font-size:.9em}
 .pal-item{display:flex;flex-direction:column;gap:4px}
 .pal-item p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.35}
 .pal-item.off{opacity:.5}
+.pgrp{border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+.pgrp summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;padding:9px 11px;font-size:12.5px;font-weight:800}
+.pgrp summary::-webkit-details-marker{display:none}
+.pgrp summary::before{content:"▸";font-size:11px;color:var(--muted);transition:transform .12s}
+.pgrp[open] summary::before{transform:rotate(90deg)}
+.pgrp summary small{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted)}
+.pgrp .pal-list{padding:4px 10px 12px}
 .pal-group{display:flex;flex-direction:column;gap:6px}
 .pal-group h3{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:4px 0 0;font-weight:700}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
@@ -129,19 +136,26 @@ code{font-family:var(--mono);font-size:.9em}
 .block.end{clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% 100%,0 100%);border-radius:0 0 10px 10px;--c:#3D4757;min-height:40px;padding-bottom:10px;font-weight:700}
 .block.compl{--c:var(--done)}
 .block.compl .hint{font-size:11.5px;font-weight:500;opacity:.9;flex-basis:100%}
-[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="block"]>.sblock>.shead,[data-drag="new"]>.block,[data-drag="rec"]>.block,[data-drag="newcomp"]>.block,[data-drag="newpar"] .block,[data-drag="newsplit"] .block{cursor:grab;touch-action:none}
+[data-drag="block"]>.block,[data-drag="block"]>.cblock>.chead,[data-drag="new"]>.block,[data-drag="rec"]>.block,[data-drag="newcomp"]>.block,[data-drag="newpar"] .block,[data-drag="newsplit"] .block{cursor:grab;touch-action:none}
 .ord{font-family:var(--mono);font-weight:700;font-size:12px;background:rgba(0,0,0,.24);border-radius:6px;padding:2px 7px;letter-spacing:.02em}
 .verb{font-weight:800}
 .spec{font-weight:700;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-underline-offset:3px}
 .by{font-weight:500;opacity:.85}
 .gp{display:inline-flex;align-items:center;gap:3px;background:#fff;color:#171E33;border-radius:999px;padding:3px 4px 3px 10px;font-size:12px;font-weight:650}
+.gp.plain{padding-right:10px}
 .gp .kk{font-size:9px;font-weight:800;letter-spacing:.05em;color:#8A4B00;text-transform:uppercase;margin-right:2px}
 .hex{--h:var(--rule);display:inline-flex;align-items:center;gap:4px;background:var(--h);color:#fff;padding:4px 10px 4px 15px;font-size:12px;font-weight:700;max-width:100%;
   clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%)}
 .hex i{font-style:normal;opacity:.82;font-weight:600}
-.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px}
+.hex .tr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
 .hex.inh{background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
 .hex.empty{background:transparent;box-shadow:inset 0 0 0 1.5px var(--rule);color:var(--rule)}
+.hex.owned{--h:#7A8396;cursor:help}
+.hex.owned .wd{font-size:9px;font-weight:800;letter-spacing:.05em;background:rgba(255,255,255,.22);border-radius:4px;padding:1px 4px}
+.help-chip{border:1.5px dashed rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:2px 7px;opacity:.85}
+.help-chip.on{border-style:solid;background:#fff;color:#171E33;opacity:1}
+.help-chip:hover{opacity:1}
+.crow.owned{border-left-color:#7A8396;background:var(--panel-2)}
 .slot{border:1.5px dashed rgba(255,255,255,.75);border-radius:999px;padding:2px 10px;font-weight:500;font-size:12px;opacity:.95}
 .slot.req{border-color:#FFD9A8;color:#FFE7C7;font-weight:700}
 .flag{font-size:11.5px;background:rgba(0,0,0,.2);border-radius:6px;padding:2px 7px;font-weight:600}
@@ -151,13 +165,20 @@ code{font-family:var(--mono);font-size:.9em}
 .tools button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:6px;font-size:11.5px;font-weight:700;padding:3px 8px}
 .tools button:hover{background:rgba(255,255,255,.32)}
 .tools .dl:hover{background:#B42318}
-.bw:hover>.block>.tools,.bw.sel>.block>.tools,.bw:hover>.cblock>.chead>.tools,.bw.sel>.cblock>.chead>.tools,.bw:hover>.sblock>.shead>.tools,.bw.sel>.sblock>.shead>.tools{opacity:1}
+.bw:hover>.block>.tools,.bw.sel>.block>.tools,.bw:hover>.cblock>.chead>.tools,.bw.sel>.cblock>.chead>.tools{opacity:1}
 @media (hover:none){.tools{opacity:1}}
+.cl{flex-basis:100%;display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.cl-i{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.18);border-radius:7px;padding:5px 8px;font-size:12px}
+.cl-i .bx{width:13px;height:13px;border:1.5px solid rgba(255,255,255,.85);border-radius:3px;flex:none}
+.cl-i .t{flex:1;min-width:0}
+.cl-i .gp{font-size:11px;padding:2px 8px}
+.cl-empty{font-size:12px;opacity:.85;border:1.5px dashed rgba(255,255,255,.6);border-radius:7px;padding:6px 8px}
 
 .stack{display:flex;flex-direction:column;position:relative}
 .stack>*{margin-top:-6px}
 .stack.root{align-items:center;min-width:var(--main-w)}
-.stack.root>.bw:not(.split),.script>.hatw,.script>.endw{width:var(--main-w)}
+.stack.root>.bw:not(.wide),.script>.hatw,.script>.endw{width:var(--main-w)}
+.stack.root>.bw.wide{min-width:var(--main-w)}
 .stack.root:empty{min-height:70px}
 .stack.root:empty::after{content:"Drag step blocks here";display:grid;place-items:center;height:64px;width:var(--main-w);margin-top:10px;border:2px dashed var(--line);border-radius:10px;color:var(--muted);font-size:12.5px;font-weight:600}
 .script>.stack,.script>.endw{margin-top:-6px}
@@ -165,58 +186,41 @@ code{font-family:var(--mono);font-size:.9em}
 .bw.sub{padding-left:22px}
 .bw.sub::before{content:"";position:absolute;left:8px;top:-2px;bottom:6px;width:3px;border-radius:2px;background:var(--rail)}
 
-/* parallel C-block */
-.cblock{display:flex;flex-direction:column}
-.chead{--c:var(--par);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),62px calc(100% - 6px),56px 100%,38px 100%,32px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px))}
-.chead .hint,.shead .hint{font-size:11.5px;font-weight:500;opacity:.85}
+/* C-blocks: Run in parallel and Split into paths share one shape; their contents sit side by side */
+.cblock{display:flex;flex-direction:column;--cc:var(--par)}
+.split>.cblock{--cc:var(--split)}
+[data-drag="newpar"]{--cc:var(--par)}
+[data-drag="newsplit"]{--cc:var(--split)}
+.chead{--c:var(--cc);clip-path:polygon(0 4px,4px 0,16px 0,22px 6px,40px 6px,46px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 10px),calc(100% - 4px) calc(100% - 6px),62px calc(100% - 6px),56px 100%,38px 100%,32px calc(100% - 6px),4px calc(100% - 6px),0 calc(100% - 10px))}
+.chead .hint{font-size:11.5px;font-weight:500;opacity:.85}
 .cmid{display:flex;margin-top:-6px}
-.carm{width:16px;background:var(--par);flex:none}
-.stack.inner{flex:1;min-width:0}
-.stack.inner>*:first-child{margin-top:0}
-.stack.inner:empty{min-height:50px;margin:6px 0 6px 6px;border:2px dashed var(--line);border-radius:8px}
-.stack.inner:empty::after{content:"Drop 2+ steps here";display:grid;place-items:center;height:46px;color:var(--muted);font-size:12px;font-weight:600}
-.cfoot{height:22px;background:var(--par);margin-top:-6px;clip-path:polygon(0 0,32px 0,38px 6px,56px 6px,62px 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px))}
-
-/* path split: default path runs straight down the middle, condition paths branch left and right */
-.sblock{display:flex;flex-direction:column;align-items:center}
-.shead,.sfoot{width:var(--main-w)}
-.shead{--c:var(--split);padding-bottom:16px}
-.shead .btn{background:rgba(255,255,255,.14);border-color:transparent;color:#fff}
-.shead .btn:hover{background:rgba(255,255,255,.26)}
-.sfan{position:relative;height:22px;align-self:stretch}
-.sfan::before{content:"";position:absolute;left:50%;top:0;height:10px;width:2px;margin-left:-1px;background:var(--split)}
-.sfan::after{content:"";position:absolute;left:var(--fl,170px);right:var(--fr,170px);top:10px;height:2px;background:var(--split);border-radius:2px}
-.sfan.bottom::before{top:auto;bottom:0}
-.sfan.bottom::after{top:auto;bottom:10px}
-.lanes-row{display:flex;gap:14px;align-items:stretch;justify-content:center;padding:0 4px}
-.lane{width:300px;flex:none;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--line);border-radius:10px;background:var(--lane-bg);padding:8px;position:relative}
-.lane::before,.lane::after{content:"";position:absolute;left:50%;width:2px;margin-left:-1px;background:var(--split);height:12px}
-.lane::before{top:-12px}
-.lane::after{bottom:-12px}
-.lane.spacer::before,.lane.spacer::after{display:none}
+.carm{width:16px;background:var(--cc);flex:none}
+.cfoot{height:22px;background:var(--cc);margin-top:-6px;clip-path:polygon(0 0,32px 0,38px 6px,56px 6px,62px 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px))}
+.cfoot.lbl{height:auto;color:#fff;font-size:11.5px;font-weight:700;padding:8px 14px 14px}
+.stack.row{flex-direction:row;gap:12px;align-items:flex-start;padding:12px 12px 12px 10px;flex:1;min-width:0}
+.stack.row>*{margin-top:0;width:290px;flex:none}
+.stack.row>.ph{width:110px;height:56px;margin:0!important;align-self:stretch}
+.stack.row:empty{min-width:320px}
+.stack.row:empty::after{content:"Drop 2+ steps here, side by side";display:grid;place-items:center;height:56px;flex:1;border:2px dashed var(--line);border-radius:8px;color:var(--muted);font-size:12px;font-weight:600}
+.lanes-row{display:flex;gap:12px;align-items:stretch;padding:12px 12px 12px 10px;flex:1;min-width:0}
+.lane{width:300px;flex:none;display:flex;flex-direction:column;gap:8px;border:1.5px solid var(--line);border-radius:10px;background:var(--lane-bg);padding:8px}
 .lane.selected{border-color:var(--sel);box-shadow:0 0 0 1px var(--sel)}
 .lane.drop-ok{border-color:var(--sky);box-shadow:0 0 0 2px var(--sky)}
-.lane-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;cursor:pointer;padding:2px}
-.lane-head .lname{font-size:13px;font-weight:800;color:var(--ink);flex:1 1 auto;width:calc(100% - 30px);min-width:0}
-.lane-head .lsub{font-size:11px;color:var(--muted);font-weight:600;flex-basis:100%}
+.lane-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;cursor:pointer}
+.lane-head .lname{font-size:12px;font-weight:700;color:var(--muted);flex:1;min-width:0;text-transform:uppercase;letter-spacing:.05em}
 .lane-head .x{color:var(--muted)}
-.stack.lane-stack{min-height:56px;padding-top:6px}
+.lane-head .hex{flex-basis:auto}
+.stack.lane-stack{min-height:56px}
 .stack.lane-stack>*:first-child{margin-top:0}
 .stack.lane-stack:empty{border:2px dashed var(--line);border-radius:8px}
 .stack.lane-stack:empty::after{content:"Drop steps for this path";display:grid;place-items:center;height:52px;color:var(--muted);font-size:12px;font-weight:600}
-.lane.def{width:170px;border-style:dashed;background:transparent;align-items:center;text-align:center}
-.lane.def .lane-head{cursor:default;justify-content:center}
-.lane.def .lane-head .lname{flex:none;width:auto}
-.lane.spacer{border-style:dashed;border-color:transparent;background:transparent;align-items:center;justify-content:center}
-.lane.spacer:hover{border-color:var(--line)}
-.passthru{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:600;min-height:56px}
-.passthru::before,.passthru::after{content:"";width:2px;flex:1;min-height:20px;background:var(--split)}
-.sfoot{--c:var(--split);background:var(--c);color:#fff;font-size:12px;font-weight:700;padding:9px 14px 15px;text-align:center;clip-path:polygon(0 0,100% 0,100% calc(100% - 6px),46px calc(100% - 6px),40px 100%,22px 100%,16px calc(100% - 6px),0 calc(100% - 6px));border-radius:8px 8px 0 0}
+.lane.add{width:140px;border-style:dashed;background:transparent;align-items:center;justify-content:center;color:var(--muted);font-weight:700;font-size:12.5px;cursor:pointer}
+.lane.add:hover{border-color:var(--accent);color:var(--accent)}
 
 .bw{position:relative}
 .bw.sel{filter:drop-shadow(2px 0 0 var(--sel)) drop-shadow(-2px 0 0 var(--sel)) drop-shadow(0 2px 0 var(--sel)) drop-shadow(0 -2px 0 var(--sel));z-index:2}
-.bw.split.sel{filter:none}
-.bw.split.sel>.sblock>.shead,.bw.split.sel>.sblock>.sfoot{box-shadow:inset 0 0 0 2px var(--sel)}
+.bw.wide.sel{filter:none}
+.bw.wide.sel>.cblock>.chead,.bw.wide.sel>.cblock>.cfoot{box-shadow:inset 0 0 0 2px var(--sel)}
 .bw.drop-ok{filter:drop-shadow(3px 0 0 var(--sky)) drop-shadow(-3px 0 0 var(--sky)) drop-shadow(0 3px 0 var(--sky)) drop-shadow(0 -3px 0 var(--sky));z-index:3}
 .ph{height:44px;border:2px dashed var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);margin-top:2px!important;margin-bottom:8px;align-self:stretch}
 .stack.root>.ph{width:var(--main-w);align-self:center}
@@ -228,11 +232,14 @@ body.trash .palette{outline:2px dashed var(--danger);outline-offset:-2px}
 .trash-note{display:none;position:absolute;inset:auto 12px 12px 12px;background:var(--danger);color:#fff;border-radius:8px;padding:8px 10px;font-weight:700;font-size:12.5px;text-align:center}
 body.trash .trash-note{display:block}
 
-/* Right pane: recommendations and details */
+/* Right pane */
 .ins{display:flex;flex-direction:column;gap:16px}
 .ins-h{display:flex;align-items:center;gap:8px}
 .ins-h .sw{width:14px;height:14px;border-radius:4px;flex:none}
 .ins-h h3{margin:0;font-size:15px;font-weight:800}
+.desc{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.5}
+.desc b{font-weight:700}
+.desc small{display:block;margin-top:4px;color:var(--muted);font-size:11.5px}
 .sec{display:flex;flex-direction:column;gap:6px}
 .sec>label,.sec>.lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .sec select,.sec input[type=text],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
@@ -248,6 +255,10 @@ body.trash .trash-note{display:block}
 .crow .ct{font-size:12.5px;font-weight:600;word-break:break-word}
 .crow .cm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
 .crow .cm .btn{margin-left:auto}
+.ci{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:start;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2)}
+.ci .bx{width:14px;height:14px;border:1.5px solid var(--muted);border-radius:3px;margin-top:9px}
+.ci .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.ci input,.ci select{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:12.5px}
 .checks-col{display:flex;flex-direction:column;gap:6px}
 .check-row{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
 .check-row input{accent-color:var(--brand);width:16px;height:16px;margin:0}
@@ -312,21 +323,46 @@ table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;curs
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:9px 14px;border-radius:10px;font-weight:600;font-size:13px;z-index:300;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
 .toast button{background:none;border:0;color:var(--sky);font-weight:800;padding:0}
 
+.home{min-height:100%;padding-block:40px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.home-in{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.home-top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.home-top .logo-big{background:#fff;border-radius:12px;padding:10px 14px;box-shadow:inset 0 0 0 1px var(--line)}
+.home-top .logo-big img{height:44px;width:auto;display:block}
+.home-top h1{margin:0;font-size:28px;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+.home-top p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.home-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn.big{padding:12px 18px;font-size:14.5px;border-radius:10px}
+.resume{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--sky);border-radius:12px;padding:14px 16px}
+.resume .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.resume .t small{color:var(--muted)}
+.home h2{margin:0 0 10px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.dcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.dcard:hover{border-color:var(--accent)}
+.dcard b{font-size:14.5px;overflow-wrap:anywhere}
+.dcard small{color:var(--muted);font-size:12px}
+.dcard .row{margin-top:auto}
+.bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.bpcard{text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.bpcard:hover{border-color:var(--accent)}
+.bpcard b{font-size:13.5px}
+.bpcard small{color:var(--muted);font-size:11.5px}
 @media (max-width:1180px){ .main{grid-template-columns:230px minmax(0,1fr) 290px} }
 @media (max-width:900px){
   :root{--main-w:min(640px, calc(100vw - 80px))}
   html,body{height:auto}
   .app{height:auto}
   .main{grid-template-columns:minmax(0,1fr)}
-  .palette .pane-b{max-height:300px}
+  .palette .pane-b{max-height:320px}
   .view{min-height:62vh}
   .canvas{padding:20px 14px 60px}
-  .lane{width:260px}
+  .lane,.stack.row>*{width:260px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<div class="home" id="home" hidden></div>
 <div class="app">
   <header class="top">
     <div class="brand">
@@ -342,8 +378,8 @@ table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;curs
     <div class="actions">
       <span class="status" id="status"></span>
       <button class="btn quiet" id="b-undo" title="Undo (Ctrl/Cmd+Z)">Undo</button>
+      <button class="btn" id="b-open" title="Back to your saved definitions">Home</button>
       <button class="btn" id="b-new">New</button>
-      <button class="btn" id="b-open">Open</button>
       <button class="btn primary" id="b-save">Save</button>
       <div class="menu">
         <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
@@ -374,7 +410,7 @@ table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;curs
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
         <span class="hint">Hover a block to copy or delete it</span>
       </div>
-      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">The main line is the default path and has no conditions. Use <b>Split into paths</b> to branch cases left and right of it; every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
+      <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps into order. Steps on the main line have no path condition. A <b>Split into paths</b> block puts paths side by side, and every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
       <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
     </section>
 
@@ -393,28 +429,29 @@ table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;curs
 const LOGO = "data:image/png;base64,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080ObEqlEt99993GGind0tKSLly48MS1ZCg3ELC/vz/99ttv367tREcpZefMmbPXwsLi+kZh5MiRUde0A6hl520VGBhYXKtv19ZFwACoo6Nj4TPPPNPjZoc3Sin58ssvD1hbW1+fC998800iAKSmprYcOnSoqVZ/p1NK/W82B7z//vun1Gp1zWZDn56ePvJmAr4mnRr27dv33M1z8fvvv/+sRqLnOI4uXLjwCACsXbt2aM1G2crKin744Yc/3fxNv//++zadO3emAKiDgwNdt27dOskLWoKERuLVV191zs3N7V0zOadNm5Zb41zi4uLyib29vR4AoqOjUVFRMfd2aqka9OrVq6J3796razuoiKIIa2vr3/z8/FDL67pR4S6pqamttm3b9kpiYiIIIejatWvcokWLRsyfP//roqKi8QDQunVrDBgwYOHd7tWnT5+y9957b2tN5idKKTp16rS7devWBTXnhISEmMaOHbugtnc4IYQXBGFWzTuWlJQgIiKC1rU56du3b+WyZcsW8Tx/3cOYUgpBELBhw4Zve/fuXc4wDEwmE4qLi3tERUV1T0tL8w4NDW3m4+MDPz8/9O7d+9igQYNybrp3ipmZWbhcLocgCLCzs/MzGo3udW1Ytm7d+nPNs7dt27bW39/f1LdvX12/fv2iW7RoUXHT+kkAYMWKFT03btz4Z1xcnBoAhg0bxs+aNeuN4ODgzfX9VkeOHGlWVlYWTCmFRqPBiBEj9n/wwQcRN3ta29ranho9evQRR0fHGikLKSkpL/I8z+Tl5U3X66t96YKDg/NWrVo1r+b/NdDr9Rg9evR7nTp10gFAWVkZTp06FSQIglXtECsAkMvl0R06dPiztkMhIUSwtLT81dXVtaY9CAkJ2UMIucHBbOLEiTEFBQU7agitY8eOfSorK0NRh8178uTJ59auXXtUuKkAOyGEDho06O2uXbsCAHiex4kTJ1SUUrujR4/y7u7uuvbt26N58+bo1KnTUUJI/E3XV2m12lU2NtUWh4qKCkVOTk7zusZe165dK/v163fLXLS0tPy9RYsW18fiuXPnRAAYP358fPPmzRMZhkF5eTlKS0uHZWdnt6x9X47jvkxISAAAtGjRQvD19V0qZcKSIKGRcHZ2fiEzM7Pm3zAzM5tba8FJ3rdvHxISEiCKIlavXu12t7SUFhYWedfm4w0rj4+P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";
 
 /* ---------- Reference data ---------- */
+/* spec: 'catalog' = pick from the business process task list, 'required' = text required, 'text' = free text.
+   noGroup: the step takes no security group (Service and Integration run as the system; Checklist assigns per item). */
 const TYPES = {
-  action:     {label:'Action', color:'#2E8540', desc:'Performs a Workday task or launches a process. Pick the task in Specify.', spec:'catalog'},
   approval:   {label:'Approval', color:'#1F78C8', desc:'One member of the group approves, denies or sends back.'},
+  action:     {label:'Action', color:'#2E8540', desc:'Performs a Workday task or launches a process. Pick the task in Specify.', spec:'catalog'},
+  service:    {label:'Service', color:'#8A5A1E', desc:'System step Workday runs on its own, no security group.', spec:'catalog', noGroup:true},
+  todo:       {label:'To Do', color:'#C2541E', desc:'Manual task outside the BP. The Specify text is what shows in the inbox, so it is required.', spec:'required'},
   chain:      {label:'Approval Chain', color:'#3F4BC0', desc:'Walks up a role hierarchy (supervisory org or cost center).'},
   cchain:     {label:'Consolidated Approval Chain', color:'#6A3FB8', desc:'Chain across lines and worktags, collapsing duplicate approvers.'},
   review:     {label:'Review', color:'#13857A', desc:'Reviewer can edit the transaction, then submits it forward.'},
-  todo:       {label:'To Do', color:'#C2541E', desc:'Manual task outside the BP. The Specify text is what shows in the inbox, so it is required.', spec:'required'},
-  checklist:  {label:'Checklist', color:'#6E7D12', desc:'List of items that must be completed before advancing.', spec:'text'},
-  integration:{label:'Integration', color:'#B3366F', desc:'Launches an integration system as a step.', spec:'text'},
-  service:    {label:'Service', color:'#8A5A1E', desc:'System step Workday runs on its own, no security group.', spec:'catalog'}
+  checklist:  {label:'Checklist', color:'#6E7D12', desc:'A list of To Do items, each assigned to a group. Drop a To Do on it to add it as an item.', spec:'text', noGroup:true},
+  integration:{label:'Integration', color:'#B3366F', desc:'Launches an integration. Name it in Specify; it runs as the system, no security group.', spec:'required', noGroup:true}
 };
+const MAIN_TYPES = ['approval','action','service','todo'], OTHER_TYPES = ['chain','cchain','review','checklist','integration'];
 const TYPE_BY_LABEL = Object.fromEntries(Object.entries(TYPES).map(([k,t])=>[t.label.toLowerCase(),k]));
 TYPE_BY_LABEL['review documents'] = 'review';
 const INIT_COLOR = '#29357F', PAR_COLOR = '#55657D', SPLIT_COLOR = '#34405E', END_COLOR = '#3D4757', DONE_COLOR = '#1F7A4D';
 
-/* Security groups: anything with "admin" in the name is user-based, everything else is role-based (constrained). */
 function groupKind(n){ if(n==='Initiator') return 'Special'; return /admin/i.test(n) ? 'User' : 'Role'; }
 const KIND_LABEL = {Special:'Special', Role:'Role-based (constrained)', User:'User-based'};
 const ADMIN_GROUPS = ['Finance Administrator','Business Process Administrator'];
 
-/* Business process catalog. The selected process decides which Action and Service tasks,
-   security groups, condition rules and recommended blocks are offered. Add tasks as {name, desc}. */
+/* Business process catalog: decides the Action and Service tasks, security groups, condition rules and recommendations offered. Add tasks as {name, desc}. */
 const R_NONPO = 'Non-PO Supplier Invoice?', R_NOTREC = 'Supplier Invoice not from Recurring Supplier Invoice?', R_FROMREC = 'Supplier Invoice from variable Recurring Supplier Invoice?';
 const R_10K = 'Supplier Total Invoice Amount >= $10,000 USD?', R_PROJ = 'Is Project Transaction?', R_IC = 'Is Direct Intercompany?', R_APR = 'Not Related to Project APR/WIP alternative setup?';
 const R_MATCH = 'Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)';
@@ -425,7 +462,7 @@ const R_ACCT = 'Invoice has lines with accounting treatment of Spend Category no
 const RESTR = ['Initiator','Approvers'];
 const BP_CATALOG = {
   'Supplier Invoice Event': {
-    loaded: true,
+    loaded: true, noun: 'supplier invoice',
     actions: [
       {name:'Supplier Accounts Match Process', desc:''},
       {name:'Review Supplier Invoice', desc:''},
@@ -445,17 +482,17 @@ const BP_CATALOG = {
       {key:'track', why:'Asset accountant reviews trackable lines that may need assets.', make:()=>S('action',{specify:'Review Trackable Invoice Lines', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_APR, R_TRACK]})},
       {key:'icrev', why:'AP reviews direct intercompany invoices.', make:()=>S('action',{specify:'Review Supplier Invoice', groups:['Accounts Payable Data Entry Specialist'], due:'1 Day', conds:[R_IC]})},
       {key:'icev', why:'Starts the intercompany event when IC companies are on the lines.', make:()=>S('action',{specify:'Initiate Supplier Invoice Intercompany Event', groups:['Initiator'], due:'1 Day', conds:[R_ICEV]})},
-      {key:'asset', why:'After completion: creates asset registration events from trackable lines.', after:true, make:()=>S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R_ASSET]})},
-      {key:'acct', why:'After completion: assigns asset accounting on lines that need it.', after:true, make:()=>S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_ACCT, R_APR]})}
+      {key:'asset', why:'After approval: creates asset registration events from trackable lines.', after:true, make:()=>S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R_ASSET]})},
+      {key:'acct', why:'After approval: assigns asset accounting on lines that need it.', after:true, make:()=>S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_ACCT, R_APR]})}
     ]
   },
-  'Expense Report Event':   {loaded:false, actions:[], services:[], groups:['Expense Partner','Manager','Cost Center Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
-  'Requisition Event':      {loaded:false, actions:[], services:[], groups:['Procurement Specialist','Buyer','Cost Center Manager','Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
-  'Purchase Order Event':   {loaded:false, actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
-  'Supplier Contract Event':{loaded:false, actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
-  'Accounting Journal Event':{loaded:false, actions:[], services:[], groups:['Accountant','Accounting Manager','Controller', ...ADMIN_GROUPS], rules:[], recs:[]}
+  'Expense Report Event':    {loaded:false, noun:'expense report', actions:[], services:[], groups:['Expense Partner','Manager','Cost Center Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Requisition Event':       {loaded:false, noun:'requisition', actions:[], services:[], groups:['Procurement Specialist','Buyer','Cost Center Manager','Manager','Project Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Purchase Order Event':    {loaded:false, noun:'purchase order', actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Supplier Contract Event': {loaded:false, noun:'supplier contract', actions:[], services:[], groups:['Buyer','Procurement Specialist','Cost Center Manager','Manager', ...ADMIN_GROUPS], rules:[], recs:[]},
+  'Accounting Journal Event':{loaded:false, noun:'journal', actions:[], services:[], groups:['Accountant','Accounting Manager','Controller', ...ADMIN_GROUPS], rules:[], recs:[]}
 };
-const OTHER_BP = {loaded:false, actions:[], services:[], groups:['Manager','Cost Center Manager', ...ADMIN_GROUPS], rules:[], recs:[]};
+const OTHER_BP = {loaded:false, noun:'document', actions:[], services:[], groups:['Manager','Cost Center Manager', ...ADMIN_GROUPS], rules:[], recs:[]};
 
 /* ---------- Helpers ---------- */
 const $ = s => document.querySelector(s);
@@ -465,6 +502,9 @@ const clone = o => JSON.parse(JSON.stringify(o));
 const trunc = (s, n) => (s = String(s||'')).length > n ? s.slice(0, n-1).trimEnd() + '…' : s;
 function letters(i){ let s=''; i++; while(i>0){ i--; s=String.fromCharCode(97+i%26)+s; i=Math.floor(i/26);} return s; }
 function shortRule(t){ return trunc(String(t||'').replace(/\(Workday Owned\)/i,'').replace(/[?\s.]+$/,'').trim(), 44); }
+const isOwned = t => /\(Workday Owned\)/i.test(String(t||''));
+const ALL_TYPES = ['approval','action'];
+const listJoin = a => a.length<=1 ? (a[0]||'') : a.slice(0,-1).join(', ') + ' and ' + a[a.length-1];
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch{ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch{ return false; } }
@@ -474,13 +514,14 @@ const store = {
 function S(type, o={}){
   return {kind:'step', id:uid(), type, specify:o.specify||'', groups:o.groups?[...o.groups]:[], conds:o.conds?[...o.conds]:[],
     sub:!!o.sub, optional:!!o.optional, restr:o.restr?[...o.restr]:[], all:!!o.all, due:o.due||'', modifier:o.modifier||'', runAs:o.runAs||'',
-    doNotAdvance:!!o.doNotAdvance, note:o.note||''};
+    doNotAdvance:!!o.doNotAdvance, note:o.note||'', help:o.help||'', items:o.items?clone(o.items):[]};
 }
+function Item(text, assignee){ return {id:uid(), text:text||'', assignee:assignee||''}; }
 function P(steps){ return {kind:'par', id:uid(), steps}; }
 function Lane(name, rule, steps){ return {id:uid(), name:name||'', rule:rule||'', steps:steps||[]}; }
 function Split(lanes){ return {kind:'split', id:uid(), lanes:lanes||[Lane('Path 1','')]}; }
 function Comp(){ return {kind:'complete', id:uid()}; }
-function blankWf(bp){ return {v:4, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
+function blankWf(bp){ return {v:5, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
 function bpCat(){ return BP_CATALOG[wf.bp] || OTHER_BP; }
 function tasksFor(type){ const c = bpCat(); return type==='action' ? c.actions : type==='service' ? c.services : null; }
 
@@ -510,15 +551,15 @@ let wf, docId = null, savedAt = null, dirty = false;
 let sel = null, view = 'build', ptab = 'steps', groupFilter = '', clip = null;
 let hist = [];
 const customSpec = new Set();
+const palOpen = new Set(store.get('bpws.palOpen', ['path']));
 function snapshot(){ hist.push(JSON.stringify({wf, docId})); if(hist.length > 80) hist.shift(); }
 function undo(){
   const h = hist.pop(); if(!h){ toast('Nothing to undo'); return; }
   const o = JSON.parse(h); wf = o.wf; docId = o.docId; if(sel && sel!=='init' && !find(sel) && !findLane(sel)) sel = null;
   markDirty(); renderAll(); renderPalette();
 }
-function markDirty(){ dirty = true; store.set('bpws4.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
+function markDirty(){ dirty = true; store.set('bpws5.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
 
-/* Walk every item: fn(item, list, index, ctx) where ctx = {par, lane, split} */
 function walk(fn){
   const go = (list, ctx) => list.forEach((it, i) => {
     fn(it, list, i, ctx);
@@ -539,10 +580,11 @@ function listFor(key){
 function laneOf(id){ const f = find(id); return f ? f.lane || null : null; }
 function effectiveConds(s){ const l = laneOf(s.id); return [...(l && l.rule ? [l.rule] : []), ...s.conds]; }
 function hasCompletion(){ return wf.items.some(i=>i.kind==='complete'); }
-function groupsForBP(){ const used = []; allSteps().forEach(s=>s.groups.forEach(g=>used.push(g))); return [...new Set([...bpCat().groups, ...(wf.customGroups||[]), ...used])].filter(g=>g!=='Initiator'); }
-function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s]; }
+function isAfterCompletion(id){ const ci = wf.items.findIndex(i=>i.kind==='complete'); if(ci<0) return false; const holds = it => it.id===id || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds)); return wf.items.findIndex(holds) > ci; }
+function groupsForBP(){ const used = []; allSteps().forEach(s=>{ s.groups.forEach(g=>used.push(g)); s.items.forEach(i=>i.assignee && used.push(i.assignee)); }); return [...new Set([...bpCat().groups, ...(wf.customGroups||[]), ...used])].filter(g=>g && g!=='Initiator'); }
+function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s].filter(r=>!isOwned(r)); }
+function stepGroups(s){ return s.type==='checklist' ? [...new Set(s.items.map(i=>i.assignee).filter(Boolean))] : TYPES[s.type].noGroup ? [] : s.groups; }
 
-/* Order letters run down the main line and through each path in turn; sub-steps number off the previous letter. */
 function orderMap(){
   const m = {init:'a'}; let li = 0, sub = 0;
   const seq = list => list.forEach(it=>{
@@ -555,67 +597,54 @@ function orderMap(){
   seq(wf.items);
   return m;
 }
-function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
+function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.items) x.items.forEach(i=>i.id = uid()); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
 
 /* ---------- Build canvas ---------- */
-const tools = id => `<span class="tools"><button class="cp" data-copy="${id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button><button class="dl" data-del="${id}" title="Delete (Del)">✕ Delete</button></span>`;
+const tools = (id, noCopy) => `<span class="tools">${noCopy?'':`<button class="cp" data-copy="${id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button>`}<button class="dl" data-del="${id}" title="Delete (Del)">✕ Delete</button></span>`;
 function groupChip(g, i){ return `<span class="gp">${groupKind(g)==='User'?'<span class="kk">user</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`; }
-function condHex(text, i){ return `<span class="hex" title="${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span><button class="x" data-rm="cond" data-i="${i}" aria-label="Remove condition">×</button></span>`; }
+function condHex(text, i){
+  if(isOwned(text)) return `<span class="hex owned" title="Workday owned: ${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span><span class="wd">WD</span></span>`;
+  return `<span class="hex" title="${esc(text)}"><i>if</i><span class="tr">${esc(shortRule(text))}</span>${i==null?'':`<button class="x" data-rm="cond" data-i="${i}" aria-label="Remove condition">×</button>`}</span>`;
+}
 function stepHTML(s, om, lane){
   const T = TYPES[s.type] || TYPES.action;
   const flags = [];
-  if(s.all) flags.push('all must act');
+  if(s.all && ALL_TYPES.includes(s.type)) flags.push(s.type==='approval' ? 'all must approve' : 'all must act');
   if(s.restr.length) flags.push('excl. ' + s.restr.join(', ').toLowerCase());
   if(s.due) flags.push('due ' + s.due);
   if(s.optional) flags.push('optional');
   if(s.doNotAdvance) flags.push('do not advance');
-  const specSlot = s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? '<span class="slot req">add To Do text</span>' : (T.spec ? '<span class="slot">specify</span>' : ''));
-  return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block"><div class="block" style="--c:${T.color}">`+
-    `<span class="ord">${om[s.id]||'?'}</span>`+
-    (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>path</i><span class="tr">${esc(lane.name || shortRule(lane.rule) || 'needs a rule')}</span></span>` : '')+
+  const specSlot = s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? `<span class="slot req">${s.type==='todo'?'add To Do text':'name it'}</span>` : (T.spec && s.type!=='checklist' ? '<span class="slot">specify</span>' : ''));
+  const who = T.noGroup ? '' : `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>');
+  const cl = s.type==='checklist' ? `<span class="cl">${s.items.length ? s.items.map(i=>`<span class="cl-i"><span class="bx"></span><span class="t">${esc(i.text||'Untitled item')}</span>${i.assignee?`<span class="gp plain">${esc(i.assignee)}</span>`:'<span class="slot">assign</span>'}</span>`).join('') : '<span class="cl-empty">Add items in Step details, or drop a To Do here</span>'}</span>` : '';
+  return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
+    `<span class="ord">${om[s.id]||'?'}</span><button class="help-chip${s.help?' on':''}" data-help="${s.id}" title="${esc(s.help || 'Add help text for this step')}">? Help text</button>`+
+    (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>if</i><span class="tr">${esc(lane.rule ? shortRule(lane.rule) : 'path rule needed')}</span></span>` : '')+
     s.conds.map(condHex).join('')+
-    `<span class="verb">${T.label}</span>${specSlot}`+
-    (s.type!=='service' ? `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>') : '')+
-    flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+ tools(s.id) +
+    `<span class="verb">${T.label}</span>${specSlot}${who}`+
+    flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+ tools(s.id) + cl +
   `</div></div>`;
 }
 function parHTML(p, om, lane){
-  return `<div class="bw par${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
-    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">steps inside share order ${om[p.id]}</span>${tools(p.id)}</div>`+
-    `<div class="cmid"><div class="carm"></div><div class="stack inner" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om,lane)).join('')}</div></div>`+
+  return `<div class="bw par wide${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
+    `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">side-by-side steps share order ${om[p.id]} and run at the same time</span>${tools(p.id)}</div>`+
+    `<div class="cmid"><div class="carm"></div><div class="stack inner row" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om,lane)).join('')}</div></div>`+
     `<div class="cfoot"></div></div></div>`;
 }
 function laneHTML(l, om){
   return `<div class="lane${sel==='lane:'+l.id?' selected':''}" data-lane="${l.id}"><div class="lane-head" data-lanesel="${l.id}">`+
     `<span class="lname">${esc(l.name||'Unnamed path')}</span><button class="x" data-rmlane="${l.id}" aria-label="Remove path" title="Remove path">×</button>`+
-    (l.rule ? `<span class="hex" title="${esc(l.rule)}"><i>if</i><span class="tr">${esc(shortRule(l.rule))}</span></span>` : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+
-    `<span class="lsub">${l.steps.length} step${l.steps.length===1?' carries':'s carry'} this condition</span></div>`+
+    (l.rule ? condHex(l.rule) : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+`</div>`+
     `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`;
 }
-/* Paths split around the default path: first half on the left, the rest on the right, padded so the default path stays centered */
-function laneLayout(sp){
-  const n = sp.lanes.length, left = sp.lanes.slice(0, Math.ceil(n/2)), right = sp.lanes.slice(Math.ceil(n/2));
-  return {left, right, pad: left.length - right.length};
-}
 function splitHTML(sp, om){
-  const {left, right, pad} = laneLayout(sp);
-  const LW = 300, DW = 170, GAP = 14;
-  const leftW = left.length*(LW+GAP), rightW = (right.length+pad)*(LW+GAP);
-  const firstC = left.length ? LW/2 + 4 : leftW + DW/2 + 4, lastC = right.length ? 4 + leftW + DW + GAP + (right.length-1)*(LW+GAP) + LW/2 : 4 + leftW + DW/2;
-  const total = leftW + DW + rightW + 8;
-  const fan = `--fl:${firstC}px;--fr:${total - lastC}px`;
-  return `<div class="bw split${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="sblock">`+
-    `<div class="block shead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">every path starts here and rejoins below</span><button class="btn sm" data-addlane="${sp.id}">+ Add path</button>${tools(sp.id)}</div>`+
-    `<div class="sfan" style="${fan}"></div>`+
-    `<div class="lanes-row">`+
-      left.map(l=>laneHTML(l, om)).join('')+
-      `<div class="lane def"><div class="lane-head"><span class="lname">Default path</span><span class="lsub">No condition</span></div><div class="passthru">continues to the next step</div></div>`+
-      right.map(l=>laneHTML(l, om)).join('')+
-      (pad>0 ? `<div class="lane spacer"><button class="btn sm" data-addlane="${sp.id}">+ Add path</button></div>` : '')+
-    `</div><div class="sfan bottom" style="${fan}"></div><div class="sfoot">Paths rejoin</div></div></div>`;
+  return `<div class="bw split wide${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="cblock">`+
+    `<div class="block chead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">each path runs when its condition is true</span>${tools(sp.id)}</div>`+
+    `<div class="cmid"><div class="carm"></div><div class="lanes-row">${sp.lanes.map(l=>laneHTML(l, om)).join('')}<button class="lane add" data-addlane="${sp.id}">+ Add path</button></div></div>`+
+    `<div class="cfoot"></div></div></div>`;
 }
 function compHTML(c){
-  return `<div class="bw comp${sel===c.id?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Business process complete</span>${tools(c.id).replace(/<button class="cp"[^>]*>[^<]*<\/button>/,'')}<span class="hint">The document is approved here. Remaining steps below still run after completion.</span></div></div>`;
+  return `<div class="bw comp${sel===c.id?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Document approved</span>${tools(c.id, true)}<span class="hint">The step above is the completion step (Complete = Yes).</span></div></div>`;
 }
 function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : it.kind==='complete' ? compHTML(it) : stepHTML(it, om); }
 function renderBuild(){
@@ -627,15 +656,18 @@ function renderBuild(){
 }
 
 /* ---------- Palette ---------- */
+function palStep(k){ const T = TYPES[k]; return `<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`; }
 function renderPalette(){
   document.querySelectorAll('.ptab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.ptab===ptab)));
   const el = $('#palette'), done = hasCompletion();
   if(ptab==='steps'){
-    el.innerHTML = `<div class="pal-list">`+
-      `<div class="pal-item${done?' off':''}"><div ${done?'':'data-drag="newcomp"'} title="${done?'Already on the canvas':'Drag onto the canvas'}"><div class="block compl" style="min-height:40px"><span class="verb">✓ Business process complete</span></div></div><p>${done?'Already placed. There can only be one.':'Where the document is approved. Steps below it still run after completion. Only one per definition.'}</p></div>`+
-      Object.entries(TYPES).map(([k,T])=>`<div class="pal-item"><div class="bw" data-drag="new" data-type="${k}" title="Drag onto the canvas, or click to add"><div class="block" style="--c:${T.color}"><span class="verb">${T.label}</span></div></div><p>${T.desc}</p></div>`).join('')+
-      `<div class="pal-item"><div data-drag="newsplit" title="Drag onto the canvas"><div class="block shead" style="min-height:40px;width:auto"><span class="verb">Split into paths</span></div><div class="sfoot" style="padding:6px 14px 12px;width:auto">Paths rejoin</div></div><p>Branch cases off the default path. Each path has a condition rule that every step in it carries.</p></div>`+
-      `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Steps inside share one order letter and run at the same time.</p></div>`+
+    el.innerHTML = `<div class="pal-list">`+ MAIN_TYPES.map(palStep).join('')+
+      `<details class="pgrp" data-grp="path"${palOpen.has('path')?' open':''}><summary>Path manipulation<small>3</small></summary><div class="pal-list">`+
+        `<div class="pal-item"><div data-drag="newsplit" title="Drag onto the canvas"><div class="block chead" style="--c:var(--split);min-height:40px"><span class="verb">Split into paths</span></div><div class="cmid"><div class="carm" style="background:var(--split);height:18px"></div></div><div class="cfoot" style="background:var(--split);height:18px"></div></div><p>Paths side by side. Each has a condition rule that every step in it carries.</p></div>`+
+        `<div class="pal-item"><div data-drag="newpar" title="Drag onto the canvas"><div class="block chead" style="min-height:40px"><span class="verb">Run in parallel</span></div><div class="cmid"><div class="carm" style="height:18px"></div></div><div class="cfoot" style="height:18px"></div></div><p>Steps side by side that share one order letter and run at the same time.</p></div>`+
+        `<div class="pal-item${done?' off':''}"><div ${done?'':'data-drag="newcomp"'} title="${done?'Already on the canvas':'Drag onto the canvas'}"><div class="block compl" style="min-height:40px"><span class="verb">✓ Document approved</span></div></div><p>${done?'Already placed. There can only be one.':'Place it under the step that completes the business process. Only one per definition.'}</p></div>`+
+      `</div></details>`+
+      `<details class="pgrp" data-grp="other"${palOpen.has('other')?' open':''}><summary>Other types<small>${OTHER_TYPES.length}</small></summary><div class="pal-list">${OTHER_TYPES.map(palStep).join('')}</div></details>`+
     `</div>`;
   } else if(ptab==='groups'){
     const f = groupFilter.trim().toLowerCase(), names = groupsForBP();
@@ -648,22 +680,51 @@ function renderPalette(){
     el.innerHTML = `<div class="pal-list"><div class="pills">`+
       ruleLibrary().map(c=>`<span class="pill hexp" data-drag="rule" data-label="${esc(c)}" title="${esc(c)}"><span class="tr">${esc(shortRule(c))}</span></span>`).join('')+
       `</div><div class="pal-group"><h3>New condition rule</h3><div class="addrow"><input id="c-new" type="text" placeholder="e.g. Company is Company B?"><button class="btn" id="c-add">Add</button></div></div>`+
-      `<p class="tip">Drop a rule on a step to make that one step conditional. Drop it on a path header to set the path's condition.</p></div>`;
+      `<p class="tip">Drop a rule on a step to make that one step conditional. Drop it on a path header to set the path's condition. Workday owned conditions (grey on the blocks) stay with their delivered step, so they aren't listed here.</p></div>`;
   }
 }
 
-/* ---------- Right pane: recommendations when nothing is selected, details otherwise ---------- */
+/* ---------- Plain-English description of a step ---------- */
+function describeStep(s){
+  const T = TYPES[s.type], noun = bpCat().noun, f = find(s.id), om = orderMap();
+  const g = s.groups.length ? listJoin(s.groups) : 'nobody yet (add a security group)';
+  const plural = s.groups.length>1;
+  let what;
+  switch(s.type){
+    case 'approval': what = `<b>${esc(g)}</b> ${plural?'approve':'approves'} the ${noun}. ${s.all?'Every member of the group has to approve.':'One approval moves it forward.'}`; break;
+    case 'chain': what = `Starts with <b>${esc(g)}</b> and walks up that hierarchy until the chain ends.`; break;
+    case 'cchain': what = `Walks the <b>${esc(g)}</b> hierarchy across lines and worktags, sending each approver one consolidated inbox item.`; break;
+    case 'review': what = `<b>${esc(g)}</b> ${plural?'review':'reviews'} the ${noun}, can edit it, then ${plural?'submit':'submits'} it forward.`; break;
+    case 'action': what = `<b>${esc(g)}</b> ${plural?'run':'runs'} <b>${esc(s.specify||'a task (pick one in Specify)')}</b>. ${s.all?'Every member of the group has to act on it.':'One person acting moves it forward.'}`; break;
+    case 'service': what = `Workday runs <b>${esc(s.specify||'a service (pick one in Specify)')}</b> automatically. No one gets an inbox item.`; break;
+    case 'todo': what = `<b>${esc(g)}</b> ${plural?'get':'gets'} a To Do: <b>${esc(s.specify||'(add the instruction text)')}</b>. They mark it done to move on.`; break;
+    case 'checklist': what = s.items.length ? `${s.items.length} item${s.items.length===1?'':'s'} to finish${s.specify?` in <b>${esc(s.specify)}</b>`:''}: ${s.items.map(i=>`${esc(i.text||'untitled')} (${esc(i.assignee||'unassigned')})`).join('; ')}.` : `A checklist with no items yet.`; break;
+    case 'integration': what = `Launches the <b>${esc(s.specify||'(name the integration)')}</b> integration. It runs as the system.`; break;
+  }
+  const conds = effectiveConds(s).map(c=>shortRule(c) + (isOwned(c)?' (Workday owned)':''));
+  const when = conds.length ? `Only runs when ${conds.map(c=>`"${esc(c)}"`).join(' and ')}; otherwise it's skipped. ` : 'Always runs. ';
+  const extra = [];
+  if(f.lane) extra.push(`Part of the "${esc(f.lane.name||'Unnamed')}" path.`);
+  if(f.par) extra.push(`Runs at the same time as the other steps in order ${om[s.id]}.`);
+  if(s.restr.length) extra.push(`The ${listJoin(s.restr.map(r=>r==='Initiator'?'initiator':'prior approvers'))} can't act on it.`);
+  if(s.due) extra.push(`Due in ${esc(s.due)}.`);
+  if(s.optional) extra.push('Optional.');
+  if(isAfterCompletion(s.id)) extra.push(`Runs after the ${noun} is approved.`);
+  return `${when}${what}${extra.length?'<small>'+extra.join(' ')+'</small>':''}`;
+}
+
+/* ---------- Right pane ---------- */
 function recPresent(item){ const key = c => c.filter(x=>!wf.items.some(i=>i.kind==='split' && i.lanes.some(l=>l.rule===x))).sort().join('|'); return allSteps().some(s=>s.type===item.type && s.specify===item.specify && s.groups.join('|')===item.groups.join('|') && key(effectiveConds(s))===key(item.conds)); }
 function recList(){
   const out = [];
-  if(!hasCompletion()) out.push({key:'__comp', why:'Marks where the document is approved. Steps placed below it still run after completion.', comp:true});
+  if(!hasCompletion()) out.push({key:'__comp', why:'Marks where the document is approved. The step right above it becomes the completion step.', comp:true});
   bpCat().recs.forEach(r=>{ const it = r.make(); if(!recPresent(it)) out.push({...r, sample:it}); });
   return out;
 }
 function recBlockHTML(r){
-  if(r.comp) return `<div data-drag="rec" data-rec="${r.key}"><div class="block compl"><span class="verb">✓ Business process complete</span></div></div>`;
+  if(r.comp) return `<div data-drag="rec" data-rec="${r.key}"><div class="block compl"><span class="verb">✓ Document approved</span></div></div>`;
   const s = r.sample, T = TYPES[s.type];
-  return `<div data-drag="rec" data-rec="${r.key}"><div class="block" style="--c:${T.color}">${s.conds.length?`<span class="hex" title="${esc(s.conds.join('\n'))}"><i>if</i><span class="tr">${esc(shortRule(s.conds[0]))}${s.conds.length>1?' +'+(s.conds.length-1):''}</span></span>`:''}<span class="verb">${T.label}</span>${s.specify?`<span class="spec">${esc(s.specify)}</span>`:''}${s.groups.length?`<span class="by">by</span><span class="gp" style="padding-right:10px">${esc(s.groups.join(', '))}</span>`:''}</div></div>`;
+  return `<div data-drag="rec" data-rec="${r.key}"><div class="block" style="--c:${T.color}">${s.conds.length?`<span class="hex" title="${esc(s.conds.join('\n'))}"><i>if</i><span class="tr">${esc(shortRule(s.conds[0]))}${s.conds.length>1?' +'+(s.conds.length-1):''}</span></span>`:''}<span class="verb">${T.label}</span>${s.specify?`<span class="spec">${esc(s.specify)}</span>`:''}${s.groups.length?`<span class="by">by</span><span class="gp plain">${esc(s.groups.join(', '))}</span>`:''}</div></div>`;
 }
 function renderRecs(el){
   const recs = recList(), c = bpCat();
@@ -673,19 +734,19 @@ function renderRecs(el){
     `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div>`+
     `<div class="sec"><span class="lbl">Shortcuts</span><div class="shortcuts">Hover a block for <b>Copy</b> and <b>Delete</b><br><span class="kbd">Del</span> delete selected · <span class="kbd">Ctrl/⌘ D</span> duplicate<br><span class="kbd">Ctrl/⌘ C</span> <span class="kbd">V</span> copy and paste · <span class="kbd">Alt</span>-drag drags a copy<br><span class="kbd">Ctrl/⌘ Z</span> undo · <span class="kbd">Ctrl/⌘ S</span> save</div></div></div>`;
 }
-function groupSelect(id){
+function groupOptions(selected){
   const names = groupsForBP();
-  return `<select id="${id}"><option value="">Add a security group…</option><optgroup label="Special"><option>Initiator</option></optgroup>`+
-    ['Role','User'].map(k=>`<optgroup label="${KIND_LABEL[k]}">${names.filter(n=>groupKind(n)===k).map(n=>`<option>${esc(n)}</option>`).join('')}</optgroup>`).join('')+`</select>`;
+  return `<optgroup label="Special"><option${selected==='Initiator'?' selected':''}>Initiator</option></optgroup>`+
+    ['Role','User'].map(k=>`<optgroup label="${KIND_LABEL[k]}">${names.filter(n=>groupKind(n)===k).map(n=>`<option${n===selected?' selected':''}>${esc(n)}</option>`).join('')}</optgroup>`).join('');
 }
-function ruleSelect(id, exclude){
-  return `<select id="${id}"><option value="">Pick a condition rule…</option>${ruleLibrary().filter(r=>!exclude.includes(r)).map(r=>`<option value="${esc(r)}">${esc(trunc(r,70))}</option>`).join('')}</select>`;
-}
+function ruleSelect(id, exclude){ return `<select id="${id}"><option value="">Pick a condition rule…</option>${ruleLibrary().filter(r=>!exclude.includes(r)).map(r=>`<option value="${esc(r)}">${esc(trunc(r,70))}</option>`).join('')}</select>`; }
 function specField(it, T){
   const tasks = tasksFor(it.type);
   if(!tasks){
     const req = T.spec==='required' && !it.specify.trim();
-    return `<div class="sec"><label for="s-spec">Specify${T.spec==='required'?' (required)':''}</label><input id="s-spec" type="text" value="${esc(it.specify)}" class="${req?'req':''}" placeholder="${it.type==='todo'?'What the person needs to do, e.g. Attach the signed W-9':'Usually blank for this type'}">${req?`<p class="req-note">To Do steps need text here. It's the instruction the person sees.</p>`:''}</div>`;
+    const label = it.type==='checklist' ? 'Checklist name' : it.type==='integration' ? 'Integration (required)' : `Specify${T.spec==='required'?' (required)':''}`;
+    const ph = it.type==='todo' ? 'What the person needs to do, e.g. Attach the signed W-9' : it.type==='integration' ? 'e.g. Send invoice to OCR vendor' : it.type==='checklist' ? 'e.g. Month-end invoice checks' : 'Usually blank for this type';
+    return `<div class="sec"><label for="s-spec">${label}</label><input id="s-spec" type="text" value="${esc(it.specify)}" class="${req?'req':''}" placeholder="${ph}">${req?`<p class="req-note">${it.type==='todo'?"To Do steps need text here. It's the instruction the person sees.":'Name the integration that runs here.'}</p>`:''}</div>`;
   }
   const inList = tasks.some(t=>t.name===it.specify), custom = customSpec.has(it.id) || (it.specify && !inList);
   const picked = tasks.find(t=>t.name===it.specify);
@@ -695,6 +756,11 @@ function specField(it, T){
     (!tasks.length ? `<p class="help">No ${T.label.toLowerCase()} tasks are loaded for ${esc(wf.bp)} yet, so type a custom one.</p>` : '')+
     (picked && picked.desc ? `<p class="help">${esc(picked.desc)}</p>` : '')+`</div>`;
 }
+function checklistField(it){
+  return `<div class="sec"><span class="lbl">Checklist items</span>`+
+    (it.items.length ? it.items.map((ci,i)=>`<div class="ci"><span class="bx"></span><div class="f"><input type="text" data-cit="${i}" value="${esc(ci.text)}" placeholder="What needs to be done" class="${ci.text.trim()?'':'req'}"><select data-cia="${i}" class="${ci.assignee?'':'req'}"><option value="">Assign to…</option>${groupOptions(ci.assignee)}</select></div><button class="x" data-cirm="${i}" aria-label="Remove item" style="color:var(--muted)">×</button></div>`).join('') : '<span class="help">No items yet. Add one below, or drag a To Do block onto this checklist.</span>')+
+    `<button class="btn sm" id="ci-add" style="align-self:flex-start">+ Add item</button></div>`;
+}
 function renderInspector(){
   const el = $('#inspector'), om = orderMap();
   const showRecs = !sel || (!find(sel) && !findLane(sel) && sel!=='init');
@@ -703,54 +769,56 @@ function renderInspector(){
   if(showRecs){ sel = null; renderRecs(el); return; }
   if(sel==='init'){
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${INIT_COLOR}"></span><h3>Step a · Initiation</h3></div>`+
-      `<p class="help">Initiation is always step a. Who can start ${esc(wf.bp||'the business process')} comes from the business process security policy.</p>`+
+      `<div class="desc">Someone submits the ${bpCat().noun} and the business process starts. Who can do that comes from the business process security policy, not this definition.</div>`+
       `<div class="sec"><label for="i-note">Design notes</label><textarea id="i-note" placeholder="Entry points, open questions">${esc(wf.init.note)}</textarea></div></div>`;
     return;
   }
   if(sel.startsWith('lane:')){
     const f = findLane(sel), l = f.lane;
-    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Path: ${esc(l.name||'Unnamed')}</h3></div>`+
-      `<p class="help">Every step in this path carries its condition rule. It's listed first in each step's If column.</p>`+
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Path: <span id="l-title">${esc(l.name||'Unnamed')}</span></h3></div>`+
+      `<div class="desc">${l.rule ? `When "${esc(shortRule(l.rule))}" is true, the ${l.steps.length} step${l.steps.length===1?'':'s'} in this path run. Otherwise they're skipped.` : 'This path needs a condition rule.'}<small>Every step in this path carries the rule first in its If column.</small></div>`+
       `<div class="sec"><label for="l-name">Path name</label><input id="l-name" type="text" value="${esc(l.name)}" placeholder="e.g. Company B"></div>`+
       `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}"><p class="req-note" id="l-rule-note"${l.rule?' hidden':''}>A path needs a rule, otherwise its steps run for every case.</p>${ruleSelect('l-pick', [l.rule])}</div>`+
-      `<p class="help">${l.steps.length} step${l.steps.length===1?'':'s'} in this path.</p>`+
       `<div class="row"><button class="btn" data-addlane="${f.split.id}">Add another path</button><button class="btn danger" data-rmlane="${l.id}">Remove path</button></div></div>`;
     return;
   }
   const f = find(sel), it = f.item;
   if(it.kind==='complete'){
-    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${DONE_COLOR}"></span><h3>Business process complete</h3></div>`+
-      `<p class="help">Everything above this block finishes before the document is approved and the business process completes. Steps below it still run afterward, like asset registration. In the export, the step right above it gets Complete = Yes.</p>`+
-      `<p class="help">There can only be one per definition, and it sits on the main line.</p>`+
+    const ci = wf.items.indexOf(it), prev = wf.items.slice(0, ci).reverse().find(x=>x.kind==='step' || x.kind==='par' || x.kind==='split');
+    const prevStep = prev ? (prev.kind==='step' ? prev : null) : null;
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${DONE_COLOR}"></span><h3>Document approved</h3></div>`+
+      `<div class="desc">The step right above this block${prevStep?` (<b>${om[prevStep.id]}</b>, ${TYPES[prevStep.type].label}${prevStep.specify?': '+esc(prevStep.specify):''})`:''} is the completion step. When it finishes, the ${bpCat().noun} is approved and gets Complete = Yes in the export.<small>Steps placed below still run afterward. There can only be one of these, on the main line.</small></div>`+
       `<div class="row"><button class="btn danger" data-del="${it.id}">Delete</button></div></div>`;
     return;
   }
   if(it.kind==='par' || it.kind==='split'){
     const isSplit = it.kind==='split';
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${isSplit?SPLIT_COLOR:PAR_COLOR}"></span><h3>${isSplit?'Split into paths':'Step '+om[it.id]+' · Parallel'}</h3></div>`+
-      (isSplit ? `<p class="help">${it.lanes.length} path${it.lanes.length===1?'':'s'} branch off the default path, which runs down the middle. Every case starts at this block and rejoins below it. Click a path header to set its name and rule.</p>`+
+      (isSplit ? `<div class="desc">${it.lanes.length} path${it.lanes.length===1?'':'s'} side by side: ${it.lanes.map(l=>`<b>${esc(l.name||'Unnamed')}</b>`).join(', ')}. Each runs only when its condition is true, and they all rejoin below.</div>`+
         `<div class="row"><button class="btn" data-addlane="${it.id}">Add path</button><button class="btn" data-copy="${it.id}">Duplicate</button></div>`+
         `<div class="row"><button class="btn" id="sp-ungroup" title="Steps move to the main line and keep their path rule as their own condition">Remove split, keep steps</button><button class="btn danger" data-del="${it.id}">Delete split and steps</button></div>`
-      : `<p class="help">${it.steps.length} step${it.steps.length===1?'':'s'} share order ${om[it.id]} and run at the same time.</p><div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn danger" data-del="${it.id}">Delete</button></div>`)+`</div>`;
+      : `<div class="desc">${it.steps.length} step${it.steps.length===1?'':'s'} share order <b>${om[it.id]}</b> and run at the same time. The process waits for all of them before moving on.</div><div class="row"><button class="btn" id="p-ungroup">Ungroup steps</button><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn danger" data-del="${it.id}">Delete</button></div>`)+`</div>`;
     return;
   }
   const T = TYPES[it.type], lane = f.lane;
   el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${T.color}"></span><h3>Step ${om[it.id]} · ${T.label}</h3></div>`+
-    `<div class="grid2"><div class="sec"><label for="s-type">Type</label><select id="s-type">${Object.entries(TYPES).map(([k,t])=>`<option value="${k}"${k===it.type?' selected':''}>${t.label}</option>`).join('')}</select></div>`+
+    `<div class="desc" id="s-desc">${describeStep(it)}</div>`+
+    `<div class="sec"><label for="s-help">Help text</label><textarea id="s-help" placeholder="Anything people should know about this step, in your own words">${esc(it.help)}</textarea></div>`+
+    `<div class="grid2"><div class="sec"><label for="s-type">Type</label><select id="s-type">${[...MAIN_TYPES, ...OTHER_TYPES].map(k=>`<option value="${k}"${k===it.type?' selected':''}>${TYPES[k].label}</option>`).join('')}</select></div>`+
       `<div class="sec"><label for="s-due">Due date</label><input id="s-due" type="text" value="${esc(it.due)}" placeholder="e.g. 2 Days"></div></div>`+
-    `<p class="help" style="margin-top:-8px">${T.desc}</p>`+
     specField(it, T)+
-    (it.type!=='service' ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${groupKind(g)==='User'?'<small>user</small>':''}${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div>${groupSelect('s-addgroup')}</div>` : '')+
+    (it.type==='checklist' ? checklistField(it) : '')+
+    (!T.noGroup ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${groupKind(g)==='User'?'<small>user</small>':''}${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div><select id="s-addgroup"><option value="">Add a security group…</option>${groupOptions('')}</select></div>` : '')+
     `<div class="sec"><span class="lbl">If (conditions)</span>`+
       (lane ? `<div class="crow inh"><div class="ct">${esc(lane.rule || 'Path has no rule yet')}</div><div class="cm">From path "${esc(lane.name||'Unnamed')}". Move the step out of the path to drop it.</div></div>` : '')+
-      it.conds.map((c,i)=>`<div class="crow"><div class="ct">${esc(c)}</div><div class="cm">Skipped when false<button class="btn sm" data-crm="${i}">Remove</button></div></div>`).join('')+
-      (!lane && !it.conds.length ? '<span class="help">Always runs (default path).</span>' : '')+
+      it.conds.map((c,i)=> isOwned(c) ? `<div class="crow owned"><div class="ct">${esc(c)}</div><div class="cm">Workday owned. It's delivered with this step, so it can't be removed or added to another step.</div></div>` : `<div class="crow"><div class="ct">${esc(c)}</div><div class="cm">Skipped when false<button class="btn sm" data-crm="${i}">Remove</button></div></div>`).join('')+
+      (!lane && !it.conds.length ? '<span class="help">No conditions, so it always runs.</span>' : '')+
       ruleSelect('s-addcond', it.conds)+
       `<div class="addrow"><input id="s-cond-new" type="text" placeholder="Or type a new rule"><button class="btn" id="s-cond-set">Add</button></div></div>`+
-    `<div class="sec"><span class="lbl">Routing restrictions (Additional Information)</span><div class="checks-col">`+
-      RESTR.map(r=>`<label class="check-row"><input type="checkbox" data-restr="${r}"${it.restr.includes(r)?' checked':''}> Exclude ${r.toLowerCase()}</label>`).join('')+`</div></div>`+
+    (!T.noGroup ? `<div class="sec"><span class="lbl">Routing restrictions (Additional Information)</span><div class="checks-col">`+
+      RESTR.map(r=>`<label class="check-row"><input type="checkbox" data-restr="${r}"${it.restr.includes(r)?' checked':''}> Exclude ${r.toLowerCase()}</label>`).join('')+`</div></div>` : '')+
     `<div class="sec"><span class="lbl">Options</span><div class="checks-col">`+
-      `<label class="check-row"><input type="checkbox" data-opt="all"${it.all?' checked':''}> All (every group member must act)</label>`+
+      (ALL_TYPES.includes(it.type) ? `<label class="check-row"><input type="checkbox" data-opt="all"${it.all?' checked':''}> All (every member of the security group must ${it.type==='approval'?'approve':'act on'} the ${bpCat().noun})</label>` : '')+
       `<label class="check-row"><input type="checkbox" data-opt="optional"${it.optional?' checked':''}> Optional</label>`+
       `<label class="check-row"><input type="checkbox" data-opt="doNotAdvance"${it.doNotAdvance?' checked':''}> Do not advance</label>`+
       (f.par ? '' : `<label class="check-row"><input type="checkbox" data-opt="sub"${it.sub?' checked':''}> Number as sub-step (e.g. a1)</label>`)+
@@ -764,7 +832,10 @@ function renderInspector(){
 function runChecks(){
   const out = [], om = orderMap(), steps = allSteps();
   if(!steps.length) out.push({sev:'warn', id:null, msg:'No steps after initiation. The transaction would complete on submit.'});
-  if(!hasCompletion() && steps.length) out.push({sev:'warn', id:null, msg:'No completion block yet. Add one to show where the document is approved.'});
+  if(!hasCompletion() && steps.length) out.push({sev:'warn', id:null, msg:'No Document approved block yet. Add one under the step that completes the business process.'});
+  const ci = wf.items.findIndex(i=>i.kind==='complete');
+  if(ci===0) out.push({sev:'warn', id:wf.items[0].id, msg:'Document approved sits right under Initiation, so no step is marked Complete.'});
+  else if(ci>0 && wf.items[ci-1].kind!=='step') out.push({sev:'info', id:wf.items[ci].id, msg:'The block above Document approved is a split or parallel block, so its last step gets Complete = Yes.'});
   walk((it)=>{
     if(it.kind==='par' && it.steps.length<2) out.push({sev:'warn', id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs two or more.`});
     if(it.kind==='split') it.lanes.forEach(l=>{
@@ -775,9 +846,14 @@ function runChecks(){
   steps.forEach(s=>{
     const L = om[s.id], T = TYPES[s.type], tasks = tasksFor(s.type);
     if(s.type==='todo' && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> To Do needs text in Specify. That's the instruction the person sees.`});
-    else if((T.spec==='catalog' || s.type==='integration') && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has no task picked in Specify.`});
+    else if(s.type==='integration' && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Integration needs a name.`});
+    else if(T.spec==='catalog' && !s.specify.trim()) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} step has no task picked in Specify.`});
     else if(tasks && tasks.length && s.specify && !tasks.some(t=>t.name===s.specify)) out.push({sev:'info', id:s.id, msg:`<b>${L}</b> "${esc(s.specify)}" isn't in the ${esc(wf.bp)} task list.`});
-    if(s.type!=='service' && !s.groups.length) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} has no security group.`});
+    if(!T.noGroup && !s.groups.length) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> ${T.label} has no security group.`});
+    if(s.type==='checklist'){
+      if(!s.items.length) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Checklist has no items.`});
+      else if(s.items.some(i=>!i.text.trim() || !i.assignee)) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Every checklist item needs text and someone assigned.`});
+    }
     if((s.type==='chain'||s.type==='cchain') && s.groups.some(g=>groupKind(g)!=='Role')) out.push({sev:'warn', id:s.id, msg:`<b>${L}</b> Approval chains walk a hierarchy, so they need a role-based group.`});
   });
   steps.forEach(s=>s.conds.forEach(c=>out.push({sev:'info', id:s.id, msg:`<b>${om[s.id]}</b> only runs if "${esc(shortRule(c))}". When it's false the step is skipped.`})));
@@ -796,12 +872,13 @@ function defRows(){
   const rows = [{id:'init', order:'a', ifs:'', type:'Initiation', specify:'', optional:'No', groups:'', addl:'', modifier:'', all:'', runAs:'', due:'', dna:'No', complete:'', note:wf.init.note, color:INIT_COLOR, path:'', step:`${bp} (${def}) step a - Initiation`}];
   let after = false, last = rows[0];
   walk((s, list, i, ctx)=>{
-    if(s.kind==='complete'){ last.complete = 'Yes'; rows.push({cmp:true, id:s.id}); after = true; return; }
+    if(s.kind==='complete'){ last.complete = 'Yes'; rows.push({cmp:true, id:s.id, of:last.order}); after = true; return; }
     if(s.kind!=='step') return;
     const T = TYPES[s.type], L = om[s.id];
     last = {id:s.id, order:L, ifs:effectiveConds(s).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
-      groups:s.groups.join('\n'), addl:s.restr.length?'Restriction: '+s.restr.join(', '):'', modifier:s.modifier, all:s.all?'Yes':'', runAs:s.runAs, due:s.due,
-      dna:s.doNotAdvance?'Yes':'No', complete:'', note:s.note, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
+      groups:stepGroups(s).join('\n'), addl:s.restr.length && !T.noGroup?'Restriction: '+s.restr.join(', '):'', modifier:s.modifier, all:s.all && ALL_TYPES.includes(s.type)?'Yes':'', runAs:s.runAs, due:s.due,
+      dna:s.doNotAdvance?'Yes':'No', complete:'', note:s.note, help:s.help, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
+      items:s.type==='checklist' ? s.items : null,
       step:`${bp} (${def}) step ${L} - ${T.label}${s.type==='service'&&s.specify?' ['+s.specify+']':''}`};
     rows.push(last);
   });
@@ -810,18 +887,15 @@ function defRows(){
 const stepRows = () => defRows().filter(r=>!r.cmp);
 function renderConfig(){
   const rows = defRows();
-  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Steps in a path list the path's rule first in the If column. Greyed rows run after the business process completes. Click a row to edit that step.</p></div>`+
+  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Steps in a path list the path's rule first in the If column. Greyed rows run after the document is approved. Click a row to edit that step.</p></div>`+
     `<div class="tbl-wrap"><table class="def"><thead><tr><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
-    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="12">✓ Business process completes here. Steps below still run.</td></tr>` :
-      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="12">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
+      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
     `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
 }
 
 /* ---------- Render orchestration ---------- */
-function renderBadges(){
-  const w = runChecks().filter(c=>c.sev==='warn').length, b = $('#check-badge');
-  b.textContent = w ? w : '✓'; b.className = 'badge' + (w ? '' : ' ok'); b.title = w ? `${w} design check${w===1?'':'s'} to review` : 'No issues';
-}
+function renderBadges(){ const w = runChecks().filter(c=>c.sev==='warn').length, b = $('#check-badge'); b.textContent = w ? w : '✓'; b.className = 'badge' + (w ? '' : ' ok'); b.title = w ? `${w} design check${w===1?'':'s'} to review` : 'No issues'; }
 function renderStatus(){
   const el = $('#status');
   if(dirty){ el.textContent = docId ? 'Unsaved changes' : 'Not saved yet'; el.className = 'status dirty'; }
@@ -846,18 +920,18 @@ function timeAgo(t){ const d = (Date.now()-t)/1000; if(d<60) return 'just now'; 
 /* ---------- Mutations ---------- */
 function change(fn, keepInspector){ snapshot(); fn(); markDirty(); renderAll(keepInspector); }
 function stepOf(id){ const f = id && find(id); return f && f.item.kind==='step' ? f.item : null; }
-function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(s.type==='service'){ toast('Service steps run as the system, so they take no group'); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
-function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
+function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(TYPES[s.type].noGroup){ toast(s.type==='checklist' ? 'Assign groups to each checklist item in Step details' : `${TYPES[s.type].label} steps run as the system, so they take no group`); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
+function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; if(isOwned(text)){ toast("Workday owned conditions stay with their delivered step and can't be added to another one"); return; } const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
 function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else if(x.conds) x.conds = x.conds.filter(c=>c!==text); }
-function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
+function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; if(isOwned(text)){ toast("Workday owned conditions can't be used as a path rule"); return; } change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
 function removeItem(id){
   const f = find(id); if(!f) return;
-  const label = f.item.kind==='complete' ? 'Completion block' : f.item.kind==='split' ? 'Split' : 'Step';
+  const label = f.item.kind==='complete' ? 'Document approved block' : f.item.kind==='split' ? 'Split' : f.item.kind==='par' ? 'Parallel block' : 'Step';
   change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); renderPalette(); toast(`${label} deleted`, 'Undo', undo);
 }
 function duplicate(id){
   const f = find(id); if(!f) return;
-  if(f.item.kind==='complete'){ toast('There can only be one completion block'); return; }
+  if(f.item.kind==='complete'){ toast('There can only be one Document approved block'); return; }
   const c = withNewIds(f.item);
   change(()=>{ f.list.splice(f.index+1, 0, c); sel = c.id; }); toast('Duplicated');
 }
@@ -873,13 +947,10 @@ function pasteClip(){
   } else if(l && c.kind!=='split'){ list = l.lane.steps; idx = list.length; }
   change(()=>{ list.splice(idx, 0, c); sel = c.id; }); toast('Pasted');
 }
-function insertBeforeCompletion(item){
-  const ci = wf.items.findIndex(i=>i.kind==='complete');
-  return ci<0 ? wf.items.length : ci;
-}
+function insertBeforeCompletion(){ const ci = wf.items.findIndex(i=>i.kind==='complete'); return ci<0 ? wf.items.length : ci; }
 function addRec(key){
   const r = recList().find(x=>x.key===key); if(!r) return;
-  if(r.comp){ const c = Comp(); change(()=>{ wf.items.push(c); sel = c.id; }); renderPalette(); toast('Completion block added'); return; }
+  if(r.comp){ const c = Comp(); change(()=>{ wf.items.push(c); sel = c.id; }); renderPalette(); toast('Document approved block added'); return; }
   const it = r.make();
   change(()=>{ const idx = r.after ? wf.items.length : insertBeforeCompletion(); wf.items.splice(idx, 0, it); sel = it.id; });
   toast('Added. Drag it to adjust the order.');
@@ -889,14 +960,19 @@ function setBP(name){
   change(()=>{ wf.bp = name; }); renderPalette();
   if(!BP_CATALOG[name] || !BP_CATALOG[name].loaded) toast(`Task list for ${name} isn't loaded yet. Custom tasks still work.`);
 }
+function todoIntoChecklist(todo, checklistId){
+  const cl = stepOf(checklistId); if(!cl) return false;
+  cl.items.push(Item(todo.specify || 'To Do', todo.groups[0] || ''));
+  return true;
+}
 
 /* ---------- Drag and drop (pointer events: mouse, pen and touch). Alt/Option-drag copies. ---------- */
 let drag = null, justDragged = 0;
 document.addEventListener('pointerdown', e=>{
   if(e.button!==0) return;
-  if(e.target.closest('.x, .tools, input, select, textarea, a, .btn, .lane-head')) return;
+  if(e.target.closest('.x, .tools, .help-chip, input, select, textarea, a, .btn, .lane-head, .lane.add, summary')) return;
   const src = e.target.closest('[data-drag]'); if(!src) return;
-  if(src.classList.contains('split') && e.target.closest('.lanes-row')) return;
+  if(src.classList.contains('wide') && (e.target.closest('.lanes-row') || e.target.closest('.stack.row'))) return;
   drag = {src, x0:e.clientX, y0:e.clientY, started:false, copy:e.altKey};
 });
 document.addEventListener('pointermove', e=>{
@@ -913,9 +989,8 @@ function startDrag(e){
   let ghostHTML;
   if(kind==='block'){
     const id = src.dataset.id, f = find(id); if(!f){ drag=null; return; }
-    if(drag.copy && f.item.kind!=='complete'){
-      drag.payload = {kind:'item', item:withNewIds(f.item), isMove:false};
-    } else {
+    if(drag.copy && f.item.kind!=='complete'){ drag.payload = {kind:'item', item:withNewIds(f.item), isMove:false}; }
+    else {
       drag.copy = false; snapshot();
       drag.payload = {kind:'item', item:f.item, fromList:f.par?'par:'+f.par.id:f.lane?'lane:'+f.lane.id:'root', fromIndex:f.index, isMove:true};
       f.list.splice(f.index,1); sel = id; renderBuild();
@@ -927,9 +1002,7 @@ function startDrag(e){
   } else if(kind==='rec'){
     const r = recList().find(x=>x.key===src.dataset.rec); if(!r){ drag=null; return; }
     drag.payload = {kind:'item', item: r.comp ? Comp() : r.make(), isMove:false}; ghostHTML = src.outerHTML;
-  } else {
-    drag.payload = {kind, value: src.dataset.name || src.dataset.label}; ghostHTML = src.outerHTML;
-  }
+  } else { drag.payload = {kind, value: src.dataset.name || src.dataset.label}; ghostHTML = src.outerHTML; }
   drag.started = true;
   const g = document.createElement('div'); g.className = 'drag-ghost' + (drag.copy && kind==='block' ? ' copying' : ''); g.innerHTML = ghostHTML;
   g.style.width = (drag.payload.kind==='item' ? Math.max(260, Math.min(rect.width, 460)) : rect.width) + 'px';
@@ -941,6 +1014,7 @@ function computeTarget(x,y){
   const cv = $('#v-build').getBoundingClientRect();
   if(view!=='build' || x<cv.left || x>cv.right || y<cv.top || y>cv.bottom) return null;
   const k = drag.payload.item.kind;
+  drag.ph.remove();
   let best = null, bestArea = Infinity;
   document.querySelectorAll('#script .stack').forEach(st=>{
     const key = st.dataset.list, root = key==='root';
@@ -953,24 +1027,32 @@ function computeTarget(x,y){
     }
   });
   if(!best) return null;
-  const kids = [...best.children].filter(c=>c.classList.contains('bw'));
+  const kids = [...best.children].filter(c=>c.classList.contains('bw')), row = best.classList.contains('row');
   let index = kids.length;
-  for(let i=0;i<kids.length;i++){ const r = kids[i].getBoundingClientRect(); if(y < r.top + Math.min(r.height/2, 30)){ index = i; break; } }
+  for(let i=0;i<kids.length;i++){ const r = kids[i].getBoundingClientRect(); if(row ? x < r.left + r.width/2 : y < r.top + Math.min(r.height/2, 30)){ index = i; break; } }
   return {stack:best, index, kids};
 }
 function clearDropOk(){ document.querySelectorAll('.drop-ok').forEach(n=>n.classList.remove('drop-ok')); }
+function hitAt(x,y){ drag.ghost.style.display = 'none'; const el = document.elementFromPoint(x,y); drag.ghost.style.display = ''; return el; }
 function pillTarget(x,y){
-  drag.ghost.style.display = 'none'; const el = document.elementFromPoint(x,y); drag.ghost.style.display = '';
-  if(!el) return null;
+  const el = hitAt(x,y); if(!el) return null;
   if(drag.payload.kind==='rule'){ const lh = el.closest('.lane-head[data-lanesel]'); if(lh) return lh.closest('.lane'); }
   const bw = el.closest('#script .bw');
   if(!bw || !stepOf(bw.dataset.id)) return null;
   return bw;
 }
+function checklistTarget(x,y){
+  const it = drag.payload.item; if(it.kind!=='step' || it.type!=='todo') return null;
+  const el = hitAt(x,y), bw = el && el.closest('#script .bw[data-type="checklist"]');
+  return bw && bw.dataset.id!==it.id ? bw : null;
+}
 function moveDrag(e){
   const x = e.clientX, y = e.clientY;
   drag.ghost.style.transform = `translate(${x-drag.dx}px, ${y-drag.dy}px) rotate(1.5deg)`;
   if(drag.payload.kind==='item'){
+    clearDropOk();
+    const cl = checklistTarget(x,y); drag.checklist = cl;
+    if(cl){ cl.classList.add('drop-ok'); drag.target = null; drag.ph.remove(); document.body.classList.remove('trash'); return; }
     const trash = overPalette(x,y) && drag.payload.isMove;
     document.body.classList.toggle('trash', trash);
     const t = trash ? null : computeTarget(x,y); drag.target = t;
@@ -983,9 +1065,10 @@ function finishDragUI(){ drag.ghost && drag.ghost.remove(); drag.ph && drag.ph.r
 function endDrag(e){
   const p = drag.payload, x = e.clientX, y = e.clientY;
   if(p.kind==='item'){
-    const t = drag.target, onTrash = overPalette(x,y); finishDragUI();
+    const t = drag.target, onTrash = overPalette(x,y), cl = drag.checklist; finishDragUI();
+    if(cl){ if(!p.isMove) snapshot(); todoIntoChecklist(p.item, cl.dataset.id); sel = cl.dataset.id; markDirty(); renderAll(); toast('Added to the checklist as an item', p.isMove ? 'Undo' : '', p.isMove ? undo : null); return; }
     if(t){
-      if(!p.isMove && p.item.kind==='complete' && hasCompletion()){ toast('There can only be one completion block'); return; }
+      if(!p.isMove && p.item.kind==='complete' && hasCompletion()){ toast('There can only be one Document approved block'); return; }
       const key = t.stack.dataset.list, list = listFor(key); if(!p.isMove) snapshot();
       if(key.startsWith('par:')) p.item.sub = false;
       if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(p.item, l.rule); }
@@ -1002,12 +1085,14 @@ function endDrag(e){
 function cancelDrag(){ const p = drag.payload; finishDragUI(); if(p && p.kind==='item' && p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(p.fromIndex,0,p.item); hist.pop(); renderAll(); } }
 
 /* ---------- Clicks ---------- */
+document.addEventListener('toggle', e=>{ const d = e.target; if(d.matches && d.matches('details.pgrp')){ d.open ? palOpen.add(d.dataset.grp) : palOpen.delete(d.dataset.grp); store.set('bpws.palOpen', [...palOpen]); } }, true);
 document.addEventListener('click', e=>{
   if(Date.now() - justDragged < 250) return;
   const t = e.target;
   const del = t.closest('[data-del]'); if(del){ removeItem(del.dataset.del); return; }
   const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
   const ra = t.closest('[data-recadd]'); if(ra){ addRec(ra.dataset.recadd); return; }
+  const hc = t.closest('[data-help]'); if(hc){ sel = hc.dataset.help; renderBuild(); renderInspector(); setTimeout(()=>{ const h = $('#s-help'); if(h){ h.focus(); h.scrollIntoView({block:'center'}); } }, 0); return; }
   if(t.id==='b-recs'){ sel = null; renderBuild(); renderInspector(); return; }
   const x = t.closest('#script .x');
   if(x){
@@ -1039,12 +1124,10 @@ document.addEventListener('click', e=>{
   if(t.id==='p-ungroup'){ const f = find(sel); change(()=>{ f.list.splice(f.index,1,...f.item.steps); sel=null; }); return; }
   if(t.id==='sp-ungroup'){
     const f = find(sel);
-    change(()=>{
-      const out = [];
-      f.item.lanes.forEach(l=>{ const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); }; l.steps.forEach(carry); out.push(...l.steps); });
-      f.list.splice(f.index, 1, ...out); sel = null;
-    }); return;
+    change(()=>{ const out = []; f.item.lanes.forEach(l=>{ const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); }; l.steps.forEach(carry); out.push(...l.steps); }); f.list.splice(f.index, 1, ...out); sel = null; }); return;
   }
+  if(t.id==='ci-add'){ const s = stepOf(sel); change(()=>s.items.push(Item())); setTimeout(()=>{ const ins = document.querySelectorAll('[data-cit]'); ins.length && ins[ins.length-1].focus(); }, 0); return; }
+  if(t.dataset.cirm!==undefined){ const s = stepOf(sel); change(()=>s.items.splice(+t.dataset.cirm,1)); return; }
   if(t.id==='s-copy'){ const f = find(sel); clip = clone(f.item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); return; }
   if(t.dataset.grm!==undefined){ const s = stepOf(sel); change(()=>s.groups.splice(+t.dataset.grm,1)); return; }
   if(t.dataset.crm!==undefined){ const s = stepOf(sel); change(()=>s.conds.splice(+t.dataset.crm,1)); return; }
@@ -1069,11 +1152,12 @@ document.addEventListener('change', e=>{
   const t = e.target, s = stepOf(sel);
   if(t.id==='f-bp'){ if(t.value==='__other'){ $('#f-bp-other').hidden = false; $('#f-bp-other').focus(); } else setBP(t.value); }
   else if(t.id==='f-bp-other'){ setBP(t.value.trim()); }
-  else if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(s.type==='service') s.groups = []; }); }
+  else if(t.id==='s-type'){ change(()=>{ s.type = t.value; if(TYPES[s.type].noGroup){ if(s.type==='checklist' && !s.items.length && s.groups.length) s.items = s.groups.map(g=>Item('', g)); s.groups = []; s.restr = []; s.all = false; } }); }
   else if(t.id==='s-spec-sel'){ if(t.value==='__custom'){ customSpec.add(s.id); change(()=>{ s.specify=''; }); setTimeout(()=>$('#s-spec') && $('#s-spec').focus(), 0); } else { customSpec.delete(s.id); change(()=>{ s.specify = t.value; }); } }
   else if(t.id==='s-addgroup' && t.value){ addGroupTo(sel, t.value); }
   else if(t.id==='s-addcond' && t.value){ addRule(sel, t.value); }
   else if(t.id==='l-pick' && t.value){ setLaneRule(sel, t.value); }
+  else if(t.dataset.cia!==undefined && s){ change(()=>{ s.items[+t.dataset.cia].assignee = t.value; }); }
   else if(t.dataset.restr && s){ const r = t.dataset.restr; change(()=>{ s.restr = t.checked ? RESTR.filter(x=>x===r || s.restr.includes(x)) : s.restr.filter(x=>x!==r); }); }
   else if(t.dataset.opt && s){ change(()=>s[t.dataset.opt] = t.checked); }
 });
@@ -1081,31 +1165,41 @@ let typingSnap = false;
 document.addEventListener('focusin', e=>{ if(e.target.matches('input[type=text], textarea')) typingSnap = false; });
 document.addEventListener('input', e=>{
   const t = e.target, s = stepOf(sel), lf = sel && sel.startsWith('lane:') && findLane(sel);
-  const map = {'s-spec':v=>s.specify=v, 's-due':v=>s.due=v, 's-mod':v=>s.modifier=v, 's-runas':v=>s.runAs=v, 's-note':v=>s.note=v, 'i-note':v=>wf.init.note=v,
+  const map = {'s-help':v=>s.help=v, 's-spec':v=>s.specify=v, 's-due':v=>s.due=v, 's-mod':v=>s.modifier=v, 's-runas':v=>s.runAs=v, 's-note':v=>s.note=v, 'i-note':v=>wf.init.note=v,
     'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v, 'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-def':v=>wf.def=v};
   const ok = t.id.startsWith('s-') ? !!s : t.id.startsWith('l-') ? !!lf : true;
+  if(t.dataset.cit!==undefined && s){
+    if(!typingSnap){ snapshot(); typingSnap = true; }
+    s.items[+t.dataset.cit].text = t.value; t.classList.toggle('req', !t.value.trim());
+    markDirty(); renderBuild(); renderBadges(); const d = $('#s-desc'); if(d) d.innerHTML = describeStep(s); return;
+  }
   if(map[t.id] && ok){
     if(!typingSnap){ snapshot(); typingSnap = true; }
     map[t.id](t.value); markDirty(); renderBuild(); renderBadges(); if(view!=='build') renderView();
-    if(t.id==='s-spec' && s.type==='todo') t.classList.toggle('req', !t.value.trim());
+    if(s){ const d = $('#s-desc'); if(d) d.innerHTML = describeStep(s); }
+    if(t.id==='s-spec' && TYPES[s.type].spec==='required') t.classList.toggle('req', !t.value.trim());
     if(t.id==='l-rule'){ t.classList.toggle('req', !t.value.trim()); $('#l-rule-note').hidden = !!t.value.trim(); }
+    if(t.id==='l-name'){ $('#l-title').textContent = t.value || 'Unnamed'; }
   }
   if(t.id==='g-search'){ groupFilter = t.value; renderPalette(); const g = $('#g-search'); g.focus(); g.setSelectionRange(g.value.length, g.value.length); }
 });
 document.addEventListener('keydown', e=>{
+  if(!$('#home').hidden && $('#modal').hidden) return;
   const typing = e.target.matches('input, textarea, select'), mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
-  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); return; }
+  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click(); return; }
   if(mod && k==='z' && !typing){ e.preventDefault(); undo(); }
   else if(mod && k==='s'){ e.preventDefault(); saveDesign(); }
   else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); duplicate(sel); }
-  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ if(find(sel).item.kind==='complete'){ toast('There can only be one completion block'); return; } clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
+  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ if(find(sel).item.kind==='complete'){ toast('There can only be one Document approved block'); return; } clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
   else if(mod && k==='v' && !typing && clip){ e.preventDefault(); pasteClip(); }
   else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); sel.startsWith('lane:') ? removeLane(sel) : removeItem(sel); }
   else if(e.key==='Escape'){ if(drag && drag.started){ cancelDrag(); drag=null; } else if(sel){ sel = null; renderBuild(); renderInspector(); } }
   else if(e.key==='Enter' && e.target.id==='g-new') addCustomGroup();
   else if(e.key==='Enter' && e.target.id==='c-new') $('#c-add').click();
   else if(e.key==='Enter' && e.target.id==='s-cond-new') $('#s-cond-set').click();
+  else if(e.key==='Enter' && e.target.dataset.cit!==undefined){ $('#ci-add').click(); }
   else if(e.key==='Enter' && e.target.id==='f-bp-other') e.target.blur();
+  else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click();
 });
 
 /* ---------- Save / open / import ---------- */
@@ -1117,10 +1211,9 @@ function saveDesign(){
   const rec = {id:docId, name:wf.name, client:wf.client, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
   const i = list.findIndex(d=>d.id===docId); i>=0 ? list.splice(i,1,rec) : list.unshift(rec);
   if(!store.set('bpws2.designs', list)){ toast('Your browser blocked local saving. Use Export › Design file instead.'); return; }
-  dirty = false; savedAt = rec.updatedAt; store.set('bpws4.draft', {wf, docId, dirty:false, savedAt});
+  dirty = false; savedAt = rec.updatedAt; store.set('bpws5.draft', {wf, docId, dirty:false, savedAt});
   renderMeta(); renderStatus(); toast('Saved to this browser');
 }
-/* Older design files load too: v1/v2 conditions become step rules, and a step marked Complete becomes a completion block after it */
 function normalize(w){
   const b = blankWf(w.bp);
   const oldCond = (s, axes) => {
@@ -1132,8 +1225,11 @@ function normalize(w){
     if(it.kind==='complete') return {kind:'complete', id:it.id||uid()};
     if(it.kind==='par') return {kind:'par', id:it.id||uid(), steps:it.steps.map(s=>fix(s, axes))};
     if(it.kind==='split') return {kind:'split', id:it.id||uid(), lanes:it.lanes.map(l=>({id:l.id||uid(), name:l.name||'', rule:l.rule||'', steps:l.steps.map(s=>fix(s, axes))}))};
-    const s = S(TYPES[it.type] ? it.type : 'action');
-    Object.assign(s, it, {kind:'step', type:TYPES[it.type] ? it.type : 'action', conds:oldCond(it, axes), specify:it.specify ?? it.task ?? '', restr:Array.isArray(it.restr)?it.restr:[], groups:Array.isArray(it.groups)?it.groups:[]});
+    const type = TYPES[it.type] ? it.type : 'action';
+    const s = S(type);
+    Object.assign(s, it, {kind:'step', type, conds:oldCond(it, axes), specify:it.specify ?? it.task ?? '', restr:Array.isArray(it.restr)?it.restr:[], groups:Array.isArray(it.groups)?it.groups:[], items:Array.isArray(it.items)?it.items.map(i=>({id:i.id||uid(), text:i.text||'', assignee:i.assignee||''})):[]});
+    if(type==='checklist' && !s.items.length && s.groups.length) s.items = s.groups.map(g=>Item('', g));
+    if(TYPES[type].noGroup) s.groups = [];
     if(it.complete && !completeId) completeId = s.id;
     delete s.condition; delete s.task; delete s.restrictions; delete s.complete;
     return s;
@@ -1144,13 +1240,10 @@ function normalize(w){
   if(completeId && !out.items.some(i=>i.kind==='complete')) placeCompletionAfter(out.items, completeId);
   return out;
 }
-function placeCompletionAfter(items, stepId){
-  const holds = it => it.id===stepId || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds));
-  const i = items.findIndex(holds); if(i>=0) items.splice(i+1, 0, Comp());
-}
+function placeCompletionAfter(items, stepId){ const holds = it => it.id===stepId || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds)); const i = items.findIndex(holds); if(i>=0) items.splice(i+1, 0, Comp()); }
 function loadWf(w, id, saved){
   wf = normalize(clone(w)); docId = id || null; sel = null; hist = []; customSpec.clear();
-  dirty = !id; savedAt = saved || null; store.set('bpws4.draft', {wf, docId, dirty, savedAt});
+  dirty = !id; savedAt = saved || null; store.set('bpws5.draft', {wf, docId, dirty, savedAt});
   renderAll(); renderPalette();
 }
 function openModal(title, html){ $('#modal-title').textContent = title; $('#modal-b').innerHTML = html; $('#modal').hidden = false; }
@@ -1159,45 +1252,74 @@ $('#modal-close').onclick = closeModal;
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
 function minis(w){ const cols=[INIT_COLOR]; const add = it => { if(it.kind==='par') it.steps.forEach(add); else if(it.kind==='split'){ cols.push(SPLIT_COLOR); it.lanes.forEach(l=>l.steps.forEach(add)); } else if(it.kind==='complete') cols.push(DONE_COLOR); else cols.push((TYPES[it.type]||TYPES.action).color); }; (w.items||[]).forEach(add); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
 
+/* ---------- Home page and New flow ---------- */
+let pickBP = null;
+function goHome(){ $('.app').hidden = true; $('#home').hidden = false; closeModal(); renderHome(); window.scrollTo(0,0); }
+function goBuild(){ $('#home').hidden = true; $('.app').hidden = false; renderAll(); renderPalette(); }
+function renderHome(){
+  const list = designs(), tpls = templates(), d = store.get('bpws5.draft', null);
+  const draftUnsaved = d && d.wf && d.dirty && (d.wf.items||[]).length;
+  $('#home').innerHTML = `<div class="home-in">`+
+    `<div class="home-top"><div class="logo-big"><img src="${LOGO}" alt="Commit, an embark company"></div><div><h1>BP Workflow Studio</h1><p>Design, review and export Workday business process definitions.</p></div></div>`+
+    `<div class="home-actions"><button class="btn primary big" id="h-new">+ New definition</button><button class="btn big" id="h-import">Import .xlsx or .json</button></div>`+
+    (draftUnsaved ? `<div class="resume"><div class="t"><b>Continue where you left off</b><small>${esc(d.wf.name || d.wf.bp || 'Unsaved definition')} · not saved yet</small></div>${minis(d.wf)}<button class="btn primary" id="h-resume">Continue</button></div>` : '')+
+    `<section><h2>Open</h2>`+
+    (list.length ? `<div class="dgrid">${list.map(x=>`<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc([x.client, x.bp].filter(Boolean).join(' · '))}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div></div>`).join('')}</div>`
+      : `<div class="empty">No saved definitions yet. Start a new one, and once you hit Save it shows up here.</div>`)+`</section>`+
+    (tpls.length ? `<section><h2>Templates</h2><div class="dgrid">${tpls.map(t=>`<div class="dcard"><b>${esc(t.name)}</b><small>${esc(t.bp||'')}</small>${minis(t.wf)}<div class="row"><button class="btn sm" data-new="t:${t.id}">Use</button><button class="btn sm danger" data-tdel="${t.id}">Delete</button></div></div>`).join('')}</div></section>` : '')+
+    `<p class="help">Definitions save in this browser. Export a design file to share one with a teammate.</p></div>`;
+}
 function showNew(){
-  const tpls = templates();
-  openModal('Start a new definition',
-    (dirty ? `<p class="help" style="color:var(--warn)">You have unsaved changes. Save first if you need them.</p>` : '')+
-    `<div class="cards"><button class="card" data-new="example"><b>Supplier Invoice Event: Default Definition</b>${minis(exampleWf())}<small>Populated example from the delivered default, with the Non-PO approvals laid out as a path.</small></button>`+
-    `<button class="card" data-new="blank"><b>Blank ${esc(wf.bp)}</b>${minis(blankWf())}<small>Just Initiation. Use the recommendations on the right to build it out.</small></button>`+
-    `<button class="card" data-new="import"><b>Import a definition export</b><small>Workday BP definition .xlsx (Step, Order, If, Type, Specify, Group…) or a design .json.</small></button></div>`+
-    `<h3>Your templates</h3>`+
-    (tpls.length ? `<div class="list">${tpls.map(t=>`<div class="li"><div class="t"><b>${esc(t.name)}</b><small>${esc(t.bp||'')}</small></div>${minis(t.wf)}<button class="btn" data-new="t:${t.id}">Use</button><button class="btn danger" data-tdel="${t.id}">Delete</button></div>`).join('')}</div>`
-      : `<div class="empty">No templates yet. Save the current canvas as one to reuse it across clients.</div>`)+
-    `<div class="addrow"><input id="tpl-name" type="text" placeholder="Template name, e.g. Mid-market AP standard" value="${esc(wf.name)}"><button class="btn primary" id="tpl-save">Save current as template</button></div>`);
+  pickBP = null;
+  const inBuild = $('#home').hidden;
+  openModal('New definition: which business process?',
+    `<div class="bpgrid">${Object.entries(BP_CATALOG).map(([n,c])=>`<button class="bpcard" data-bp="${esc(n)}"><b>${esc(n)}</b><small>${c.loaded ? 'Tasks, groups and recommendations loaded' : 'Security groups only for now'}</small></button>`).join('')}</div>`+
+    `<div class="addrow"><input id="bp-other" type="text" placeholder="Another process, e.g. Customer Invoice Event"><button class="btn" id="bp-other-go">Use</button></div>`+
+    (inBuild ? `<h3>Or save what you have</h3><div class="addrow"><input id="tpl-name" type="text" placeholder="Template name, e.g. Mid-market AP standard" value="${esc(wf.name)}"><button class="btn" id="tpl-save">Save current as template</button></div>` : ''));
 }
-function showOpen(){
-  const list = designs();
-  openModal('Open a saved design',
-    `<p class="help">Designs are saved in this browser. To share one, export a design file and import it on the other side, or commit it to the repo's <code>designs/</code> folder. You can also import a Workday BP definition export (.xlsx).</p>`+
-    `<div class="row"><button class="btn" id="imp">Import .xlsx or .json…</button></div>`+
-    (list.length ? `<div class="list">${list.map(d=>`<div class="li"><div class="t"><b>${esc(d.name||'Untitled')}</b><small>${esc([d.client,d.bp].filter(Boolean).join(' · '))} · ${timeAgo(d.updatedAt)}</small></div>${minis(d.wf)}<button class="btn" data-open="${d.id}">Open</button><button class="btn danger" data-ddel="${d.id}">Delete</button></div>`).join('')}</div>`
-      : `<div class="empty">No saved designs yet. Build a definition and hit Save, and it will show up here.</div>`));
+function showStart(bp){
+  pickBP = bp;
+  const tpls = templates().filter(t=>t.bp===bp), hasEx = bp==='Supplier Invoice Event';
+  openModal(`New ${bp}`,
+    `<div class="cards">`+
+      (hasEx ? `<button class="card" data-new="example"><b>Start from the delivered default</b>${minis(exampleWf())}<small>Populated with the Supplier Invoice Event Default Definition, Non-PO approvals as a path.</small></button>` : '')+
+      `<button class="card" data-new="blank"><b>Start blank</b>${minis(blankWf())}<small>Just Initiation. The Recommended panel helps you build it out.</small></button>`+
+      `<button class="card" data-new="import"><b>Import a definition export</b><small>Workday BP definition .xlsx or a design .json.</small></button>`+
+    `</div>`+
+    (tpls.length ? `<h3>Your ${esc(bp)} templates</h3><div class="list">${tpls.map(t=>`<div class="li"><div class="t"><b>${esc(t.name)}</b></div>${minis(t.wf)}<button class="btn" data-new="t:${t.id}">Use</button></div>`).join('')}</div>` : '')+
+    `<div class="row"><button class="btn quiet" id="bp-back">‹ Pick a different process</button></div>`);
 }
+function startNew(v){
+  if(v==='import'){ $('#import-file').click(); return; }
+  if(v==='example') loadWf(exampleWf());
+  else if(v==='blank') loadWf(blankWf(pickBP || wf.bp));
+  else { const tp = templates().find(x=>x.id===v.slice(2)); if(!tp) return; const w = clone(tp.wf); w.name=''; w.client=''; loadWf(w); }
+  closeModal(); goBuild(); toast('New definition ready');
+}
+function openDesign(id){ const d = designs().find(x=>x.id===id); if(d){ loadWf(d.wf, d.id, d.updatedAt); closeModal(); goBuild(); } }
+function deleteDesign(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.designs', designs().filter(x=>x.id!==id)); if(docId===id){ docId=null; dirty=true; } after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
+function deleteTemplate(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.templates', templates().filter(x=>x.id!==id)); after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
+$('#home').addEventListener('click', e=>{
+  const t = e.target.closest('button'); if(!t) return;
+  if(t.id==='h-new') return showNew();
+  if(t.id==='h-import') return $('#import-file').click();
+  if(t.id==='h-resume'){ const d = store.get('bpws5.draft', null); if(d){ wf = normalize(d.wf); docId = d.docId||null; dirty = true; savedAt = d.savedAt||null; hist = []; sel = null; } goBuild(); return; }
+  if(t.dataset.open) return openDesign(t.dataset.open);
+  if(t.dataset.ddel) return deleteDesign(t, t.dataset.ddel, renderHome);
+  if(t.dataset.tdel) return deleteTemplate(t, t.dataset.tdel, renderHome);
+  if(t.dataset.new){ pickBP = null; startNew(t.dataset.new); }
+});
 $('#modal-b').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
-  if(t.dataset.new){
-    const v = t.dataset.new;
-    if(v==='import'){ $('#import-file').click(); return; }
-    if(v==='example') loadWf(exampleWf());
-    else if(v==='blank') loadWf(blankWf(wf.bp));
-    else { const tp = templates().find(x=>x.id===v.slice(2)); if(tp){ const w = clone(tp.wf); w.name=''; w.client=''; loadWf(w); } }
-    closeModal(); toast('New definition ready'); return;
-  }
+  if(t.dataset.bp) return showStart(t.dataset.bp);
+  if(t.id==='bp-other-go'){ const v = $('#bp-other').value.trim(); if(v) showStart(v); else $('#bp-other').focus(); return; }
+  if(t.id==='bp-back') return showNew();
+  if(t.dataset.new) return startNew(t.dataset.new);
   if(t.id==='tpl-save'){
     const name = $('#tpl-name').value.trim(); if(!name){ $('#tpl-name').focus(); return; }
     const tp = templates(); tp.unshift({id:uid(), name, bp:wf.bp, wf:clone(wf), createdAt:Date.now()});
-    store.set('bpws2.templates', tp); showNew(); toast('Template saved'); return;
+    store.set('bpws2.templates', tp); closeModal(); toast('Template saved'); return;
   }
-  if(t.dataset.tdel){ if(t.dataset.armed){ store.set('bpws2.templates', templates().filter(x=>x.id!==t.dataset.tdel)); showNew(); } else { t.dataset.armed='1'; t.textContent='Confirm delete'; } return; }
-  if(t.dataset.open){ const d = designs().find(x=>x.id===t.dataset.open); if(d){ loadWf(d.wf, d.id, d.updatedAt); closeModal(); } return; }
-  if(t.dataset.ddel){ if(t.dataset.armed){ store.set('bpws2.designs', designs().filter(x=>x.id!==t.dataset.ddel)); if(docId===t.dataset.ddel){ docId=null; dirty=true; renderStatus(); } showOpen(); } else { t.dataset.armed='1'; t.textContent='Confirm delete'; } return; }
-  if(t.id==='imp'){ $('#import-file').click(); }
 });
 $('#import-file').addEventListener('change', async e=>{
   const file = e.target.files[0]; e.target.value = ''; if(!file) return;
@@ -1205,13 +1327,13 @@ $('#import-file').addEventListener('change', async e=>{
     let w;
     if(/\.xlsx?$/i.test(file.name)){ await loadLib('xlsx'); w = importWorkbook(await file.arrayBuffer()); }
     else { const d = JSON.parse(await file.text()); w = d.wf || d; if(!w.init || !Array.isArray(w.items)) throw new Error('shape'); }
-    loadWf(w); closeModal();
+    loadWf(w); closeModal(); goBuild();
     const nSplit = wf.items.filter(i=>i.kind==='split').length;
     toast(`Imported ${allSteps().length} steps${nSplit?` and ${nSplit} path split${nSplit===1?'':'s'}`:''}`);
   }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that workbook." : "That file isn't a definition export or design file I can read."); }
 });
 
-/* Workday BP definition export -> design. Consecutive steps that share a rule become a path; Complete = Yes becomes the completion block. */
+/* Workday BP definition export -> design. Consecutive steps that share a rule become a path; Complete = Yes becomes the Document approved block. */
 function importWorkbook(buf){
   const wb = XLSX.read(buf, {type:'array'});
   for(const name of wb.SheetNames){
@@ -1241,6 +1363,8 @@ function importWorkbook(buf){
       const s = S(type, {specify:get(r,'specify'), groups, conds:ifs, sub:!!om[2], optional:yes(get(r,'optional')), restr, all:yes(get(r,'all')),
         due:get(r,'due date'), modifier:get(r,'routing modifier'), runAs:get(r,'run as user'), doNotAdvance:yes(get(r,'do not advance')),
         note: !TYPE_BY_LABEL[typeRaw.toLowerCase()] ? `Imported type: ${typeRaw}` : (addl && !restr.length ? addl : '')});
+      if(type==='checklist'){ s.items = groups.map(g=>Item('', g)); s.groups = []; }
+      else if(TYPES[type].noGroup) s.groups = [];
       if(yes(get(r,'complete'))) s.complete = true;
       if(!om[2] && om[1]===lastLetter && lastItem){
         if(lastPar) lastPar.steps.push(s);
@@ -1267,12 +1391,13 @@ function importWorkbook(buf){
 function wrapText(t, n){ const words = String(t).split(/\s+/), lines = []; let cur = ''; words.forEach(w=>{ if((cur+' '+w).trim().length>n && cur){ lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); }); if(cur) lines.push(cur); return lines; }
 function flowSVG(){
   const om = orderMap(), FONT = 'Helvetica, Arial, sans-serif';
-  const NW = 330, LW = 270, DW = 150, GX = 18, PAD = 36, HEAD = 92, GAP = 22;
+  const NW = 330, LW = 270, GX = 18, PAD = 36, HEAD = 92, GAP = 22;
   const box = (s, w) => {
     const T = TYPES[s.type], ch = Math.floor((w-26)/6.3), lines = [];
-    s.conds.forEach(c=>wrapText('If: ' + shortRule(c), ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:'#1E8A5B'})));
+    s.conds.forEach(c=>wrapText('If: ' + shortRule(c), ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:isOwned(c)?'#7A8396':'#1E8A5B'})));
     wrapText(T.label + (s.specify ? ': ' + s.specify : ''), Math.floor((w-58)/7.1)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
-    wrapText(s.type==='service' ? 'System step' : (s.groups.join(', ') || 'No security group'), ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
+    if(s.type==='checklist') s.items.forEach(i=>wrapText('☐ ' + (i.text||'Untitled') + (i.assignee ? ' · ' + i.assignee : ''), ch).forEach(l=>lines.push({t:l, s:12, w:'500', c:'#273244'})));
+    else wrapText(T.noGroup ? 'Runs as the system' : (s.groups.join(', ') || 'No security group'), ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
     const meta = [s.all?'All':'', s.restr.length?'Excl. '+s.restr.join(', ').toLowerCase():'', s.due?'Due '+s.due:''].filter(Boolean).join(' · ');
     if(meta) wrapText(meta, ch).forEach(l=>lines.push({t:l, s:11.5, w:'400', c:'#59647C'}));
     return {s, w, lines, h: 18 + lines.length*16, color:T.color, letter:om[s.id]};
@@ -1285,10 +1410,9 @@ function flowSVG(){
       o += `<text x="${x + (l.head ? 19 + lw : 13)}" y="${ly}" font-family="${FONT}" font-size="${l.s}" font-weight="${l.w}" fill="${l.c}">${esc(l.t)}</text>`; });
     return o;
   };
-  const cols = sp => { const {left, right, pad} = laneLayout(sp); return [...left.map(l=>({l})), {def:true}, ...right.map(l=>({l})), ...Array(Math.max(0,pad)).fill({spacer:true})]; };
-  const colsW = cs => cs.reduce((a,c)=>a + (c.def ? DW : LW), 0) + GX*(cs.length-1);
+  const splitW = sp => sp.lanes.length*LW + (sp.lanes.length-1)*GX;
   const parW = n => n*NW*0.82 + (n-1)*GX;
-  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split') maxW = Math.max(maxW, colsW(cols(it))); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
+  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split' && it.lanes.length) maxW = Math.max(maxW, splitW(it)); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
   const width = Math.max(700, maxW + PAD*2), cx = width/2;
   let y = PAD + HEAD, body = '', rails = '';
   const line = (x1,y1,x2,y2,dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#B4BED0" stroke-width="2"${dash?' stroke-dasharray="4 4"':''}/>`;
@@ -1302,36 +1426,30 @@ function flowSVG(){
     if(n>1){ const bot = y + h + 10; bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, y + b.h, x0 + i*(colW+GX) + colW/2, bot)); rails += line(x0 + colW/2, bot, x0 + rw - colW/2, bot); y = bot; }
     else y += h;
   };
-  wf.items.forEach(it=>{
+  wf.items.forEach((it, idx)=>{
     if(it.kind==='step') stepRow([it], NW);
-    else if(it.kind==='par') stepRow(it.steps, NW*0.82);
-    else if(it.kind==='complete'){ rails += line(cx, y, cx, y + GAP); y += GAP; body += pill('✓  Business process complete', DONE_COLOR, 300, 'Document approved · steps below still run'); }
-    else {
-      const cs = cols(it), tw = colsW(cs); let xx = cx - tw/2;
-      cs.forEach(c=>{ c.x = xx; c.w = c.def ? DW : LW; c.c = xx + c.w/2; xx += c.w + GX; });
-      const live = cs.filter(c=>!c.spacer), centers = live.map(c=>c.c);
+    else if(it.kind==='par'){ if(it.steps.length) stepRow(it.steps, NW*0.82); }
+    else if(it.kind==='complete'){ rails += line(cx, y, cx, y + GAP); y += GAP; const prev = wf.items.slice(0, idx).reverse().find(x=>x.kind==='step'); body += pill('✓  Document approved', DONE_COLOR, 300, prev ? `step ${om[prev.id]} is the completion step` : 'completion step'); }
+    else if(it.lanes.length){
+      const n = it.lanes.length, tw = splitW(it), x0 = cx - tw/2;
+      const centers = it.lanes.map((l,i)=> x0 + i*(LW+GX) + LW/2);
       rails += line(cx, y, cx, y + 14); y += 14;
-      rails += line(Math.min(...centers), y, Math.max(...centers), y);
+      rails += line(Math.min(...centers, cx), y, Math.max(...centers, cx), y);
       const top = y; y += 12;
-      const heads = cs.map(c=> c.l ? wrapText('If: ' + (c.l.rule ? shortRule(c.l.rule) : 'no rule yet'), 38).slice(0,2) : []);
+      const heads = it.lanes.map(l=>wrapText('If: ' + (l.rule ? shortRule(l.rule) : 'no rule yet'), 38).slice(0,2));
       const hh = Math.max(44, ...heads.map(h=>26 + h.length*15));
-      cs.forEach((c,i)=>{
-        if(c.spacer) return;
-        if(c.def){ body += `<rect x="${c.x}" y="${y}" width="${DW}" height="${hh}" rx="8" fill="#FFFFFF" stroke="#B4BED0" stroke-dasharray="4 3"/><text x="${c.c}" y="${y+18}" text-anchor="middle" font-family="${FONT}" font-size="12.5" font-weight="800" fill="#59647C">Default path</text><text x="${c.c}" y="${y+34}" text-anchor="middle" font-family="${FONT}" font-size="11" fill="#59647C">no condition</text>`; return; }
-        body += `<rect x="${c.x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${c.x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(c.l.name || 'Path')}</text>`+
-          heads[i].map((t,k)=>`<text x="${c.x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join('');
-      });
+      it.lanes.forEach((l,i)=>{ const x = x0 + i*(LW+GX); body += `<rect x="${x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(l.name || 'Path ' + (i+1))}</text>`+
+        heads[i].map((t,k)=>`<text x="${x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join(''); });
       centers.forEach(c=> rails += line(c, top, c, y));
       y += hh;
-      const ys = cs.map(c=>{
-        if(!c.l) return y;
-        let ly = y; const flat = []; c.l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
-        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, c.x, ly); ly += b.h; });
+      const ys = it.lanes.map((l,i)=>{
+        let ly = y; const x = x0 + i*(LW+GX); const flat = []; l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
+        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, x, ly); ly += b.h; });
         return ly;
       });
       const laneBottom = Math.max(y + 40, ...ys) + 16;
-      live.forEach(c=> rails += line(c.c, y, c.c, laneBottom, c.def));
-      rails += line(Math.min(...centers), laneBottom, Math.max(...centers), laneBottom);
+      centers.forEach(c=> rails += line(c, y, c, laneBottom));
+      rails += line(Math.min(...centers, cx), laneBottom, Math.max(...centers, cx), laneBottom);
       y = laneBottom;
     }
   });
@@ -1359,7 +1477,7 @@ function svgToCanvas(scale){
 }
 async function doExport(kind){
   try{
-    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:4, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
+    if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:5, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
     if(kind==='png'){ const {canvas} = await svgToCanvas(2); canvas.toBlob(b=>{ saveFile(b, fileBase()+'_flow.png'); toast('PNG downloaded'); }, 'image/png'); return; }
     if(kind==='xlsx'){
       toast('Building Excel file…'); await loadLib('xlsx');
@@ -1369,13 +1487,15 @@ async function doExport(kind){
       ws['!cols'] = [{wch:58},{wch:7},{wch:60},{wch:14},{wch:36},{wch:9},{wch:34},{wch:30},{wch:16},{wch:6},{wch:12},{wch:10},{wch:14},{wch:12},{wch:10},{wch:18}];
       XLSX.utils.book_append_sheet(wb, ws, `${wf.bp||'Definition'} |${(wf.def||'Default').replace(/\s*Definition$/i,'')}`.replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31));
       const paths = [['Split at','Path','Condition rule','Steps']];
-      wf.items.forEach(it=>{ if(it.kind!=='split') return; it.lanes.forEach(l=>{ const ids = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ids.push(om[x.id]); l.steps.forEach(add); paths.push([om[it.id], l.name, l.rule, ids.join(', ')]); }); paths.push([om[it.id], 'Default path', '(no condition)', 'continues to the next step']); });
+      wf.items.forEach(it=>{ if(it.kind!=='split') return; it.lanes.forEach(l=>{ const ids = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ids.push(om[x.id]); l.steps.forEach(add); paths.push([om[it.id], l.name, l.rule, ids.join(', ')]); }); });
       const pws = XLSX.utils.aoa_to_sheet(paths.length>1 ? paths : [['No path splits in this design']]); pws['!cols'] = [{wch:9},{wch:26},{wch:60},{wch:24}];
       XLSX.utils.book_append_sheet(wb, pws, 'Paths');
+      const cl = [['Order','Checklist','Item','Assigned to']]; rows.filter(r=>r.items).forEach(r=>r.items.forEach(i=>cl.push([r.order, r.specify, i.text, i.assignee])));
+      if(cl.length>1){ const cws0 = XLSX.utils.aoa_to_sheet(cl); cws0['!cols'] = [{wch:7},{wch:30},{wch:50},{wch:32}]; XLSX.utils.book_append_sheet(wb, cws0, 'Checklist Items'); }
       const ch = runChecks().map(c=>[c.sev==='warn'?'Review':'Info', c.msg.replace(/<[^>]+>/g,'').replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/&#39;/g,"'")]);
       const cws = XLSX.utils.aoa_to_sheet([['Level','Design check']].concat(ch.length?ch:[['','No issues found']])); cws['!cols'] = [{wch:9},{wch:120}];
       XLSX.utils.book_append_sheet(wb, cws, 'Design Checks');
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Order','Design notes']].concat(rows.filter(r=>r.note).map(r=>[r.order, r.note]))), 'Design Notes');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Order','Help text','Design notes']].concat(rows.filter(r=>r.note||r.help).map(r=>[r.order, r.help||'', r.note||'']))), 'Help and Notes');
       saveFile(new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), fileBase()+'.xlsx');
       toast('Excel file downloaded'); return;
     }
@@ -1396,9 +1516,10 @@ async function doExport(kind){
       const header = ()=>{ doc.setFillColor(238,241,247); doc.rect(m, y-11, W2-2*m, 17, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(89,100,124); let x=m+5; cols.forEach(c=>{ doc.text(c.h.toUpperCase(), x, y); x+=c.w; }); y += 17; };
       pageHead(); y = m + 56; header();
       defRows().forEach(r=>{
-        if(r.cmp){ doc.setFillColor(227,244,234); doc.rect(m, y-10, W2-2*m, 16, 'F'); doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.text('Business process completes here. Steps below still run.', m+5, y); y += 18; return; }
+        if(r.cmp){ doc.setFillColor(227,244,234); doc.rect(m, y-10, W2-2*m, 16, 'F'); doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.text(`Document approved. Step ${r.of} is the completion step.`, m+5, y); y += 18; return; }
         doc.setFontSize(8.5);
-        const cells = cols.map(c=>doc.splitTextToSize(String(r[c.k]||'').replace(/\n\n/g,'\n'), c.w-8));
+        const spec = r.items && r.items.length ? (r.specify ? r.specify + '\n' : '') + r.items.map(i=>'- ' + i.text + (i.assignee ? ' (' + i.assignee + ')' : '')).join('\n') : r.specify;
+        const cells = cols.map(c=>doc.splitTextToSize(String((c.k==='specify' ? spec : r[c.k])||'').replace(/\n\n/g,'\n'), c.w-8));
         const h = Math.max(...cells.map(c=>c.length))*10.5 + 8;
         if(y + h > H2 - m){ doc.addPage('letter','landscape'); pageHead(); y = m+56; header(); doc.setFontSize(8.5); }
         let x = m+5;
@@ -1421,12 +1542,12 @@ function toast(msg, actLabel, act){
 }
 
 /* ---------- Boot ---------- */
-$('#b-new').onclick = showNew; $('#b-open').onclick = showOpen; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo;
+$('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps().length) toast('Your work is kept as a draft. Continue it from Home.'); goHome(); }; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo;
 (function boot(){
-  const d = store.get('bpws4.draft', null);
+  const d = store.get('bpws5.draft', null);
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
   else { wf = exampleWf(); dirty = true; }
-  renderPalette(); renderAll();
+  renderPalette(); renderAll(); goHome();
   setInterval(renderStatus, 60000);
 })();
 </script>
