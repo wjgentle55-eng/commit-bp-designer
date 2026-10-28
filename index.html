@@ -342,6 +342,17 @@ table.def tr.cmp td{background:var(--ok-bg);color:var(--ok);font-weight:700;curs
 .dcard b{font-size:14.5px;overflow-wrap:anywhere}
 .dcard small{color:var(--muted);font-size:12px}
 .dcard .row{margin-top:auto}
+.build-from{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--panel-2)}
+.drop b{font-size:15px}
+.drop small{color:var(--muted)}
+body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:color-mix(in srgb,var(--sky) 8%,var(--panel-2))}
+.build-from textarea{width:100%;min-height:110px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:12px/1.4 var(--mono)}
+.build-from details summary{cursor:pointer;font-weight:700;font-size:13px}
+.build-from details[open]{display:flex;flex-direction:column;gap:8px}
+.isum{border:1px solid var(--line);border-left:4px solid var(--sky);border-radius:10px;padding:12px;background:var(--panel-2);display:flex;flex-direction:column;gap:8px}
+.isum b{font-size:13.5px}
+.isum ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:12.5px}
 .bpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .bpcard{text-align:left;border:1px solid var(--line);background:var(--panel-2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px}
 .bpcard:hover{border-color:var(--accent)}
@@ -618,7 +629,7 @@ function stepHTML(s, om, lane){
   const who = T.noGroup ? '' : `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>');
   const cl = s.type==='checklist' ? `<span class="cl">${s.items.length ? s.items.map(i=>`<span class="cl-i"><span class="bx"></span><span class="t">${esc(i.text||'Untitled item')}</span>${i.assignee?`<span class="gp plain">${esc(i.assignee)}</span>`:'<span class="slot">assign</span>'}</span>`).join('') : '<span class="cl-empty">Add items in Step details, or drop a To Do here</span>'}</span>` : '';
   return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
-    `<span class="ord">${om[s.id]||'?'}</span><button class="help-chip${s.help?' on':''}" data-help="${s.id}" title="${esc(s.help || 'Add help text for this step')}">? Help text</button>`+
+    `<span class="ord">${om[s.id]||'?'}</span>`+
     (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>if</i><span class="tr">${esc(lane.rule ? shortRule(lane.rule) : 'path rule needed')}</span></span>` : '')+
     s.conds.map(condHex).join('')+
     `<span class="verb">${T.label}</span>${specSlot}${who}`+
@@ -728,7 +739,9 @@ function recBlockHTML(r){
 }
 function renderRecs(el){
   const recs = recList(), c = bpCat();
-  el.innerHTML = `<div class="ins"><div class="sec"><span class="lbl">Recommended for ${esc(wf.bp)}</span>`+
+  el.innerHTML = `<div class="ins">`+
+    (lastImport ? `<div class="isum"><b>Built from ${esc(lastImport.source)}</b><ul>${lastImport.notes.map(n=>`<li>${esc(n)}</li>`).join('')}</ul><div class="row"><button class="btn sm" data-goto-view="config">Check the Definition tab</button><button class="btn sm quiet" id="isum-x">Dismiss</button></div></div>` : '')+
+    `<div class="sec"><span class="lbl">Recommended for ${esc(wf.bp)}</span>`+
     (recs.length ? `<div class="recs">${recs.map(r=>`<div class="rec">${recBlockHTML(r)}<p>${esc(r.why)}</p><div class="rr"><small>Drag onto the canvas or</small><button class="btn sm" data-recadd="${r.key}">Add</button></div></div>`).join('')}</div>`
       : `<div class="rec-empty">${c.loaded ? 'Everything recommended for this process is already on the canvas.' : `Recommendations for ${esc(wf.bp)} aren't loaded yet.`}</div>`)+`</div>`+
     `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div>`+
@@ -1092,6 +1105,8 @@ document.addEventListener('click', e=>{
   const del = t.closest('[data-del]'); if(del){ removeItem(del.dataset.del); return; }
   const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
   const ra = t.closest('[data-recadd]'); if(ra){ addRec(ra.dataset.recadd); return; }
+  if(t.id==='isum-x'){ lastImport = null; renderInspector(); return; }
+  const gv = t.closest('[data-goto-view]'); if(gv){ view = gv.dataset.gotoView; renderView(); return; }
   const hc = t.closest('[data-help]'); if(hc){ sel = hc.dataset.help; renderBuild(); renderInspector(); setTimeout(()=>{ const h = $('#s-help'); if(h){ h.focus(); h.scrollIntoView({block:'center'}); } }, 0); return; }
   if(t.id==='b-recs'){ sel = null; renderBuild(); renderInspector(); return; }
   const x = t.closest('#script .x');
@@ -1242,6 +1257,7 @@ function normalize(w){
 }
 function placeCompletionAfter(items, stepId){ const holds = it => it.id===stepId || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds)); const i = items.findIndex(holds); if(i>=0) items.splice(i+1, 0, Comp()); }
 function loadWf(w, id, saved){
+  lastImport = null;
   wf = normalize(clone(w)); docId = id || null; sel = null; hist = []; customSpec.clear();
   dirty = !id; savedAt = saved || null; store.set('bpws5.draft', {wf, docId, dirty, savedAt});
   renderAll(); renderPalette();
@@ -1261,7 +1277,11 @@ function renderHome(){
   const draftUnsaved = d && d.wf && d.dirty && (d.wf.items||[]).length;
   $('#home').innerHTML = `<div class="home-in">`+
     `<div class="home-top"><div class="logo-big"><img src="${LOGO}" alt="Commit, an embark company"></div><div><h1>BP Workflow Studio</h1><p>Design, review and export Workday business process definitions.</p></div></div>`+
-    `<div class="home-actions"><button class="btn primary big" id="h-new">+ New definition</button><button class="btn big" id="h-import">Import .xlsx or .json</button></div>`+
+    `<div class="home-actions"><button class="btn primary big" id="h-new">+ New definition</button></div>`+
+    `<section class="build-from"><h2 style="margin:0">Build from a Workday definition</h2>`+
+      `<div class="drop" id="h-drop"><b>Drop the definition export (.xlsx) here</b><small>The same layout you get from the tenant: Step, Order, If, Type, Specify, Group… It's built out into blocks, paths and the Document approved point for you.</small><button class="btn" id="h-import">Choose a file</button></div>`+
+      `<details><summary>Or paste the step grid</summary><textarea id="h-paste" placeholder="Copy the Business Process Steps grid, header row included, from the tenant or Excel and paste it here"></textarea><div class="row"><button class="btn primary" id="h-paste-go">Build it</button></div></details>`+
+    `</section>`+
     (draftUnsaved ? `<div class="resume"><div class="t"><b>Continue where you left off</b><small>${esc(d.wf.name || d.wf.bp || 'Unsaved definition')} · not saved yet</small></div>${minis(d.wf)}<button class="btn primary" id="h-resume">Continue</button></div>` : '')+
     `<section><h2>Open</h2>`+
     (list.length ? `<div class="dgrid">${list.map(x=>`<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc([x.client, x.bp].filter(Boolean).join(' · '))}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div></div>`).join('')}</div>`
@@ -1303,6 +1323,7 @@ $('#home').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   if(t.id==='h-new') return showNew();
   if(t.id==='h-import') return $('#import-file').click();
+  if(t.id==='h-paste-go'){ const v = $('#h-paste').value; if(!v.trim()){ $('#h-paste').focus(); return; } try{ const w = importRows(parseDelimited(v), ''); finishImport(w, 'pasted step grid'); }catch(err){ toast("Couldn't find the Order and Type columns. Paste the grid with its header row."); } return; }
   if(t.id==='h-resume'){ const d = store.get('bpws5.draft', null); if(d){ wf = normalize(d.wf); docId = d.docId||null; dirty = true; savedAt = d.savedAt||null; hist = []; sel = null; } goBuild(); return; }
   if(t.dataset.open) return openDesign(t.dataset.open);
   if(t.dataset.ddel) return deleteDesign(t, t.dataset.ddel, renderHome);
@@ -1321,32 +1342,75 @@ $('#modal-b').addEventListener('click', e=>{
     store.set('bpws2.templates', tp); closeModal(); toast('Template saved'); return;
   }
 });
-$('#import-file').addEventListener('change', async e=>{
-  const file = e.target.files[0]; e.target.value = ''; if(!file) return;
+let lastImport = null;
+async function importFile(file){
   try{
     let w;
-    if(/\.xlsx?$/i.test(file.name)){ await loadLib('xlsx'); w = importWorkbook(await file.arrayBuffer()); }
-    else { const d = JSON.parse(await file.text()); w = d.wf || d; if(!w.init || !Array.isArray(w.items)) throw new Error('shape'); }
-    loadWf(w); closeModal(); goBuild();
-    const nSplit = wf.items.filter(i=>i.kind==='split').length;
-    toast(`Imported ${allSteps().length} steps${nSplit?` and ${nSplit} path split${nSplit===1?'':'s'}`:''}`);
-  }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that workbook." : "That file isn't a definition export or design file I can read."); }
-});
+    if(/\.xlsx?$/i.test(file.name)){ await loadLib('xlsx'); w = importWorkbook(await file.arrayBuffer()); finishImport(w, file.name); return; }
+    if(/\.(csv|tsv|txt)$/i.test(file.name)){ w = importRows(parseDelimited(await file.text()), ''); finishImport(w, file.name); return; }
+    const d = JSON.parse(await file.text()); w = d.wf || d; if(!w.init || !Array.isArray(w.items)) throw new Error('shape');
+    loadWf(w); closeModal(); goBuild(); toast('Design file opened');
+  }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that file." : "That file isn't a definition export or design file I can read."); }
+}
+/* After an import: build it, then summarize what was designed from it in the side panel */
+function finishImport(w, source){
+  loadWf(w); closeModal();
+  const om = orderMap(), steps = allSteps(), notes = [];
+  const letters_ = steps.map(s=>om[s.id]);
+  notes.push(`${steps.length} step${steps.length===1?'':'s'} after Initiation (${letters_[0]||''} to ${letters_[letters_.length-1]||''})`);
+  steps.filter(s=>s.sub).forEach(s=>notes.push(`${om[s.id]} kept as a sub-step of ${om[s.id].replace(/\d+$/,'')}`));
+  wf.items.filter(i=>i.kind==='split').forEach(sp=>sp.lanes.forEach(l=>notes.push(`"${l.name}" path (${om[sp.id]}) built from the condition every one of those steps shares`)));
+  wf.items.filter(i=>i.kind==='par').forEach(p=>notes.push(`${p.steps.length} steps share order ${om[p.id]}, so they're side by side in a parallel block`));
+  const ci = wf.items.findIndex(i=>i.kind==='complete');
+  if(ci>0){ const prev = wf.items.slice(0,ci).reverse().find(x=>x.kind==='step'); notes.push(`Document approved placed under ${prev ? om[prev.id] : 'the completion step'} (Complete = Yes)${ci < wf.items.length-1 ? `, with ${wf.items.length-1-ci} step${wf.items.length-2-ci===0?'':'s'} running after it` : ''}`); }
+  const owned = steps.reduce((n,s)=>n + s.conds.filter(isOwned).length, 0);
+  if(owned) notes.push(`${owned} Workday owned condition${owned===1?'':'s'} locked in grey`);
+  const custom = wf.customGroups.length; if(custom) notes.push(`${custom} group${custom===1?'':'s'} not in the ${wf.bp} list added as client-specific: ${wf.customGroups.join(', ')}`);
+  lastImport = {source, bp:wf.bp, def:wf.def, notes};
+  sel = null; goBuild();
+  toast(`Built ${wf.bp} from ${source}`);
+}
+$('#import-file').addEventListener('change', e=>{ const file = e.target.files[0]; e.target.value = ''; if(file) importFile(file); });
+let dragDepth = 0;
+window.addEventListener('dragenter', e=>{ if([...(e.dataTransfer?.types||[])].includes('Files')){ dragDepth++; document.body.classList.add('filedrag'); } });
+window.addEventListener('dragleave', e=>{ if(dragDepth && --dragDepth===0) document.body.classList.remove('filedrag'); });
+window.addEventListener('dragover', e=>{ if([...(e.dataTransfer?.types||[])].includes('Files')) e.preventDefault(); });
+window.addEventListener('drop', e=>{ if(!e.dataTransfer || !e.dataTransfer.files.length) return; e.preventDefault(); dragDepth = 0; document.body.classList.remove('filedrag'); importFile(e.dataTransfer.files[0]); });
+/* Tab- or comma-separated text (a grid copied from Workday or Excel), quoted multi-line cells included */
+function parseDelimited(text){
+  const delim = text.includes('\t') ? '\t' : ',', rows = []; let row = [], cell = '', q = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q = false; } else cell += c; }
+    else if(c==='"' && cell==='') q = true;
+    else if(c===delim){ row.push(cell); cell=''; }
+    else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+    else if(c!=='\r') cell += c;
+  }
+  if(cell || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
 
 /* Workday BP definition export -> design. Consecutive steps that share a rule become a path; Complete = Yes becomes the Document approved block. */
 function importWorkbook(buf){
   const wb = XLSX.read(buf, {type:'array'});
   for(const name of wb.SheetNames){
     const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:'', raw:false});
+    try{ return importRows(rows, name); }catch(err){ if(err.message!=='nohdr') throw err; }
+  }
+  throw new Error('nohdr');
+}
+function importRows(rows, name){
+  {
     const hi = rows.findIndex(r=>r.some(c=>String(c).trim().toLowerCase()==='order') && r.some(c=>String(c).trim().toLowerCase()==='type'));
-    if(hi<0) continue;
+    if(hi<0) throw new Error('nohdr');
     const H = rows[hi].map(c=>String(c).trim().toLowerCase());
     const get = (r,k) => { const i = H.indexOf(k); return i<0 ? '' : String(r[i]??'').trim(); };
     const yes = v => /^y(es)?$/i.test(v);
     const w = blankWf();
     const firstStep = rows.slice(hi+1).map(r=>get(r,'step')).find(Boolean) || '';
     const m = firstStep.match(/^(.*?)\s*\(([^)]+)\)\s*step/i);
-    if(m){ w.bp = m[1].trim(); w.def = m[2].trim(); } else { const sn = name.split('|'); w.bp = sn[0].trim(); w.def = (sn[1]||'Default').trim(); if(!/definition/i.test(w.def)) w.def += ' Definition'; }
+    if(m){ w.bp = m[1].trim(); w.def = m[2].trim(); } else if(!name){ w.bp = pickBP || wf.bp || 'Supplier Invoice Event'; w.def = 'Default Definition'; } else { const sn = name.split('|'); w.bp = sn[0].trim(); w.def = (sn[1]||'Default').trim(); if(!/definition/i.test(w.def)) w.def += ' Definition'; }
     w.name = `${w.bp}: ${w.def}`;
     const known = (BP_CATALOG[w.bp] || OTHER_BP).groups;
     let lastLetter = null, lastPar = null, lastItem = null;

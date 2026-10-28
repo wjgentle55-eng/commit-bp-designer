@@ -4,14 +4,14 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 
 ## How it works
 
-- **Home**: opening the app lands on a home page with your saved definitions (Open) and **New definition**. New asks which business process first, then lets you start from the delivered default (Supplier Invoice), start blank, use a template, or import.
+- **Home**: opening the app lands on a home page with **New definition**, a **Build from a Workday definition** drop zone, and your saved definitions (Open). Drop the definition export (.xlsx), choose the file, or paste the step grid, and it's built into blocks for you: shared conditions become paths, Complete = Yes becomes the Document approved block, same-letter steps become parallel, and Workday owned conditions are locked. The side panel then lists what was built. New asks which business process first, then lets you start from the delivered default (Supplier Invoice), start blank, use a template, or import.
 - **Palette**: Approval, Action, Service and To Do are up top. **Path manipulation** (Split into paths, Run in parallel, Document approved) and **Other types** (Approval Chain, Consolidated Approval Chain, Review, Checklist, Integration) are dropdowns.
 - **Build**: Initiation is always step `a`. Letters update on their own. Mark a step as a sub-step to number it like `a1`.
 - **Business process**: the header dropdown decides which Action and Service tasks, security groups, condition rules and recommendations are offered (`BP_CATALOG` in `index.html`). Supplier Invoice Event is fully loaded; the others have groups only for now.
 - **Conditions**: a step's conditions sit at the front of the block. Workday owned conditions show in grey, stay with their delivered step, and can't be added to another step or used as a path rule.
 - **Split into paths** and **Run in parallel** share the same C-block shape, with their contents side by side. Each path has a condition rule in the same format as a step condition, and every step dropped into a path carries it. Steps in a parallel block share one order letter.
 - **Document approved**: place it under the step that completes the business process. That step gets Complete = Yes. There can only be one.
-- **Help text**: every step has a small Help text block on its left. Click it to add your own notes about the step.
+- **Help text**: click into any step and add your own notes in the Help text field in Step details.
 - **Step details**: clicking a block shows a plain-English description of what the step does, then its fields.
 - **All**: on Approval and Action steps, every member of the security group has to approve or act.
 - **Checklist**: add items and assign each one to a group. Drag a To Do block onto a checklist to turn it into an item.
