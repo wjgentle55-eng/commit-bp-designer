@@ -1,9 +1,9 @@
 {
   "app": "bp-workflow-studio",
-  "version": 2,
-  "exportedAt": "2026-10-28T18:43:47.235Z",
+  "version": 3,
+  "exportedAt": "2026-10-28T19:08:21.399Z",
   "wf": {
-    "v": 2,
+    "v": 3,
     "name": "Supplier Invoice Event: Default Definition",
     "client": "",
     "bp": "Supplier Invoice Event",
@@ -14,17 +14,14 @@
     "items": [
       {
         "kind": "step",
-        "id": "on7b0qv",
+        "id": "ohxampy",
         "type": "action",
         "specify": "Supplier Accounts Match Process",
         "groups": [
           "Initiator"
         ],
         "conds": [
-          {
-            "t": "rule",
-            "text": "Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)"
-          }
+          "Only initiate Supplier Accounts Match Process if Invoice is Procurement related and does not have Match Status of Override.? (Workday Owned)"
         ],
         "sub": true,
         "optional": false,
@@ -39,18 +36,14 @@
       },
       {
         "kind": "step",
-        "id": "obt17hi",
+        "id": "b0nv7wx",
         "type": "action",
         "specify": "Review Supplier Invoice",
         "groups": [
           "Accounts Payable Data Entry Specialist"
         ],
         "conds": [
-          {
-            "t": "path",
-            "axis": "ax-rec",
-            "outcome": "from"
-          }
+          "Supplier Invoice from variable Recurring Supplier Invoice?"
         ],
         "sub": false,
         "optional": false,
@@ -64,128 +57,105 @@
         "note": ""
       },
       {
-        "kind": "step",
-        "id": "eqwa56t",
-        "type": "approval",
-        "specify": "",
-        "groups": [
-          "Cost Center Manager"
-        ],
-        "conds": [
+        "kind": "split",
+        "id": "gokb4b9",
+        "lanes": [
           {
-            "t": "path",
-            "axis": "ax-po",
-            "outcome": "nonpo"
-          },
-          {
-            "t": "path",
-            "axis": "ax-rec",
-            "outcome": "not"
+            "id": "dpwv9e3",
+            "name": "Non-PO invoice",
+            "rule": "Non-PO Supplier Invoice?",
+            "steps": [
+              {
+                "kind": "step",
+                "id": "0lve76q",
+                "type": "approval",
+                "specify": "",
+                "groups": [
+                  "Cost Center Manager"
+                ],
+                "conds": [
+                  "Supplier Invoice not from Recurring Supplier Invoice?"
+                ],
+                "sub": false,
+                "optional": false,
+                "restr": [
+                  "Initiator",
+                  "Approvers"
+                ],
+                "all": true,
+                "due": "2 Days",
+                "modifier": "",
+                "runAs": "",
+                "doNotAdvance": false,
+                "complete": false,
+                "note": ""
+              },
+              {
+                "kind": "step",
+                "id": "qtbrb3r",
+                "type": "approval",
+                "specify": "",
+                "groups": [
+                  "Project Manager"
+                ],
+                "conds": [
+                  "Is Project Transaction?"
+                ],
+                "sub": false,
+                "optional": false,
+                "restr": [
+                  "Initiator",
+                  "Approvers"
+                ],
+                "all": true,
+                "due": "2 Days",
+                "modifier": "",
+                "runAs": "",
+                "doNotAdvance": false,
+                "complete": false,
+                "note": ""
+              },
+              {
+                "kind": "step",
+                "id": "k3sx4iy",
+                "type": "approval",
+                "specify": "",
+                "groups": [
+                  "Controller"
+                ],
+                "conds": [
+                  "Supplier Invoice not from Recurring Supplier Invoice?",
+                  "Supplier Total Invoice Amount >= $10,000 USD?"
+                ],
+                "sub": false,
+                "optional": false,
+                "restr": [
+                  "Initiator",
+                  "Approvers"
+                ],
+                "all": false,
+                "due": "2 Days",
+                "modifier": "",
+                "runAs": "",
+                "doNotAdvance": false,
+                "complete": false,
+                "note": ""
+              }
+            ]
           }
-        ],
-        "sub": false,
-        "optional": false,
-        "restr": [
-          "Initiator",
-          "Approvers"
-        ],
-        "all": true,
-        "due": "2 Days",
-        "modifier": "",
-        "runAs": "",
-        "doNotAdvance": false,
-        "complete": false,
-        "note": ""
+        ]
       },
       {
         "kind": "step",
-        "id": "wpyb339",
-        "type": "approval",
-        "specify": "",
-        "groups": [
-          "Project Manager"
-        ],
-        "conds": [
-          {
-            "t": "rule",
-            "text": "Is Project Transaction?"
-          },
-          {
-            "t": "path",
-            "axis": "ax-po",
-            "outcome": "nonpo"
-          }
-        ],
-        "sub": false,
-        "optional": false,
-        "restr": [
-          "Initiator",
-          "Approvers"
-        ],
-        "all": true,
-        "due": "2 Days",
-        "modifier": "",
-        "runAs": "",
-        "doNotAdvance": false,
-        "complete": false,
-        "note": ""
-      },
-      {
-        "kind": "step",
-        "id": "6fmtatu",
-        "type": "approval",
-        "specify": "",
-        "groups": [
-          "Controller"
-        ],
-        "conds": [
-          {
-            "t": "path",
-            "axis": "ax-po",
-            "outcome": "nonpo"
-          },
-          {
-            "t": "path",
-            "axis": "ax-rec",
-            "outcome": "not"
-          },
-          {
-            "t": "rule",
-            "text": "Supplier Total Invoice Amount >= $10,000 USD?"
-          }
-        ],
-        "sub": false,
-        "optional": false,
-        "restr": [
-          "Initiator",
-          "Approvers"
-        ],
-        "all": false,
-        "due": "2 Days",
-        "modifier": "",
-        "runAs": "",
-        "doNotAdvance": false,
-        "complete": false,
-        "note": ""
-      },
-      {
-        "kind": "step",
-        "id": "ycq4mlg",
+        "id": "juw2c6v",
         "type": "action",
         "specify": "Review Trackable Invoice Lines",
         "groups": [
           "Business Asset Accountant"
         ],
         "conds": [
-          {
-            "t": "path",
-            "axis": "ax-apr",
-            "outcome": "not"
-          },
-          {
-            "t": "rule",
-            "text": "The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)"
-          }
+          "Not Related to Project APR/WIP alternative setup?",
+          "The invoice: 1) has at least 1 trackable line, 2) isn’t tagged by capital project/plan phase/task, 3) isn’t an adjustment or installment, 4) hasn’t been reviewed, 5) has at least 1 trackable line that doesn’t use a spend category used with leased assets and is without assets or has assets that are removed or pending registration? (Workday Owned)"
         ],
         "sub": false,
         "optional": false,
@@ -200,17 +170,14 @@
       },
       {
         "kind": "step",
-        "id": "8ax0qad",
+        "id": "eswyjxj",
         "type": "action",
         "specify": "Review Supplier Invoice",
         "groups": [
           "Accounts Payable Data Entry Specialist"
         ],
         "conds": [
-          {
-            "t": "rule",
-            "text": "Is Direct Intercompany?"
-          }
+          "Is Direct Intercompany?"
         ],
         "sub": false,
         "optional": false,
@@ -225,17 +192,14 @@
       },
       {
         "kind": "step",
-        "id": "w5rwf3t",
+        "id": "x933cns",
         "type": "action",
         "specify": "Initiate Supplier Invoice Intercompany Event",
         "groups": [
           "Initiator"
         ],
         "conds": [
-          {
-            "t": "rule",
-            "text": "Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)"
-          }
+          "Only Initiate Intercompany Event if IC Companies are on the Invoice Lines? (Workday Owned)"
         ],
         "sub": false,
         "optional": false,
@@ -250,15 +214,12 @@
       },
       {
         "kind": "step",
-        "id": "mzihqbz",
+        "id": "mtm9r1n",
         "type": "service",
         "specify": "Initiate Asset Registration Events from Invoice",
         "groups": [],
         "conds": [
-          {
-            "t": "rule",
-            "text": "The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)"
-          }
+          "The supplier invoice: 1) isn't an adjustment, 2) isn't from a supplier contract, 3) has at least 1 trackable line without a spend category used with leased assets, 4) has assets that haven't been created by a related PO receipt? (Workday Owned)"
         ],
         "sub": false,
         "optional": false,
@@ -273,22 +234,15 @@
       },
       {
         "kind": "step",
-        "id": "pvl3iaj",
+        "id": "rswfwkk",
         "type": "action",
         "specify": "Assign Asset Accounting Information from Invoice",
         "groups": [
           "Business Asset Accountant"
         ],
         "conds": [
-          {
-            "t": "rule",
-            "text": "Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)"
-          },
-          {
-            "t": "path",
-            "axis": "ax-apr",
-            "outcome": "not"
-          }
+          "Invoice has lines with accounting treatment of Spend Category not equal to Expense. Or the accounting treatment is equal to Expense and has multibook asset accounting enabled in tenant for company asset books and at least one asset needs an accounting assignment.? (Workday Owned)",
+          "Not Related to Project APR/WIP alternative setup?"
         ],
         "sub": false,
         "optional": false,
@@ -302,60 +256,7 @@
         "note": ""
       }
     ],
-    "axes": [
-      {
-        "id": "ax-po",
-        "name": "Invoice type",
-        "outcomes": [
-          {
-            "id": "nonpo",
-            "label": "Non-PO invoice",
-            "rule": "Non-PO Supplier Invoice?"
-          },
-          {
-            "id": "po",
-            "label": "PO-backed invoice",
-            "rule": ""
-          }
-        ]
-      },
-      {
-        "id": "ax-rec",
-        "name": "Recurring source",
-        "outcomes": [
-          {
-            "id": "not",
-            "label": "Not from recurring",
-            "rule": "Supplier Invoice not from Recurring Supplier Invoice?"
-          },
-          {
-            "id": "from",
-            "label": "From recurring invoice",
-            "rule": "Supplier Invoice from variable Recurring Supplier Invoice?"
-          }
-        ]
-      },
-      {
-        "id": "ax-apr",
-        "name": "Project APR/WIP setup",
-        "outcomes": [
-          {
-            "id": "not",
-            "label": "Not APR/WIP related",
-            "rule": "Not Related to Project APR/WIP alternative setup?"
-          },
-          {
-            "id": "rel",
-            "label": "APR/WIP related",
-            "rule": ""
-          }
-        ]
-      }
-    ],
     "customGroups": [],
-    "customRules": [],
-    "split": [
-      "ax-po"
-    ]
+    "customRules": []
   }
 }
