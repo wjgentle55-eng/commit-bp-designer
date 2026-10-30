@@ -211,7 +211,7 @@ code{font-family:var(--mono);font-size:.9em}
 .lane.selected{border-color:var(--sel);box-shadow:0 0 0 1px var(--sel)}
 .lane.drop-ok{border-color:var(--sky);box-shadow:0 0 0 2px var(--sky)}
 .lane-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px;cursor:pointer}
-.lane-head .lname{font-size:12px;font-weight:700;color:var(--muted);flex:1;min-width:0;text-transform:uppercase;letter-spacing:.05em}
+.lane-head .lname{font-size:12px;font-weight:700;color:var(--muted);flex:1 1 calc(100% - 30px);min-width:0;text-transform:uppercase;letter-spacing:.05em}
 .lane-head .x{color:var(--muted)}
 .lane-head .hex{flex-basis:auto}
 .stack.lane-stack{min-height:56px}
@@ -406,6 +406,10 @@ table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
 .chgbox{margin-bottom:12px}
 .chgbox .row{margin-top:8px}
 .btn-note{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+.block.linkb{background:transparent!important;color:var(--ink);border:2px dashed var(--c,#888);box-shadow:none}
+.block.linkb .flag{background:var(--panel-2);color:var(--ink)}
+.block.linkb .spec{color:var(--muted);font-weight:600}
+.block.linkb .ord{background:var(--c,#888);color:#fff}
 /* Custom chains */
 .pal-item.chain .block{flex-wrap:wrap}
 .pal-item.chain .row{margin-top:2px}
@@ -465,6 +469,7 @@ table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
 <button class="ctab" role="tab" data-view="flow" aria-selected="false">Flow</button>
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
         <span class="vtoggle" id="vtoggle" role="group" aria-label="Which version to show"></span>
+        <button class="btn sm" id="b-paths" title="Groups steps that share the same condition rules into paths. Steps between them that run either way are shared across the paths. Undo reverts it.">Build paths</button>
         <span class="hint">Shift-click to select a run of blocks</span>
       </div>
       <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps into order. Steps on the main line have no path condition. A <b>Split into paths</b> block puts paths side by side, and every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
@@ -681,26 +686,31 @@ function listFor(key){
   return null;
 }
 function laneOf(id){ const f = find(id); return f ? f.lane || null : null; }
-function effectiveConds(s){ const l = laneOf(s.id); return [...(l && l.rule ? [l.rule] : []), ...s.conds]; }
+/* A path can need more than one rule: rule is the first, more holds the rest */
+const LR = l => l ? [l.rule, ...(l.more||[])].filter(Boolean) : [];
+/* Shared steps sit in a path block because they fall between its steps, but they run whatever the path condition is */
+function effectiveConds(s){ const l = laneOf(s.id); return [...(l && !s.shared ? LR(l) : []), ...s.conds]; }
 function hasCompletion(){ return wf.items.some(i=>i.kind==='complete'); }
 function isAfterCompletion(id){ const ci = wf.items.findIndex(i=>i.kind==='complete'); if(ci<0) return false; const holds = it => it.id===id || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds)); return wf.items.findIndex(holds) > ci; }
 function groupsForBP(){ const used = []; allSteps().forEach(s=>{ s.groups.forEach(g=>used.push(g)); s.items.forEach(i=>i.assignee && used.push(i.assignee)); }); return [...new Set([...bpCat().groups, ...(wf.customGroups||[]), ...used])].filter(g=>g && g!=='Initiator'); }
-function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s].filter(r=>!isOwned(r)); }
+function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>LR(l).forEach(r=>s.add(r)))); return [...s].filter(r=>!isOwned(r)); }
 function stepGroups(s){ return s.type==='checklist' ? [...new Set(s.items.map(i=>i.assignee).filter(Boolean))] : TYPES[s.type].noGroup ? [] : s.groups; }
 
 function orderMap(items){
-  const m = {init:'a'}; let li = 0, sub = 0;
+  const m = {init:'a'}, links = []; let li = 0, sub = 0;
   const seq = list => list.forEach(it=>{
     if(it.kind==='complete'){ m[it.id] = ''; return; }
+    if(it.kind==='link'){ links.push(it); return; }
     if(it.kind==='split'){ const start = li; it.lanes.forEach(l=>seq(l.steps)); m[it.id] = li>start ? (li-start>1 ? `${letters(start+1)}-${letters(li)}` : letters(li)) : '·'; return; }
     if(it.kind==='step' && it.sub){ sub++; m[it.id] = letters(li) + sub; return; }
     li++; sub = 0; const L = letters(li); m[it.id] = L;
     if(it.kind==='par') it.steps.forEach(s=>m[s.id]=L);
   });
   seq(items || wf.items);
+  links.forEach(l=>m[l.id] = m[l.ref] || '?');
   return m;
 }
-function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.items) x.items.forEach(i=>i.id = uid()); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
+function withNewIds(it){ const c = clone(it), map = {}, links = []; const re = x => { if(x.kind==='link') links.push(x); map[x.id] = uid(); x.id = map[x.id]; if(x.steps) x.steps.forEach(re); if(x.items) x.items.forEach(i=>i.id = uid()); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); links.forEach(l=>{ if(map[l.ref]) l.ref = map[l.ref]; }); return c; }
 
 /* ---------- Selection: shift-click selects a run of blocks next to each other in one column ---------- */
 const multiOn = () => multi.length > 1 && multi.includes(sel);
@@ -723,7 +733,7 @@ function stepIndex(items){
     if(it.kind==='complete'){ completeId = last; return; }
     if(it.kind!=='step') return;
     last = it.id;
-    m[it.id] = {s:it, order:om[it.id], conds:[...(ctx.lane && ctx.lane.rule ? [ctx.lane.rule] : []), ...it.conds], par:!!ctx.par};
+    m[it.id] = {s:it, order:om[it.id], conds:[...(ctx.lane && !it.shared ? LR(ctx.lane) : []), ...it.conds], par:!!ctx.par};
   }, items);
   if(completeId && m[completeId]) m[completeId].complete = true;
   return m;
@@ -798,7 +808,7 @@ function chainCheck(c){
   const cat = BP_CATALOG[wf.bp] || OTHER_BP, groups = new Set([...groupsForBP(), 'Initiator']), rules = new Set(ruleLibrary()), miss = [];
   const rule = r => { if(!r) return; if(isOwned(r)) miss.push(`Workday owned condition "${shortRule(r)}"`); else if(!rules.has(r)) miss.push(`condition "${shortRule(r)}"`); };
   walk(it=>{
-    if(it.kind==='split') it.lanes.forEach(l=>rule(l.rule));
+    if(it.kind==='split') it.lanes.forEach(l=>LR(l).forEach(rule));
     if(it.kind!=='step') return;
     const list = it.type==='action' ? cat.actions : it.type==='service' ? cat.services : null;
     if(list && it.specify && !list.some(t=>t.name===it.specify)) miss.push(`task "${it.specify}"`);
@@ -832,6 +842,84 @@ function insertChain(id, list, idx){
   toast(`Added "${c.name}"`);
 }
 
+/* ---------- Path engine ----------
+   A path is a condition rule, or a group of rules that always appear together, that two or more steps contain
+   (Workday owned conditions never form a path). A path whose steps all sit inside a bigger path stays as step conditions.
+   Each path's block spans from its first to its last step; overlapping spans become one Split block with a lane per path.
+   A step that contains a path's rules goes in that lane and carries them; if it contains several paths' rules it sits in the
+   first and appears as a linked copy in the others. Any other step in the span is shared: it runs whatever the path
+   condition is, keeps its own conditions, and shows in every lane. Steps outside every span stay on the main line and apply
+   to all. The Document approved point is never crossed. */
+function pathKey(u){
+  const own = s => [...new Set(s.conds.filter(c=>!isOwned(c)))];
+  if(u.kind==='step') return own(u).sort();
+  if(u.kind==='par' && u.steps.length){ const ks = u.steps.map(own); return ks[0].filter(r=>ks.every(k=>k.includes(r))).sort(); }
+  return [];
+}
+const stepsOf = u => u.kind==='par' ? u.steps : u.kind==='step' ? [u] : [];
+function flattenPaths(items){
+  const out = [];
+  items.forEach(it=>{
+    if(it.kind==='link') return;
+    if(it.kind!=='split'){ stepsOf(it).forEach(s=>delete s.shared); out.push(it); return; }
+    it.lanes.forEach(l=>l.steps.forEach(x=>{
+      if(x.kind==='link') return;
+      stepsOf(x).forEach(s=>{ if(!s.shared) LR(l).slice().reverse().forEach(r=>{ if(!s.conds.includes(r)) s.conds.unshift(r); }); delete s.shared; });
+      out.push(x);
+    }));
+  });
+  return out;
+}
+function pathsFor(units){
+  const keys = units.map(pathKey), bySet = {};
+  /* Rules that always appear together (same steps) form one combination; it's a path when two or more steps contain it */
+  const has = {}; keys.forEach((k, i)=>k.forEach(r=>(has[r] = has[r] || []).push(i)));
+  Object.entries(has).forEach(([r, ix])=>{ if(ix.length < 2) return; const id = ix.join(','); (bySet[id] = bySet[id] || {rules:[], idx:ix}).rules.push(r); });
+  let combos = Object.values(bySet);
+  /* Least steps: a path whose steps all sit inside a bigger path stays as step conditions instead */
+  combos = combos.filter(c=>!combos.some(o=>o!==c && o.idx.length > c.idx.length && c.idx.every(i=>o.idx.includes(i))));
+  combos.forEach(c=>{ c.rules.sort(); c.lo = c.idx[0]; c.hi = c.idx[c.idx.length-1]; });
+  combos.sort((a, b)=>a.lo - b.lo || b.idx.length - a.idx.length);
+  const blocks = [];
+  combos.forEach(c=>{ const b = blocks[blocks.length-1]; if(b && c.lo <= b.hi){ b.paths.push(c); b.hi = Math.max(b.hi, c.hi); } else blocks.push({lo:c.lo, hi:c.hi, paths:[c]}); });
+  const out = []; let i = 0;
+  blocks.forEach(b=>{
+    while(i < b.lo) out.push(units[i++]);
+    const lanes = b.paths.map(c=>{ const l = Lane(c.rules.map(shortRule).join(' + '), c.rules[0], []); l.more = c.rules.slice(1); return l; });
+    for(; i <= b.hi; i++){
+      const u = units[i];
+      let fit = b.paths.map((c, j)=>c.idx.includes(i) ? j : -1).filter(j=>j >= 0);
+      if(fit.length){ const rules = b.paths[fit[0]].rules; stepsOf(u).forEach(s=>{ s.conds = s.conds.filter(c=>!rules.includes(c)); }); }
+      else { fit = b.paths.map((c, j)=>j); stepsOf(u).forEach(s=>s.shared = true); }
+      lanes[fit[0]].steps.push(u);
+      fit.slice(1).forEach(j=>lanes[j].steps.push({kind:'link', id:uid(), ref:u.id}));
+    }
+    /* Workday runs the lanes one after another, so order them by their first own step to keep the original order where possible */
+    const first = l => { const k = l.steps.findIndex(x=>x.kind!=='link'); return k < 0 ? Infinity : units.indexOf(l.steps[k]); };
+    lanes.sort((a, b)=>first(a) - first(b));
+    out.push(Split(lanes));
+  });
+  while(i < units.length) out.push(units[i++]);
+  return out;
+}
+function buildPaths(items){
+  const flat = flattenPaths(items), out = []; let seg = [];
+  const done = () => { out.push(...pathsFor(seg)); seg = []; };
+  flat.forEach(u=>{
+    if(u.kind==='complete'){ done(); out.push(u); return; }
+    seg.push(u);
+    if(stepsOf(u).some(s=>s.complete)) done();
+  });
+  done();
+  return out;
+}
+function autoPaths(){
+  if(readOnly()) return;
+  let n = 0;
+  change(()=>{ wf.items = buildPaths(wf.items); sel = null; multi = []; wf.items.forEach(it=>{ if(it.kind==='split') n += it.lanes.length; }); });
+  toast(n ? `Built ${n} path${n===1?'':'s'} from shared conditions` : 'No two steps share the same conditions, so there are no paths to build');
+}
+
 /* ---------- Build canvas ---------- */
 const tools = (id, noCopy) => `<span class="tools">${noCopy?'':`<button class="cp" data-copy="${id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button>`}<button class="dl" data-del="${id}" title="Delete (Del)">✕ Delete</button></span>`;
 function groupChip(g, i){ return `<span class="gp">${groupKind(g)==='User'?'<span class="kk">user</span>':''}${esc(g)}<button class="x" data-rm="group" data-i="${i}" aria-label="Remove ${esc(g)}">×</button></span>`; }
@@ -862,7 +950,8 @@ function stepHTML(s, om, lane){
   const cl = s.type==='checklist' ? `<span class="cl">${s.items.length ? s.items.map(i=>`<span class="cl-i"><span class="bx"></span><span class="t">${esc(i.text||'Untitled item')}</span>${i.assignee?`<span class="gp plain">${esc(i.assignee)}</span>`:'<span class="slot">assign</span>'}</span>`).join('') : '<span class="cl-empty">Add items in Step details, or drop a To Do here</span>'}</span>` : '';
   return `<div class="bw${isSel(s.id)?' sel':''}${s.sub?' sub':''}${chgCls(s.id)}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
     `<span class="ord">${om[s.id]||'?'}</span>${chgPill(s.id)}`+
-    (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>if</i><span class="tr">${esc(lane.rule ? shortRule(lane.rule) : 'path rule needed')}</span></span>` : '')+
+    (lane && s.shared ? `<span class="flag" title="Sits between this path's steps but runs whatever the path condition is">shared · every path</span>` : '')+
+    (lane && !s.shared ? (LR(lane).length ? LR(lane).map(r=>`<span class="hex inh" title="${esc('From path: '+r)}"><i>if</i><span class="tr">${esc(shortRule(r))}</span></span>`).join('') : `<span class="hex inh" title="This path needs a condition rule"><i>if</i><span class="tr">path rule needed</span></span>`) : '')+
     s.conds.map(condHex).join('')+
     `<span class="verb">${T.label}</span>${specSlot}${who}`+
     flags.map(f=>`<span class="flag">${esc(f)}</span>`).join('')+ tools(s.id) + cl +
@@ -877,8 +966,16 @@ function parHTML(p, om, lane){
 function laneHTML(l, om){
   return `<div class="lane${sel==='lane:'+l.id?' selected':''}" data-lane="${l.id}"><div class="lane-head" data-lanesel="${l.id}">`+
     `<span class="lname">${esc(l.name||'Unnamed path')}</span><button class="x" data-rmlane="${l.id}" aria-label="Remove path" title="Remove path">×</button>`+
-    (l.rule ? condHex(l.rule) : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+`</div>`+
-    `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`;
+    (LR(l).length ? LR(l).map(r=>condHex(r)).join('') : `<span class="hex empty"><i>if</i> drop a condition rule</span>`)+`</div>`+
+    `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='link'?linkHTML(it,om):it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`;
+}
+/* A linked copy: the same step shown again in another path. It's edited and exported once, at its main spot. */
+function linkHTML(k, om){
+  const f = find(k.ref), r = f && f.item;
+  if(!r) return `<div class="bw link${isSel(k.id)?' sel':''}" data-id="${k.id}" data-drag="block"><div class="block linkb"><span class="verb">Linked step is missing</span>${tools(k.id, true)}</div></div>`;
+  const label = r.kind==='par' ? 'Run in parallel' : TYPES[r.type].label, what = r.kind==='par' ? r.steps.map(x=>TYPES[x.type].label).join(' + ') : (r.specify || r.groups.join(', '));
+  return `<div class="bw link${isSel(k.id)?' sel':''}" data-id="${k.id}" data-drag="block"><div class="block linkb" style="--c:${r.kind==='par' ? PAR_COLOR : TYPES[r.type].color}" title="Same step as ${esc(om[r.id]||'')}. Edit it at its main spot.">`+
+    `<span class="ord">${om[r.id]||'?'}</span><span class="flag">🔗 linked</span><span class="verb">${esc(label)}</span>${what ? `<span class="spec">${esc(what)}</span>` : ''}${tools(k.id, true)}</div></div>`;
 }
 function splitHTML(sp, om){
   return `<div class="bw split wide${isSel(sp.id)?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="cblock">`+
@@ -889,7 +986,7 @@ function splitHTML(sp, om){
 function compHTML(c){
   return `<div class="bw comp${isSel(c.id)?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Document approved</span>${tools(c.id, true)}<span class="hint">The step above is the completion step (Complete = Yes).</span></div></div>`;
 }
-function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : it.kind==='complete' ? compHTML(it) : stepHTML(it, om); }
+function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : it.kind==='complete' ? compHTML(it) : it.kind==='link' ? linkHTML(it, om) : stepHTML(it, om); }
 function renderBuild(){
   DIFF = showInitial ? null : diffInfo();
   asShown(()=>{
@@ -974,7 +1071,7 @@ function describeStep(s){
 }
 
 /* ---------- Right pane ---------- */
-function recPresent(item){ const key = c => c.filter(x=>!wf.items.some(i=>i.kind==='split' && i.lanes.some(l=>l.rule===x))).sort().join('|'); return allSteps().some(s=>s.type===item.type && s.specify===item.specify && s.groups.join('|')===item.groups.join('|') && key(effectiveConds(s))===key(item.conds)); }
+function recPresent(item){ const key = c => c.filter(x=>!wf.items.some(i=>i.kind==='split' && i.lanes.some(l=>LR(l).includes(x)))).sort().join('|'); return allSteps().some(s=>s.type===item.type && s.specify===item.specify && s.groups.join('|')===item.groups.join('|') && key(effectiveConds(s))===key(item.conds)); }
 function recList(){
   const out = [];
   if(!hasCompletion()) out.push({key:'__comp', why:'Marks where the document is approved. The step right above it becomes the completion step.', comp:true});
@@ -1056,13 +1153,20 @@ function renderInspector(){
   if(sel.startsWith('lane:')){
     const f = findLane(sel), l = f.lane;
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Path: <span id="l-title">${esc(l.name||'Unnamed')}</span></h3></div>`+
-      `<div class="desc">${l.rule ? `When "${esc(shortRule(l.rule))}" is true, the ${l.steps.length} step${l.steps.length===1?'':'s'} in this path run. Otherwise they're skipped.` : 'This path needs a condition rule.'}<small>Every step in this path carries the rule first in its If column.</small></div>`+
+      `<div class="desc">${LR(l).length ? `When ${LR(l).map(r=>`"${esc(shortRule(r))}"`).join(' and ')} ${LR(l).length>1?'are':'is'} true, the steps in this path run. Otherwise they're skipped.` : 'This path needs a condition rule.'}<small>Every step in this path carries these rules first in its If column, except shared steps, which run either way.</small></div>`+
       `<div class="sec"><label for="l-name">Path name</label><input id="l-name" type="text" value="${esc(l.name)}" placeholder="e.g. Company B"></div>`+
-      `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}"><p class="req-note" id="l-rule-note"${l.rule?' hidden':''}>A path needs a rule, otherwise its steps run for every case.</p>${ruleSelect('l-pick', [l.rule])}</div>`+
+      `<div class="sec"><label for="l-rule">Condition rule</label><input id="l-rule" type="text" value="${esc(l.rule)}" placeholder="e.g. Company is Company B?" class="${l.rule?'':'req'}"><p class="req-note" id="l-rule-note"${l.rule?' hidden':''}>A path needs a rule, otherwise its steps run for every case.</p>${(l.more||[]).map((r,i)=>`<div class="crow"><div class="ct">and ${esc(r)}</div><div class="cm">Also required<button class="btn sm" data-lmrm="${i}">Remove</button></div></div>`).join('')}${ruleSelect('l-pick', LR(l))}<span class="btn-note">Picking another rule adds it, so the path needs all of them.</span></div>`+
       `<div class="row"><button class="btn" data-addlane="${f.split.id}">Add another path</button><button class="btn danger" data-rmlane="${l.id}">Remove path</button></div></div>`;
     return;
   }
   const f = find(sel), it = f.item;
+  if(it.kind==='link'){
+    const r = find(it.ref);
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>Linked step ${esc(om[it.id]||'')}</h3></div>`+
+      `<div class="desc">${r ? `This is the same step as <b>${esc(om[r.item.id]||'')}</b>, shown again because it also belongs in this path. Edit it at its main spot. It's exported to Workday once.` : 'The step this pointed to has been deleted.'}</div>`+
+      `<div class="row">${r ? `<button class="btn" data-goto="${r.item.id}">Go to step ${esc(om[r.item.id]||'')}</button>` : ''}<button class="btn danger" data-del="${it.id}">Remove from this path</button></div></div>`;
+    return;
+  }
   if(it.kind==='complete'){
     const ci = wf.items.indexOf(it), prev = wf.items.slice(0, ci).reverse().find(x=>x.kind==='step' || x.kind==='par' || x.kind==='split');
     const prevStep = prev ? (prev.kind==='step' ? prev : null) : null;
@@ -1090,7 +1194,8 @@ function renderInspector(){
     (it.type==='checklist' ? checklistField(it) : '')+
     (!T.noGroup ? `<div class="sec"><span class="lbl">Security groups</span><div class="chips">${it.groups.map((g,i)=>`<span class="chip">${groupKind(g)==='User'?'<small>user</small>':''}${esc(g)}<button class="x" data-grm="${i}" aria-label="Remove">×</button></span>`).join('')||'<span class="help">No groups yet.</span>'}</div><select id="s-addgroup"><option value="">Add a security group…</option>${groupOptions('')}</select></div>` : '')+
     `<div class="sec"><span class="lbl">If (conditions)</span>`+
-      (lane ? `<div class="crow inh"><div class="ct">${esc(lane.rule || 'Path has no rule yet')}</div><div class="cm">From path "${esc(lane.name||'Unnamed')}". Move the step out of the path to drop it.</div></div>` : '')+
+      (lane && it.shared ? `<div class="crow inh"><div class="ct">Shared step</div><div class="cm">It sits between the steps of path "${esc(lane.name||'Unnamed')}" but runs whatever the path condition is. <button class="btn sm" id="s-unshare">Make it part of the path</button></div></div>` : '')+
+      (lane && !it.shared ? `<div class="crow inh"><div class="ct">${esc(LR(lane).join(' and ') || 'Path has no rule yet')}</div><div class="cm">From path "${esc(lane.name||'Unnamed')}". Move the step out of the path to drop it.</div></div>` : '')+
       it.conds.map((c,i)=> isOwned(c) ? `<div class="crow owned"><div class="ct">${esc(c)}</div><div class="cm">Workday owned. It's delivered with this step, so it can't be removed or added to another step.</div></div>` : `<div class="crow"><div class="ct">${esc(c)}</div><div class="cm">Skipped when false<button class="btn sm" data-crm="${i}">Remove</button></div></div>`).join('')+
       (!lane && !it.conds.length ? '<span class="help">No conditions, so it always runs.</span>' : '')+
       ruleSelect('s-addcond', it.conds)+
@@ -1118,8 +1223,9 @@ function runChecks(){
   else if(ci>0 && wf.items[ci-1].kind!=='step') out.push({sev:'info', id:wf.items[ci].id, msg:'The block above Document approved is a split or parallel block, so its last step gets Complete = Yes.'});
   walk((it)=>{
     if(it.kind==='par' && it.steps.length<2) out.push({sev:'warn', id:it.id, msg:`<b>${om[it.id]}</b> Parallel block has ${it.steps.length} step${it.steps.length===1?'':'s'}. It needs two or more.`});
+    if(it.kind==='link' && !find(it.ref)) out.push({sev:'warn', id:it.id, msg:'A linked step points to a step that was deleted. Remove the link.'});
     if(it.kind==='split') it.lanes.forEach(l=>{
-      if(!l.rule) out.push({sev:'warn', id:'lane:'+l.id, msg:`Path "${esc(l.name||'Unnamed')}" has no condition rule, so its steps would run for every case.`});
+      if(!LR(l).length) out.push({sev:'warn', id:'lane:'+l.id, msg:`Path "${esc(l.name||'Unnamed')}" has no condition rule, so its steps would run for every case.`});
       if(!l.steps.length) out.push({sev:'warn', id:'lane:'+l.id, msg:`Path "${esc(l.name||'Unnamed')}" has no steps yet.`});
     });
   });
@@ -1157,7 +1263,7 @@ function defRows(){
     const T = TYPES[s.type], L = om[s.id];
     last = {id:s.id, order:L, ifs:effectiveConds(s).join('\n\n'), type:T.label, specify:s.specify, optional:s.optional?'Yes':'No',
       groups:stepGroups(s).join('\n'), addl:s.restr.length && !T.noGroup?'Restriction: '+s.restr.join(', '):'', modifier:s.modifier, all:s.all && ALL_TYPES.includes(s.type)?'Yes':'', runAs:s.runAs, due:s.due,
-      dna:s.doNotAdvance?'Yes':'No', complete:'', note:s.note, help:s.help, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (ctx.lane.name || shortRule(ctx.lane.rule)) : '', after,
+      dna:s.doNotAdvance?'Yes':'No', complete:'', note:s.note, help:s.help, color:T.color, parallel:!!ctx.par, path:ctx.lane ? (s.shared ? 'Shared: ' : '') + (ctx.lane.name || LR(ctx.lane).map(shortRule).join(' + ')) : '', after,
       items:s.type==='checklist' ? s.items : null,
       step:`${bp} (${def}) step ${L} - ${T.label}${s.type==='service'&&s.specify?' ['+s.specify+']':''}`};
     rows.push(last);
@@ -1211,7 +1317,7 @@ function stepOf(id){ const f = id && find(id); return f && f.item.kind==='step' 
 function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(TYPES[s.type].noGroup){ toast(s.type==='checklist' ? 'Assign groups to each checklist item in Step details' : `${TYPES[s.type].label} steps run as the system, so they take no group`); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
 function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; if(isOwned(text)){ toast("Workday owned conditions stay with their delivered step and can't be added to another one"); return; } const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
 function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else if(x.conds) x.conds = x.conds.filter(c=>c!==text); }
-function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; if(isOwned(text)){ toast("Workday owned conditions can't be used as a path rule"); return; } change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
+function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; if(isOwned(text)){ toast("Workday owned conditions can't be used as a path rule"); return; } if(LR(f.lane).includes(text)) return; if(f.lane.rule){ change(()=>{ f.lane.more = [...(f.lane.more||[]), text]; f.lane.name = LR(f.lane).map(shortRule).join(' + '); f.lane.steps.forEach(x=>{ if(!x.shared) stripRule(x, text); }); }); renderPalette(); return; } change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
 function removeItem(id){
   if(readOnly()) return;
   const f = find(id); if(!f) return;
@@ -1394,7 +1500,7 @@ function endDrag(e){
       const key = t.stack.dataset.list, list = listFor(key); if(!p.isMove) snapshot();
       its.forEach(it=>{
         if(key.startsWith('par:')) it.sub = false;
-        if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(it, l.rule); }
+        if(key.startsWith('lane:')){ const l = findLane(key).lane; if(!it.shared) LR(l).forEach(r=>stripRule(it, r)); }
       });
       list.splice(t.index, 0, ...its);
       if(its.length > 1){ multi = its.map(i=>i.id); anchor = multi[0]; sel = multi[multi.length-1]; } else sel = p.item.id;
@@ -1421,6 +1527,9 @@ document.addEventListener('click', e=>{
   const rs = t.closest('[data-restore]'); if(rs){ restoreStep(rs.dataset.restore); return; }
   const chd = t.closest('[data-chdel]'); if(chd){ if(chd.dataset.armed){ store.set('bpws.chains', chains().filter(x=>x.id!==chd.dataset.chdel)); renderPalette(); toast('Chain deleted'); } else { chd.dataset.armed = '1'; chd.textContent = 'Confirm delete'; } return; }
   if(t.id==='m-copy'){ copySel(); return; }
+  if(t.id==='b-paths'){ autoPaths(); return; }
+  if(t.id==='s-unshare'){ const s = stepOf(sel), l = laneOf(sel); if(s && l) change(()=>{ s.shared = false; LR(l).forEach(r=>stripRule(s, r)); }); return; }
+  if(t.dataset.lmrm!==undefined){ const f = findLane(sel); if(f) change(()=>{ f.lane.more.splice(+t.dataset.lmrm, 1); f.lane.name = LR(f.lane).map(shortRule).join(' + '); }); return; }
   if(t.id==='m-dup'){ duplicateRun(); return; }
   if(t.id==='m-del'){ removeRun(); return; }
   if(t.id==='m-chain'){ promptChain(selItems() || []); return; }
@@ -1467,7 +1576,7 @@ document.addEventListener('click', e=>{
   if(t.id==='p-ungroup'){ const f = find(sel); change(()=>{ f.list.splice(f.index,1,...f.item.steps); sel=null; }); return; }
   if(t.id==='sp-ungroup'){
     const f = find(sel);
-    change(()=>{ const out = []; f.item.lanes.forEach(l=>{ const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(l.rule && !x.conds.includes(l.rule)) x.conds.unshift(l.rule); }; l.steps.forEach(carry); out.push(...l.steps); }); f.list.splice(f.index, 1, ...out); sel = null; }); return;
+    change(()=>{ const out = []; f.item.lanes.forEach(l=>{ const carry = x => { if(x.kind==='par') x.steps.forEach(carry); else if(!x.shared) LR(l).slice().reverse().forEach(r=>{ if(!x.conds.includes(r)) x.conds.unshift(r); }); delete x.shared; }; l.steps.forEach(carry); out.push(...l.steps.filter(x=>x.kind!=='link')); }); f.list.splice(f.index, 1, ...out); sel = null; }); return;
   }
   if(t.id==='ci-add'){ const s = stepOf(sel); change(()=>s.items.push(Item())); setTimeout(()=>{ const ins = document.querySelectorAll('[data-cit]'); ins.length && ins[ins.length-1].focus(); }, 0); return; }
   if(t.dataset.cirm!==undefined){ const s = stepOf(sel); change(()=>s.items.splice(+t.dataset.cirm,1)); return; }
@@ -1574,7 +1683,8 @@ function normalize(w){
   const fix = (it, axes) => {
     if(it.kind==='complete') return {kind:'complete', id:it.id||uid()};
     if(it.kind==='par') return {kind:'par', id:it.id||uid(), steps:it.steps.map(s=>fix(s, axes))};
-    if(it.kind==='split') return {kind:'split', id:it.id||uid(), lanes:it.lanes.map(l=>({id:l.id||uid(), name:l.name||'', rule:l.rule||'', steps:l.steps.map(s=>fix(s, axes))}))};
+    if(it.kind==='link') return {kind:'link', id:it.id||uid(), ref:it.ref};
+    if(it.kind==='split') return {kind:'split', id:it.id||uid(), lanes:it.lanes.map(l=>({id:l.id||uid(), name:l.name||'', rule:l.rule||'', more:Array.isArray(l.more)?l.more:[], steps:l.steps.map(s=>fix(s, axes))}))};
     const type = TYPES[it.type] ? it.type : 'action';
     const s = S(type);
     Object.assign(s, it, {kind:'step', type, conds:oldCond(it, axes), specify:it.specify ?? it.task ?? '', restr:Array.isArray(it.restr)?it.restr:[], groups:Array.isArray(it.groups)?it.groups:[], items:Array.isArray(it.items)?it.items.map(i=>({id:i.id||uid(), text:i.text||'', assignee:i.assignee||''})):[]});
@@ -1778,16 +1888,7 @@ function importRows(rows, name){
       } else { w.items.push(s); lastPar = null; lastItem = s; }
       if(!om[2]) lastLetter = om[1];
     });
-    for(let i=0; i<w.items.length; i++){
-      const it = w.items[i]; if(it.kind!=='step') continue;
-      let best = null;
-      it.conds.forEach(rule=>{ let j = i; while(j+1<w.items.length && w.items[j+1].kind==='step' && !w.items[j+1].sub && w.items[j+1].conds.includes(rule)) j++; if(j>i && (!best || j-i > best.len)) best = {rule, len:j-i}; });
-      if(best){
-        const steps = w.items.splice(i, best.len+1, null);
-        steps.forEach(s=>{ s.conds = s.conds.filter(c=>c!==best.rule); s.sub = false; });
-        w.items[i] = Split([Lane(shortRule(best.rule), best.rule, steps)]);
-      }
-    }
+    w.items = buildPaths(w.items);
     w.baseline = null;
     return w;
   }
@@ -1821,13 +1922,15 @@ const drawLines = (lines, cx, y, h) => { let o = '', ly = y + (h - linesH(lines)
 
 /* Client-facing step numbers: Step 1, Step 2... in flow order. Parallel steps share a number (3A, 3B). */
 function stepNumbers(){
- const m = {}; let n = 0;
+ const m = {}, links = []; let n = 0;
  const seq = list => list.forEach(it=>{
-  if(it.kind==='step') m[it.id] = String(++n);
+  if(it.kind==='link') links.push(it);
+  else if(it.kind==='step') m[it.id] = String(++n);
   else if(it.kind==='par' && it.steps.length){ n++; it.steps.forEach((s,i)=> m[s.id] = n + (it.steps.length>1 ? letters(i).toUpperCase() : '')); }
   else if(it.kind==='split') it.lanes.forEach(l=>seq(l.steps));
  });
  seq(wf.items);
+ links.forEach(l=>{ const r = find(l.ref); m[l.id] = m[l.ref] || (r && r.item.steps && r.item.steps[0] ? String(m[r.item.steps[0].id]).replace(/[A-Z]$/,'') : ''); });
  return m;
 }
 function stepTitle(s){
@@ -1849,11 +1952,11 @@ function flowCard(s, num, gateRule){
  if(s.optional) subs.push('Optional step');
  const subL = subs.flatMap(t=>fmWrap(t, 11.5, 500, IW));
  const due = s.due ? s.due.replace(/\b(Days?|Hours?|Weeks?|Months?)\b/g, m=>m.toLowerCase()) : 'Not set';
- const conds = effectiveConds(s).filter(c=>c!==gateRule);
+ const gr = [].concat(gateRule || []), conds = effectiveConds(s).filter(c=>!gr.includes(c));
  const condL = conds.length ? conds.map(c=>fmWrap(condText(c), 12, 500, IW-12)) : null;
  const hH = 38 + head.length*16, bH = 34 + who.length*(ws+4) + subL.length*15, dH = 48;
  const cH = 36 + (condL ? condL.reduce((a,l)=>a + l.length*16, 0) : 16);
- return {id:s.id, num, head, tag:(chg==='new' ? 'NEW · ' : chg==='mod' ? 'CHANGED · ' : '') + (after ? 'AFTER APPROVAL' : T.label.toUpperCase()), chg, after, label, who, ws, ww, subL, due, condL, hH, bH, dH, h:hH+bH+dH+cH};
+ return {id:s.id, num, head, tag:(chg==='new' ? 'NEW · ' : chg==='mod' ? 'CHANGED · ' : '') + (s.shared ? 'SHARED · ' : '') + (after ? 'AFTER APPROVAL' : T.label.toUpperCase()), chg, after, label, who, ws, ww, subL, due, condL, hH, bH, dH, h:hH+bH+dH+cH};
 }
 function drawCard(c, x, y, h){
  const w = FL.CW, r = 6;
@@ -1880,9 +1983,9 @@ function drawCard(c, x, y, h){
 }
 function gateU(lane, rangeTxt, idx){
  const IW = FL.CW - 28, lines = [{t: idx==null ? 'Gate' : `Path ${idx+1} gate`, s:13, w:800, c:FL.INK}];
- if(lane.rule) fmWrap(condText(lane.rule), 12.5, 700, IW).forEach((t,i)=>lines.push({t, s:12.5, w:700, c:FL.INK, g:i?0:3}));
- else lines.push({t:'No condition rule yet', s:12.5, w:700, c:'#A8560A', g:3});
- if(lane.name && lane.name!==shortRule(lane.rule) && !/^Path \d+$/.test(lane.name)) fmWrap('Path: ' + lane.name, 11, 500, IW).forEach(t=>lines.push({t, s:11, w:500, c:FL.MUTED}));
+ LR(lane).forEach((r, j)=>fmWrap((j ? 'and ' : '') + condText(r), 12.5, 700, IW).forEach((t,i)=>lines.push({t, s:12.5, w:700, c:FL.INK, g:i?0:3})));
+ if(!LR(lane).length) lines.push({t:'No condition rule yet', s:12.5, w:700, c:'#A8560A', g:3});
+ if(lane.name && lane.name!==LR(lane).map(shortRule).join(' + ') && !/^Path \d+$/.test(lane.name)) fmWrap('Path: ' + lane.name, 11, 500, IW).forEach(t=>lines.push({t, s:11, w:500, c:FL.MUTED}));
  fmWrap(rangeTxt ? 'Applies to ' + rangeTxt : 'No steps in this path yet', 11, 500, IW).forEach((t,i)=>lines.push({t, s:11, w:500, c:FL.MUTED, g:i?0:4}));
  return {w:FL.CW, h:Math.max(120, linesH(lines) + 32), stretch:true, draw:(x,y,h)=>
   `<g data-goto="lane:${lane.id}"><rect x="${x}" y="${y}" width="${FL.CW}" height="${h}" rx="6" fill="#FFFFFF" stroke="${FL.ARROW}" stroke-width="1.3" stroke-dasharray="5 4"/>${drawLines(lines, x+FL.CW/2, y, h)}</g>`};
@@ -1921,13 +2024,21 @@ function drawSeq(us, x, y, rowH, cardH, out){
 function flowUnits(){
  const nums = stepNumbers(), units = [];
  if(!wf.baseline) DIFF = null;
- const range = steps => { const ns = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ns.push(nums[x.id]); steps.forEach(add); return !ns.length ? '' : ns.length===1 ? 'step ' + ns[0] : `steps ${ns[0]} to ${ns[ns.length-1]}`; };
+ const range = steps => {
+  const ns = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : nums[x.id] && ns.push(nums[x.id]); steps.forEach(add);
+  const u = [...new Set(ns)].sort((a, b)=>parseInt(a) - parseInt(b) || String(a).localeCompare(String(b)));
+  if(!u.length) return ''; if(u.length===1) return 'step ' + u[0];
+  const run = u.every((n, i)=>!i || parseInt(n) - parseInt(u[i-1]) <= 1);
+  return run ? `steps ${u[0]} to ${u[u.length-1]}` : 'steps ' + listJoin(u);
+ };
  const cardU = (s, rule) => { const c = flowCard(s, nums[s.id], rule); return {w:FL.CW, h:c.h, stretch:true, draw:(x,y,h)=>drawCard(c, x, y, h)}; };
- const laneUs = l => l.steps.filter(x=>x.kind!=='par' || x.steps.length).map(x=>x.kind==='par' ? parU(x, l.rule, nums) : cardU(x, l.rule));
+ const linkU = (k, rules) => { const f = find(k.ref), r = f && f.item; if(!r) return null; if(r.kind==='par') return r.steps.length ? parU(r, rules, nums) : null; const c = flowCard(r, nums[r.id], rules); return {w:FL.CW, h:c.h, stretch:true, draw:(x,y,h)=>drawCard(c, x, y, h)}; };
+ const laneUs = l => l.steps.filter(x=>x.kind!=='par' || x.steps.length).map(x=>x.kind==='link' ? linkU(x, LR(l)) : x.kind==='par' ? parU(x, LR(l), nums) : cardU(x, LR(l))).filter(Boolean);
  let prev = null, compPrev = null;
  walk(it=>{ if(it.kind==='step') prev = it; else if(it.kind==='complete') compPrev = prev; });
  wf.items.forEach((it, i)=>{
   if(it.kind==='step') units.push(cardU(it));
+  else if(it.kind==='link'){ const f = find(it.ref); if(f && f.item.kind==='step') units.push(cardU(f.item)); }
   else if(it.kind==='par'){ if(it.steps.length) units.push(parU(it, null, nums)); }
   else if(it.kind==='complete') units.push(doneU(compPrev && nums[compPrev.id], i < wf.items.length-1));
   else if(it.kind==='split' && it.lanes.length) units.push(splitU(it, range, laneUs));
@@ -2022,7 +2133,7 @@ async function doExport(kind){
       ws['!cols'] = [{wch:58},{wch:7},{wch:60},{wch:14},{wch:36},{wch:9},{wch:34},{wch:30},{wch:16},{wch:6},{wch:12},{wch:10},{wch:14},{wch:12},{wch:10},{wch:18}];
       XLSX.utils.book_append_sheet(wb, ws, `${wf.bp||'Definition'} |${(wf.def||'Default').replace(/\s*Definition$/i,'')}`.replace(/[\\\/\?\*\[\]:]/g,'').slice(0,31));
       const paths = [['Split at','Path','Condition rule','Steps']];
-      wf.items.forEach(it=>{ if(it.kind!=='split') return; it.lanes.forEach(l=>{ const ids = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ids.push(om[x.id]); l.steps.forEach(add); paths.push([om[it.id], l.name, l.rule, ids.join(', ')]); }); });
+      wf.items.forEach(it=>{ if(it.kind!=='split') return; it.lanes.forEach(l=>{ const ids = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ids.push(om[x.id] + (x.kind==='link' || x.shared ? ' (shared)' : '')); l.steps.forEach(add); paths.push([om[it.id], l.name, LR(l).join('\nand '), ids.join(', ')]); }); });
       const pws = XLSX.utils.aoa_to_sheet(paths.length>1 ? paths : [['No path splits in this design']]); pws['!cols'] = [{wch:9},{wch:26},{wch:60},{wch:24}];
       XLSX.utils.book_append_sheet(wb, pws, 'Paths');
       const cl = [['Order','Checklist','Item','Assigned to']]; rows.filter(r=>r.items).forEach(r=>r.items.forEach(i=>cl.push([r.order, r.specify, i.text, i.assignee])));
