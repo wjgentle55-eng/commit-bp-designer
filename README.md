@@ -12,6 +12,7 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 - **Split into paths** and **Run in parallel** share the same C-block shape, with their contents side by side. Each path has a condition rule in the same format as a step condition, and every step dropped into a path carries it. Steps in a parallel block share one order letter.
 - **Document approved**: place it under the step that completes the business process. That step gets Complete = Yes. There can only be one.
 - **Help text**: click into any step and add your own notes in the Help text field in Step details.
+- **Flow tab**: the client-facing view, and exactly what the PDF flow page prints. Steps read left to right and wrap to the next row, numbered Step 1, Step 2... (parallel steps share a number, like 3A and 3B). Each card puts the approver or reviewer at the top, then the due date, then the entry conditions. A dashed **gate** card shows a path condition and which steps it applies to. Two or more paths sit in a dashed **Conditional paths** frame, and parallel steps sit in a dashed **Run in parallel** frame. Steps after Document approved are greyed and tagged After approval. **Auto** picks the cards per row that fit one page; if a design is too long to stay readable on one page, the PDF splits it across landscape pages. The Definition tab and PDF table show the Step number next to the Workday order letter. Click a card to jump to that step in Build.
 - **Step details**: clicking a block shows a plain-English description of what the step does, then its fields.
 - **All**: on Approval and Action steps, every member of the security group has to approve or act.
 - **Checklist**: add items and assign each one to a group. Drag a To Do block onto a checklist to turn it into an item.
@@ -24,7 +25,7 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 
 - **Import** a Workday BP definition export (.xlsx with Step, Order, If, Type, Specify, Group... columns) or a design `.json` file from New or Open. When consecutive steps share a condition, they're grouped into a path automatically.
 - **Excel** export uses the same 16 columns as the definition export. It also includes Paths, Checklist Items, Design Checks, and Help and Notes sheets.
-- **PDF** (Commit-branded flow diagram with paths, plus the definition table), **PNG**, and design **.json**.
+- **PDF** (Commit-branded flow that reads left to right and wraps to rows to fit one page, plus the definition table with a Step column), **PNG**, and design **.json**.
 
 `designs/` holds the original Supplier Invoice Event Default Definition export and the matching design file.
 

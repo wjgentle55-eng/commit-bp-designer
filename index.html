@@ -363,6 +363,16 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
 .bpcard:hover{border-color:var(--accent)}
 .bpcard b{font-size:13.5px}
 .bpcard small{color:var(--muted);font-size:11.5px}
+/* Flow tab: the PDF flow page, left to right */
+.flowv{padding:16px 20px 40px;display:flex;flex-direction:column;gap:12px}
+.flow-bar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.flow-bar .help{flex:1 1 280px}
+.flow-bar label{font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px}
+.flow-bar select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.flow-sheet{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:auto;box-shadow:0 2px 10px rgba(10,20,40,.06)}
+.flow-sheet svg{display:block;max-width:100%;height:auto;margin:0 auto}
+.flow-sheet [data-goto]{cursor:pointer}
+.flow-sheet [data-goto]:hover>rect:first-child{stroke:#00AEEF;stroke-width:2.4}
 @media (max-width:1180px){ .main{grid-template-columns:230px minmax(0,1fr) 290px} }
 @media (max-width:900px){
   :root{--main-w:min(640px, calc(100vw - 80px))}
@@ -401,7 +411,7 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
         <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
         <div class="menu-list" id="export-menu" hidden>
           <button data-exp="xlsx"><span>Excel (Workday definition layout)</span><small>Same 16 columns as a BP definition export</small></button>
-          <button data-exp="pdf"><span>PDF for sign-off</span><small>Commit-branded flow with paths, plus definition table</small></button>
+          <button data-exp="pdf"><span>PDF for sign-off</span><small>Left-to-right flow sized to one page, plus definition table</small></button>
           <button data-exp="png"><span>PNG image</span><small>Flow diagram for decks</small></button>
           <button data-exp="json"><span>Design file (.json)</span><small>Share with a teammate or commit to the repo</small></button>
         </div>
@@ -423,11 +433,13 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
     <section class="pane center" aria-label="Workflow">
       <div class="ctabs" role="tablist">
         <button class="ctab" role="tab" data-view="build" aria-selected="true">Build</button>
+<button class="ctab" role="tab" data-view="flow" aria-selected="false">Flow</button>
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
         <span class="hint">Hover a block to copy or delete it</span>
       </div>
       <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps into order. Steps on the main line have no path condition. A <b>Split into paths</b> block puts paths side by side, and every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
       <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
+<div class="view" id="v-flow" hidden><div class="flowv" id="flow"></div></div>
     </section>
 
     <aside class="pane" aria-label="Recommendations and step details">
@@ -956,11 +968,11 @@ function defRows(){
 }
 const stepRows = () => defRows().filter(r=>!r.cmp);
 function renderConfig(){
-  const rows = defRows();
-  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Steps in a path list the path's rule first in the If column. Greyed rows run after the document is approved. Click a row to edit that step.</p></div>`+
-    `<div class="tbl-wrap"><table class="def"><thead><tr><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
-    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="12">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
-      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+  const rows = defRows(), nums = stepNumbers();
+  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Step is the client-facing number used on the Flow tab and in the PDF. Steps in a path list the path's rule first in the If column. Greyed rows run after the document is approved. Click a row to edit that step.</p></div>`+
+    `<div class="tbl-wrap"><table class="def"><thead><tr><th>Step</th><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
+    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="13">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
+      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${nums[r.id]||''}</td><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
     `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
 }
 
@@ -981,8 +993,8 @@ function renderMeta(){
 }
 function renderView(){
   document.querySelectorAll('.ctab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.view===view)));
-  $('#v-build').hidden = view!=='build'; $('#v-config').hidden = view!=='config';
-  if(view==='config') renderConfig();
+  $('#v-build').hidden = view!=='build'; $('#v-config').hidden = view!=='config'; $('#v-flow').hidden = view!=='flow';
+  if(view==='config') renderConfig(); if(view==='flow') renderFlow();
 }
 function renderAll(keepInspector){ renderMeta(); renderBuild(); if(!keepInspector) renderInspector(); renderBadges(); renderStatus(); renderView(); }
 function timeAgo(t){ const d = (Date.now()-t)/1000; if(d<60) return 'just now'; if(d<3600) return Math.floor(d/60)+'m ago'; if(d<86400) return Math.floor(d/3600)+'h ago'; return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
@@ -1518,82 +1530,202 @@ function importRows(rows, name){
   throw new Error('nohdr');
 }
 
-/* ---------- Flow diagram (SVG) for PNG / PDF ---------- */
-function wrapText(t, n){ const words = String(t).split(/\s+/), lines = []; let cur = ''; words.forEach(w=>{ if((cur+' '+w).trim().length>n && cur){ lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); }); if(cur) lines.push(cur); return lines; }
-function flowSVG(){
-  const om = orderMap(), FONT = 'Helvetica, Arial, sans-serif';
-  const NW = 330, LW = 270, GX = 18, PAD = 36, HEAD = 92, GAP = 22;
-  const box = (s, w) => {
-    const T = TYPES[s.type], ch = Math.floor((w-26)/6.3), lines = [];
-    s.conds.forEach(c=>wrapText('If: ' + shortRule(c), ch).forEach(l=>lines.push({t:l, s:11.5, w:'700', c:isOwned(c)?'#7A8396':'#1E8A5B'})));
-    wrapText(T.label + (s.specify ? ': ' + s.specify : ''), Math.floor((w-58)/7.1)).forEach((l,i)=>lines.push({t:l, s:13, w:'700', c:'#171E33', head:i===0}));
-    if(s.type==='checklist') s.items.forEach(i=>wrapText('☐ ' + (i.text||'Untitled') + (i.assignee ? ' · ' + i.assignee : ''), ch).forEach(l=>lines.push({t:l, s:12, w:'500', c:'#273244'})));
-    else wrapText(T.noGroup ? 'Runs as the system' : (s.groups.join(', ') || 'No security group'), ch).forEach(l=>lines.push({t:l, s:12, w:'600', c:'#273244'}));
-    const meta = [s.all?'All':'', s.restr.length?'Excl. '+s.restr.join(', ').toLowerCase():'', s.due?'Due '+s.due:''].filter(Boolean).join(' · ');
-    if(meta) wrapText(meta, ch).forEach(l=>lines.push({t:l, s:11.5, w:'400', c:'#59647C'}));
-    return {s, w, lines, h: 18 + lines.length*16, color:T.color, letter:om[s.id]};
-  };
-  const drawBox = (b, x, y) => {
-    const lw = 10 + b.letter.length*7;
-    let o = `<rect x="${x}" y="${y}" width="${b.w}" height="${b.h}" rx="9" fill="#FFFFFF" stroke="#D4DAE6"/><rect x="${x}" y="${y}" width="5" height="${b.h}" rx="2.5" fill="${b.color}"/>`;
-    b.lines.forEach((l,i)=>{ const ly = y + 22 + i*16;
-      if(l.head) o += `<rect x="${x+13}" y="${ly-13}" width="${lw}" height="18" rx="4" fill="${b.color}"/><text x="${x+13+lw/2}" y="${ly}" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="11" font-weight="700" fill="#fff">${b.letter}</text>`;
-      o += `<text x="${x + (l.head ? 19 + lw : 13)}" y="${ly}" font-family="${FONT}" font-size="${l.s}" font-weight="${l.w}" fill="${l.c}">${esc(l.t)}</text>`; });
-    return o;
-  };
-  const splitW = sp => sp.lanes.length*LW + (sp.lanes.length-1)*GX;
-  const parW = n => n*NW*0.82 + (n-1)*GX;
-  let maxW = NW; wf.items.forEach(it=>{ if(it.kind==='split' && it.lanes.length) maxW = Math.max(maxW, splitW(it)); if(it.kind==='par') maxW = Math.max(maxW, parW(it.steps.length)); });
-  const width = Math.max(700, maxW + PAD*2), cx = width/2;
-  let y = PAD + HEAD, body = '', rails = '';
-  const line = (x1,y1,x2,y2,dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#B4BED0" stroke-width="2"${dash?' stroke-dasharray="4 4"':''}/>`;
-  const pill = (label, color, w, sub) => { const x = cx - w/2, h = sub ? 46 : 34; let o = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h/2}" fill="${color}"/><text x="${cx}" y="${y+22}" text-anchor="middle" font-family="${FONT}" font-size="13" font-weight="700" fill="#fff">${esc(label)}</text>`; if(sub) o += `<text x="${cx}" y="${y+37}" text-anchor="middle" font-family="${FONT}" font-size="10.5" fill="#E3F4EA">${esc(sub)}</text>`; y += h; return o; };
-  body += pill('a  ·  Initiation', INIT_COLOR, 200);
-  const stepRow = (steps, colW) => {
-    const bs = steps.map(s=>box(s, colW)), n = bs.length, rw = n*colW + (n-1)*GX, x0 = cx - rw/2, h = Math.max(...bs.map(b=>b.h));
-    rails += line(cx, y, cx, y + GAP - (n>1?10:0));
-    if(n>1){ const top = y + GAP - 10; rails += line(x0 + colW/2, top, x0 + rw - colW/2, top); bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, top, x0 + i*(colW+GX) + colW/2, top + 10)); }
-    y += GAP; bs.forEach((b,i)=> body += drawBox(b, x0 + i*(colW+GX), y));
-    if(n>1){ const bot = y + h + 10; bs.forEach((b,i)=> rails += line(x0 + i*(colW+GX) + colW/2, y + b.h, x0 + i*(colW+GX) + colW/2, bot)); rails += line(x0 + colW/2, bot, x0 + rw - colW/2, bot); y = bot; }
-    else y += h;
-  };
-  wf.items.forEach((it, idx)=>{
-    if(it.kind==='step') stepRow([it], NW);
-    else if(it.kind==='par'){ if(it.steps.length) stepRow(it.steps, NW*0.82); }
-    else if(it.kind==='complete'){ rails += line(cx, y, cx, y + GAP); y += GAP; const prev = wf.items.slice(0, idx).reverse().find(x=>x.kind==='step'); body += pill('✓  Document approved', DONE_COLOR, 300, prev ? `step ${om[prev.id]} is the completion step` : 'completion step'); }
-    else if(it.lanes.length){
-      const n = it.lanes.length, tw = splitW(it), x0 = cx - tw/2;
-      const centers = it.lanes.map((l,i)=> x0 + i*(LW+GX) + LW/2);
-      rails += line(cx, y, cx, y + 14); y += 14;
-      rails += line(Math.min(...centers, cx), y, Math.max(...centers, cx), y);
-      const top = y; y += 12;
-      const heads = it.lanes.map(l=>wrapText('If: ' + (l.rule ? shortRule(l.rule) : 'no rule yet'), 38).slice(0,2));
-      const hh = Math.max(44, ...heads.map(h=>26 + h.length*15));
-      it.lanes.forEach((l,i)=>{ const x = x0 + i*(LW+GX); body += `<rect x="${x}" y="${y}" width="${LW}" height="${hh}" rx="8" fill="#EEF1F8" stroke="${SPLIT_COLOR}" stroke-width="1.2"/><text x="${x+12}" y="${y+18}" font-family="${FONT}" font-size="12.5" font-weight="800" fill="${SPLIT_COLOR}">${esc(l.name || 'Path ' + (i+1))}</text>`+
-        heads[i].map((t,k)=>`<text x="${x+12}" y="${y+34+k*15}" font-family="${FONT}" font-size="11.5" font-weight="700" fill="#1E8A5B">${esc(t)}</text>`).join(''); });
-      centers.forEach(c=> rails += line(c, top, c, y));
-      y += hh;
-      const ys = it.lanes.map((l,i)=>{
-        let ly = y; const x = x0 + i*(LW+GX); const flat = []; l.steps.forEach(s=> s.kind==='par' ? flat.push(...s.steps) : flat.push(s));
-        flat.forEach(s=>{ const b = box(s, LW); ly += 16; body += drawBox(b, x, ly); ly += b.h; });
-        return ly;
-      });
-      const laneBottom = Math.max(y + 40, ...ys) + 16;
-      centers.forEach(c=> rails += line(c, y, c, laneBottom));
-      rails += line(Math.min(...centers, cx), laneBottom, Math.max(...centers, cx), laneBottom);
-      y = laneBottom;
-    }
-  });
-  rails += line(cx, y, cx, y + GAP); y += GAP;
-  body += pill('End of definition', END_COLOR, 220);
-  const height = y + PAD;
-  const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
-  const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'})].filter(Boolean).join('   |   ');
-  const head = `<image href="${LOGO}" x="${width-PAD-150}" y="${PAD-4}" width="150" height="45"/>`+
-    `<text x="${PAD}" y="${PAD+18}" font-family="${FONT}" font-size="19" font-weight="800" fill="#29357F">${esc(title)}</text>`+
-    `<text x="${PAD}" y="${PAD+40}" font-family="${FONT}" font-size="12" fill="#59647C">${esc(sub)}</text>`+
-    `<rect x="${PAD}" y="${PAD+58}" width="${width-PAD*2}" height="2" fill="#00AEEF"/>`;
-  return {svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${rails}${body}</svg>`, width, height};
+/* ---------- Flow layout: steps run left to right and wrap to rows (Flow tab, PNG, PDF) ---------- */
+const FL = {CW:232, AG:46, PAD:36, TOP:84, RG:40, FOOT:46, FONT:'Helvetica, Arial, sans-serif', HEAD:'#1D5D7E', AFTER:'#5E6B7E', BAND:'#DCEBF5', EDGE:'#2C3E50', SEP:'#D4DAE6', ARROW:'#2F6F8F', INK:'#171E33', MUTED:'#59647C', LBL:'#33475B'};
+const PAGE = {landscape:[792,612], portrait:[612,792]}, PM = 24;
+let flowCols = +store.get('bpws.flowCols', 0) || 0, fmCtx = null;
+function fmWrap(text, size, weight, maxW){
+ fmCtx = fmCtx || document.createElement('canvas').getContext('2d');
+ fmCtx.font = `${weight} ${size}px ${FL.FONT}`;
+ const out = [];
+ String(text ?? '').split('\n').forEach(par=>{
+  let cur = '';
+  par.split(/\s+/).filter(Boolean).forEach(w=>{ const t = cur ? cur + ' ' + w : w; if(cur && fmCtx.measureText(t).width > maxW){ out.push(cur); cur = w; } else cur = t; });
+  if(cur) out.push(cur);
+ });
+ return out.length ? out : [''];
+}
+const ft = (x, y, t, size, weight, fill, anchor) => `<text x="${x}" y="${y}" font-family="${FL.FONT}" font-size="${size}" font-weight="${weight}" fill="${fill}"${anchor ? ` text-anchor="${anchor}"` : ''}>${esc(t)}</text>`;
+const sentence = t => String(t||'').trim().split(/\s+/).map((w,i)=> i===0 ? w.charAt(0).toUpperCase() + w.slice(1) : (/[A-Z].*[A-Z]|\d/.test(w) ? w : w.toLowerCase())).join(' ');
+const condText = c => String(c||'').replace(/\(Workday Owned\)/i,'').replace(/[?\s.]+$/,'').trim() + (isOwned(c) ? ' (Workday owned)' : '');
+const seqW = us => us.reduce((a,u,i)=>a + u.w + (i ? FL.AG : 0), 0);
+const sepLine = (x, y, w) => `<line x1="${x}" y1="${y}" x2="${x+w}" y2="${y}" stroke="${FL.SEP}"/>`;
+const arrowSVG = (x1, x2, y) => { const a = x1 + 7, b = x2 - 7; return `<path d="M${a} ${y}H${b-1}M${b-8} ${y-5.5}L${b} ${y}L${b-8} ${y+5.5}" fill="none" stroke="${FL.ARROW}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`; };
+const frameSVG = (x, y, w, h, color, title, sub) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${color}" fill-opacity=".05" stroke="${color}" stroke-width="1.4" stroke-dasharray="6 4"/>` + ft(x+14, y+20, title, 12, 800, color) + ft(x+14, y+34, sub, 10.5, 500, FL.MUTED);
+const linesH = lines => lines.reduce((a,l)=>a + l.s + 5 + (l.g||0), 0);
+const drawLines = (lines, cx, y, h) => { let o = '', ly = y + (h - linesH(lines))/2; lines.forEach(l=>{ ly += l.s + 5 + (l.g||0); o += ft(cx, ly-5, l.t, l.s, l.w, l.c, 'middle'); }); return o; };
+
+/* Client-facing step numbers: Step 1, Step 2... in flow order. Parallel steps share a number (3A, 3B). */
+function stepNumbers(){
+ const m = {}; let n = 0;
+ const seq = list => list.forEach(it=>{
+  if(it.kind==='step') m[it.id] = String(++n);
+  else if(it.kind==='par' && it.steps.length){ n++; it.steps.forEach((s,i)=> m[s.id] = n + (it.steps.length>1 ? letters(i).toUpperCase() : '')); }
+  else if(it.kind==='split') it.lanes.forEach(l=>seq(l.steps));
+ });
+ seq(wf.items);
+ return m;
+}
+function stepTitle(s){
+ const n = bpCat().noun || 'document';
+ if(s.specify && s.type!=='checklist') return sentence(s.specify);
+ return {approval:'Approve the ' + n, review:'Review the ' + n, chain:'Approval chain', cchain:'Consolidated approval chain', checklist:s.specify ? sentence(s.specify) : 'Checklist', action:'Action (task not picked yet)', service:'Service (not picked yet)', todo:'To Do (text needed)', integration:'Integration (not named yet)'}[s.type] || TYPES[s.type].label;
+}
+function flowCard(s, num, gateRule){
+ const T = TYPES[s.type] || TYPES.action, IW = FL.CW - 24, after = isAfterCompletion(s.id);
+ const head = fmWrap(stepTitle(s), 12.5, 700, IW).slice(0, 3);
+ let label = 'Approver / reviewer', whoTxt, ws = 15, ww = 700;
+ if(s.type==='checklist'){ label = 'Checklist items'; ws = 12; ww = 600; whoTxt = s.items.length ? s.items.map(i=>'• ' + (i.text||'Untitled item') + (i.assignee ? ' (' + sentence(i.assignee) + ')' : '')).join('\n') : 'No items yet'; }
+ else if(T.noGroup){ label = 'Runs as'; ws = 13; ww = 600; whoTxt = 'System (no inbox item)'; }
+ else whoTxt = s.groups.length ? s.groups.map(sentence).join(' or ') : 'No security group yet';
+ const who = fmWrap(whoTxt, ws, ww, IW);
+ const subs = [];
+ if(s.restr.length && !T.noGroup){ const a = s.restr.includes('Initiator'), b = s.restr.includes('Approvers'); subs.push(a && b ? 'Not the initiator or a prior approver' : a ? 'Not the initiator' : 'Not a prior approver'); }
+ if(s.all && ALL_TYPES.includes(s.type)) subs.push(s.type==='approval' ? 'Every member must approve' : 'Every member must act');
+ if(s.optional) subs.push('Optional step');
+ const subL = subs.flatMap(t=>fmWrap(t, 11.5, 500, IW));
+ const due = s.due ? s.due.replace(/\b(Days?|Hours?|Weeks?|Months?)\b/g, m=>m.toLowerCase()) : 'Not set';
+ const conds = effectiveConds(s).filter(c=>c!==gateRule);
+ const condL = conds.length ? conds.map(c=>fmWrap(condText(c), 12, 500, IW-12)) : null;
+ const hH = 38 + head.length*16, bH = 34 + who.length*(ws+4) + subL.length*15, dH = 48;
+ const cH = 36 + (condL ? condL.reduce((a,l)=>a + l.length*16, 0) : 16);
+ return {id:s.id, num, head, tag:after ? 'AFTER APPROVAL' : T.label.toUpperCase(), after, label, who, ws, ww, subL, due, condL, hH, bH, dH, h:hH+bH+dH+cH};
+}
+function drawCard(c, x, y, h){
+ const w = FL.CW, r = 6;
+ let o = `<g class="fcard" data-goto="${c.id}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="#FFFFFF" stroke="${FL.EDGE}" stroke-width="1.2"/>`;
+ o += `<path d="M${x} ${y+c.hH}V${y+r}Q${x} ${y} ${x+r} ${y}H${x+w-r}Q${x+w} ${y} ${x+w} ${y+r}V${y+c.hH}Z" fill="${c.after ? FL.AFTER : FL.HEAD}"/>`;
+ o += ft(x+12, y+22, 'Step ' + c.num, 14, 800, '#FFFFFF');
+ o += `<text x="${x+w-12}" y="${y+21}" font-family="${FL.FONT}" font-size="8.5" font-weight="700" fill="#FFFFFF" fill-opacity=".75" text-anchor="end" letter-spacing=".5">${esc(c.tag)}</text>`;
+ c.head.forEach((t,i)=> o += ft(x+12, y+40+i*16, t, 12.5, 700, '#FFFFFF'));
+ let yy = y + c.hH, ly;
+ o += `<rect x="${x+.6}" y="${yy}" width="${w-1.2}" height="${c.bH}" fill="${FL.BAND}"/>` + sepLine(x, yy, w);
+ o += ft(x+12, yy+23, c.label, 11, 600, FL.LBL);
+ ly = yy + 26;
+ c.who.forEach(t=>{ ly += c.ws + 4; o += ft(x+12, ly-4, t, c.ws, c.ww, FL.INK); });
+ c.subL.forEach(t=>{ ly += 15; o += ft(x+12, ly-3, t, 11.5, 500, FL.EDGE); });
+ yy += c.bH; o += sepLine(x, yy, w);
+ o += ft(x+12, yy+24, 'Due', 11, 600, FL.LBL) + ft(x+12, yy+42, c.due, 13, 500, c.due==='Not set' ? FL.MUTED : FL.INK);
+ yy += c.dH; o += sepLine(x, yy, w);
+ o += ft(x+12, yy+24, 'Entry conditions', 11, 600, FL.LBL);
+ ly = yy + 26;
+ if(c.condL) c.condL.forEach(lines=>lines.forEach((t,i)=>{ ly += 16; if(!i) o += `<circle cx="${x+16}" cy="${ly-8}" r="2.2" fill="${FL.INK}"/>`; o += ft(x+24, ly-4, t, 12, 500, FL.INK); }));
+ else { ly += 16; o += ft(x+12, ly-4, 'None, always runs', 12, 500, FL.MUTED); }
+ return o + '</g>';
+}
+function gateU(lane, rangeTxt, idx){
+ const IW = FL.CW - 28, lines = [{t: idx==null ? 'Gate' : `Path ${idx+1} gate`, s:13, w:800, c:FL.INK}];
+ if(lane.rule) fmWrap(condText(lane.rule), 12.5, 700, IW).forEach((t,i)=>lines.push({t, s:12.5, w:700, c:FL.INK, g:i?0:3}));
+ else lines.push({t:'No condition rule yet', s:12.5, w:700, c:'#A8560A', g:3});
+ if(lane.name && lane.name!==shortRule(lane.rule) && !/^Path \d+$/.test(lane.name)) fmWrap('Path: ' + lane.name, 11, 500, IW).forEach(t=>lines.push({t, s:11, w:500, c:FL.MUTED}));
+ fmWrap(rangeTxt ? 'Applies to ' + rangeTxt : 'No steps in this path yet', 11, 500, IW).forEach((t,i)=>lines.push({t, s:11, w:500, c:FL.MUTED, g:i?0:4}));
+ return {w:FL.CW, h:Math.max(120, linesH(lines) + 32), stretch:true, draw:(x,y,h)=>
+  `<g data-goto="lane:${lane.id}"><rect x="${x}" y="${y}" width="${FL.CW}" height="${h}" rx="6" fill="#FFFFFF" stroke="${FL.ARROW}" stroke-width="1.3" stroke-dasharray="5 4"/>${drawLines(lines, x+FL.CW/2, y, h)}</g>`};
+}
+function doneU(prevNum, more){
+ const W = 156, IW = W - 20, noun = bpCat().noun || 'document', lines = [{t:'Document approved', s:12.5, w:800, c:DONE_COLOR}];
+ fmWrap(prevNum ? `Step ${prevNum} completes the ${noun}.` : `The step before this completes the ${noun}.`, 11, 500, IW).forEach((t,i)=>lines.push({t, s:11, w:500, c:'#273244', g:i?0:4}));
+ if(more) fmWrap('Later steps run after approval.', 11, 500, IW).forEach((t,i)=>lines.push({t, s:11, w:500, c:FL.MUTED, g:i?0:4}));
+ return {w:W, h:linesH(lines) + 32, stretch:true, draw:(x,y,h)=>`<rect x="${x}" y="${y}" width="${W}" height="${h}" rx="8" fill="#E3F4EA" stroke="${DONE_COLOR}" stroke-width="1.4"/>${drawLines(lines, x+W/2, y, h)}`};
+}
+function parU(p, gateRule, nums){
+ const cards = p.steps.map(s=>flowCard(s, nums[s.id], gateRule)), P = 12, TH = 44, G = 12, w = FL.CW + P*2;
+ const h = TH + cards.reduce((a,c)=>a + c.h, 0) + G*(cards.length-1) + P, ns = p.steps.map(s=>nums[s.id]);
+ return {w, h, draw:(x,y)=>{
+  let o = frameSVG(x, y, w, h, PAR_COLOR, 'Run in parallel', cards.length>1 ? `Steps ${listJoin(ns)} run at the same time` : 'Add steps to run them together'), cy = y + TH;
+  cards.forEach(c=>{ o += drawCard(c, x+P, cy, c.h); cy += c.h + G; });
+  return o;
+ }};
+}
+function splitU(sp, range, laneUs){
+ const P = 14, TH = 46, LG = 18;
+ const lanes = sp.lanes.map((l,i)=>{ const us = [gateU(l, range(l.steps), i), ...laneUs(l)]; return {us, w:seqW(us), h:Math.max(...us.map(u=>u.h)), ch:Math.max(...us.filter(u=>u.stretch).map(u=>u.h))}; });
+ const w = P*2 + Math.max(...lanes.map(l=>l.w)), h = TH + lanes.reduce((a,l)=>a + l.h, 0) + LG*(lanes.length-1) + P;
+ return {w, h, draw:(x,y)=>{
+  let o = frameSVG(x, y, w, h, SPLIT_COLOR, 'Conditional paths', 'Each path runs only when its gate condition is met'), ly = y + TH;
+  lanes.forEach((l,i)=>{ if(i) o += `<line x1="${x+P}" y1="${ly-LG/2}" x2="${x+w-P}" y2="${ly-LG/2}" stroke="${SPLIT_COLOR}" stroke-opacity=".35" stroke-dasharray="3 4"/>`; o += drawSeq(l.us, x+P, ly, l.h, l.ch); ly += l.h + LG; });
+  return o;
+ }};
+}
+function drawSeq(us, x, y, rowH, cardH, out){
+ let o = '', cx = x; const mid = y + rowH/2;
+ us.forEach((u,i)=>{ if(i) o += arrowSVG(cx - FL.AG, cx, mid); const h = u.stretch ? cardH : u.h; o += u.draw(cx, y + (rowH-h)/2, h); cx += u.w + FL.AG; });
+ if(out) o += arrowSVG(cx - FL.AG, cx, mid);
+ return o;
+}
+function flowUnits(){
+ const nums = stepNumbers(), units = [];
+ const range = steps => { const ns = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ns.push(nums[x.id]); steps.forEach(add); return !ns.length ? '' : ns.length===1 ? 'step ' + ns[0] : `steps ${ns[0]} to ${ns[ns.length-1]}`; };
+ const cardU = (s, rule) => { const c = flowCard(s, nums[s.id], rule); return {w:FL.CW, h:c.h, stretch:true, draw:(x,y,h)=>drawCard(c, x, y, h)}; };
+ const laneUs = l => l.steps.filter(x=>x.kind!=='par' || x.steps.length).map(x=>x.kind==='par' ? parU(x, l.rule, nums) : cardU(x, l.rule));
+ let prev = null, compPrev = null;
+ walk(it=>{ if(it.kind==='step') prev = it; else if(it.kind==='complete') compPrev = prev; });
+ wf.items.forEach((it, i)=>{
+  if(it.kind==='step') units.push(cardU(it));
+  else if(it.kind==='par'){ if(it.steps.length) units.push(parU(it, null, nums)); }
+  else if(it.kind==='complete') units.push(doneU(compPrev && nums[compPrev.id], i < wf.items.length-1));
+  else if(it.kind==='split' && it.lanes.length===1){ const l = it.lanes[0]; units.push(gateU(l, range(l.steps), null), ...laneUs(l)); }
+  else if(it.kind==='split' && it.lanes.length) units.push(splitU(it, range, laneUs));
+ });
+ return units;
+}
+const rowsHeight = R => FL.PAD + FL.TOP + (R.length ? R.reduce((a,r)=>a + r.h, 0) + FL.RG*(R.length-1) : 60) + FL.FOOT + FL.PAD;
+function flowMetrics(cols){
+ const maxW = cols*(FL.CW+28) + (cols-1)*FL.AG, rows = []; let cur = [];
+ flowUnits().forEach(u=>{ if(cur.length && seqW([...cur, u]) > maxW){ rows.push(cur); cur = []; } cur.push(u); });
+ if(cur.length) rows.push(cur);
+ const R = rows.map(us=>({us, w:seqW(us), h:Math.max(...us.map(u=>u.h)), ch:Math.max(0, ...us.filter(u=>u.stretch).map(u=>u.h))}));
+ const width = FL.PAD*2 + Math.max(640, ...R.map(r=>r.w + FL.AG));
+ return {cols, rows:R, width, height:rowsHeight(R)};
+}
+/* Picks cards per row (and page orientation) so the flow fits one letter page as large as possible */
+function pickCols(){
+ let best = null;
+ (flowCols ? [flowCols] : [2,3,4,5,6,7,8]).forEach(c=>{ const M = flowMetrics(c); Object.entries(PAGE).forEach(([o,[pw,ph]])=>{ const s = Math.min((pw-2*PM)/M.width, (ph-2*PM)/M.height); if(!best || s > best.scale + 1e-6) best = {cols:c, orient:o, scale:s, M}; }); });
+ best.fits = best.scale >= 0.4;
+ return best;
+}
+/* What the Flow tab shows and the PDF prints: one page when it stays readable, otherwise 3 to 5 cards per row (fewest pages) across landscape pages */
+function paginate(M){
+ const [lw, lh] = PAGE.landscape, k = Math.min(1, (lw-2*PM)/M.width), avail = (lh-2*PM)/k - (FL.PAD*2 + FL.TOP + FL.FOOT + 24), pages = [];
+ let a = 0, h = 0;
+ M.rows.forEach((r,i)=>{ const add = r.h + (i>a ? FL.RG : 0); if(i>a && h + add > avail){ pages.push([a,i]); a = i; h = r.h; } else h += add; });
+ pages.push([a, M.rows.length]);
+ return pages;
+}
+function flowPlan(){
+ const pick = pickCols();
+ if(pick.fits) return {M:pick.M, orient:pick.orient, pages:[[0, pick.M.rows.length]], fits:true};
+ let best = null;
+ (flowCols ? [flowCols] : [3,4,5]).forEach(c=>{ const M = flowCols ? pick.M : flowMetrics(c), pages = paginate(M); if(!best || pages.length < best.pages.length) best = {M, pages}; });
+ return {M:best.M, orient:'landscape', pages:best.pages, fits:false};
+}
+function flowSVG(opts={}){
+ const M = opts.M || pickCols().M, R = opts.rows ? M.rows.slice(opts.rows[0], opts.rows[1]) : M.rows, off = opts.rows ? opts.rows[0] : 0;
+ const width = M.width, height = rowsHeight(R) + (off + R.length < M.rows.length ? 24 : 0), P = FL.PAD;
+ let body = '', y = P + FL.TOP;
+ if(!R.length) body += ft(P, y + 30, 'No steps yet. Add steps on the Build tab.', 13, 500, FL.MUTED);
+ R.forEach((r,i)=>{
+  const last = off + i === M.rows.length - 1;
+  body += drawSeq(r.us, P, y, r.h, r.ch, !last);
+  if(!last) body += ft(P + r.w + FL.AG, y + r.h + 24, `Continues on row ${off+i+2}`, 11, 600, FL.MUTED, 'end');
+  y += r.h + FL.RG;
+ });
+ const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
+ const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}), opts.pages>1 ? `Page ${opts.page} of ${opts.pages}` : ''].filter(Boolean).join(' | ');
+ const legend = fmWrap(`Read left to right, row by row. A gate is the condition that decides whether the steps it lists run. Dashed frames group steps that run in parallel or on conditional paths. Steps marked After approval run once the ${bpCat().noun||'document'} is approved.`, 10.5, 500, width - P*2).slice(0, 2);
+ const head = `<image href="${LOGO}" x="${width-P-150}" y="${P-4}" width="150" height="45"/>`+
+  ft(P, P+18, title, 19, 800, '#29357F') + ft(P, P+40, sub, 12, 500, FL.MUTED) +
+  `<rect x="${P}" y="${P+58}" width="${width-P*2}" height="2" fill="#00AEEF"/>`;
+ const foot = legend.map((t,i)=>ft(P, height - P - 18 + i*14, t, 10.5, 500, FL.MUTED)).join('');
+ return {svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)} flow"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${body}${foot}</svg>`, width, height};
+}
+function renderFlow(){
+ const plan = flowPlan(), {svg} = flowSVG({M:plan.M});
+ $('#flow').innerHTML = `<div class="flow-bar"><p class="help">This is the flow page of the PDF. Steps run left to right and wrap to the next row${plan.pages.length>1 ? `. It is too long for one page, so the PDF splits it across ${plan.pages.length} pages` : ''}. Click a step or gate to edit it.</p>`+
+  `<label>Cards per row <select id="flow-cols">${[0,2,3,4,5,6].map(n=>`<option value="${n}"${n===flowCols?' selected':''}>${n ? n : 'Auto (fit one page)'}</option>`).join('')}</select></label>`+
+  `<button class="btn primary sm" data-exp="pdf">Download PDF</button></div><div class="flow-sheet">${svg}</div>`;
+ $('#flow-cols').onchange = e => { flowCols = +e.target.value || 0; store.set('bpws.flowCols', flowCols); renderFlow(); };
 }
 
 /* ---------- Exports ---------- */
@@ -1602,8 +1734,8 @@ const loaded = {};
 function loadLib(k){ if(!loaded[k]) loaded[k] = new Promise((res, rej)=>{ const s = document.createElement('script'); s.src = LIBS[k]; s.onload = res; s.onerror = ()=>{ loaded[k]=null; rej(new Error('load')); }; document.head.appendChild(s); }); return loaded[k]; }
 function fileBase(){ return (wf.name || [wf.client, wf.bp].filter(Boolean).join(' ') || 'definition').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'_').slice(0,80) || 'definition'; }
 function saveFile(blob, filename){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
-function svgToCanvas(scale){
-  const {svg, width, height} = flowSVG();
+function svgToCanvas(scale, opts){
+  const {svg, width, height} = flowSVG(opts);
   return new Promise((res, rej)=>{ const img = new Image(); img.onload = ()=>{ const c = document.createElement('canvas'); c.width = width*scale; c.height = height*scale; const ctx = c.getContext('2d'); ctx.scale(scale, scale); ctx.drawImage(img,0,0); res({canvas:c, width, height}); }; img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
 }
 async function doExport(kind){
@@ -1632,22 +1764,26 @@ async function doExport(kind){
     }
     if(kind==='pdf'){
       toast('Building PDF…'); await loadLib('pdf');
-      const {canvas, width, height} = await svgToCanvas(2);
-      const {jsPDF} = window.jspdf;
-      const doc = new jsPDF({orientation: width>height ? 'landscape' : 'portrait', unit:'pt', format:'letter'});
-      const pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight(), m = 30;
-      const sc = Math.min((pw-2*m)/width, (ph-2*m)/height);
-      doc.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', (pw-width*sc)/2, m, width*sc, height*sc);
+      const {jsPDF} = window.jspdf, m = 30, {M, orient, pages} = flowPlan();
+      const doc = new jsPDF({orientation:orient, unit:'pt', format:'letter'});
+      for(let i=0; i<pages.length; i++){
+        if(i) doc.addPage('letter', orient);
+        const {canvas, width, height} = await svgToCanvas(3, {M, rows:pages[i], page:i+1, pages:pages.length});
+        const pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight(), sc = Math.min(1.15, (pw-2*PM)/width, (ph-2*PM)/height);
+        doc.addImage(canvas.toDataURL('image/jpeg', 0.94), 'JPEG', (pw-width*sc)/2, PM, width*sc, height*sc);
+      }
       doc.addPage('letter','landscape');
       const W2 = doc.internal.pageSize.getWidth(), H2 = doc.internal.pageSize.getHeight(), logoW = 110, logoH = logoW*222/738;
       const pageHead = ()=>{ doc.addImage(LOGO, 'PNG', W2-m-logoW, m-6, logoW, logoH); doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.setTextColor(41,53,127); doc.text('Business process definition', m, m+8); doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(89,100,124); doc.text([wf.client, `${wf.bp} (${wf.def})`].filter(Boolean).join('   |   '), m, m+23); doc.setFillColor(0,174,239); doc.rect(m, m+32, W2-2*m, 1.5, 'F'); };
-      const cols = [{h:'Order',w:40,k:'order'},{h:'If',w:200,k:'ifs'},{h:'Type',w:70,k:'type'},{h:'Specify',w:120,k:'specify'},{h:'Group',w:120,k:'groups'},{h:'Addl. info',w:90,k:'addl'},{h:'All',w:28,k:'all'},{h:'Due',w:44,k:'due'}];
+      const cols = [{h:'Step',w:32,k:'num'},{h:'Order',w:36,k:'order'},{h:'If',w:170,k:'ifs'},{h:'Type',w:62,k:'type'},{h:'Specify',w:120,k:'specify'},{h:'Group',w:116,k:'groups'},{h:'Addl. info',w:80,k:'addl'},{h:'All',w:24,k:'all'},{h:'Due',w:40,k:'due'}], nums = stepNumbers();
+      let lastNum = '';
       cols.push({h:'Path',w:W2-2*m-cols.reduce((a,c)=>a+c.w,0),k:'path'});
       let y;
       const header = ()=>{ doc.setFillColor(238,241,247); doc.rect(m, y-11, W2-2*m, 17, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(89,100,124); let x=m+5; cols.forEach(c=>{ doc.text(c.h.toUpperCase(), x, y); x+=c.w; }); y += 17; };
       pageHead(); y = m + 56; header();
       defRows().forEach(r=>{
-        if(r.cmp){ doc.setFillColor(227,244,234); doc.rect(m, y-10, W2-2*m, 16, 'F'); doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.text(`Document approved. Step ${r.of} is the completion step.`, m+5, y); y += 18; return; }
+        r.num = nums[r.id] || ''; if(!r.cmp) lastNum = r.num;
+        if(r.cmp){ doc.setFillColor(227,244,234); doc.rect(m, y-10, W2-2*m, 16, 'F'); doc.setTextColor(31,122,77); doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.text(`Document approved. Step ${lastNum} (${r.of}) is the completion step.`, m+5, y); y += 18; return; }
         doc.setFontSize(8.5);
         const spec = r.items && r.items.length ? (r.specify ? r.specify + '\n' : '') + r.items.map(i=>'- ' + i.text + (i.assignee ? ' (' + i.assignee + ')' : '')).join('\n') : r.specify;
         const cells = cols.map(c=>doc.splitTextToSize(String((c.k==='specify' ? spec : r[c.k])||'').replace(/\n\n/g,'\n'), c.w-8));
