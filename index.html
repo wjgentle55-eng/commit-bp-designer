@@ -65,8 +65,9 @@ code{font-family:var(--mono);font-size:.9em}
 .field label{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .field input,.field select{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 9px;min-width:0;width:100%}
 .field .pair{display:flex;gap:6px}
-.field.bp{flex:1.3 1 190px}
+.field.bp{flex:0 1 auto;max-width:340px}
 .field .flabel{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.field .fixed .fcl{color:var(--muted);font-weight:600}
 .field .fixed{padding:6px 9px;border:1px solid transparent;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -418,6 +419,7 @@ table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
 .crumb.cur{color:var(--ink);cursor:default}
 button.dcard.folder{text-align:left;cursor:pointer;font:inherit;color:inherit}
 .folder-add{margin-top:12px;max-width:520px}
+select.move{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:12px;color:var(--muted)}
 .folder-admin{margin-top:14px;font-size:13px}
 .folder-admin summary{cursor:pointer;color:var(--muted);font-weight:600}
 .folder-admin .addrow{margin:8px 0;max-width:420px}
@@ -437,10 +439,9 @@ button.dcard.folder{text-align:left;cursor:pointer;font:inherit;color:inherit}
       <div class="brand-txt"><h1>BP Workflow Studio</h1><span>Commit Consulting</span></div>
     </div>
     <div class="meta">
-      <div class="field bp"><span class="flabel">Business process</span><div class="fixed" id="f-bp" title="Set when the definition was created. To design another business process, start a New definition."></div></div>
+      <div class="field bp"><span class="flabel">Client › Business process</span><div class="fixed" id="f-bp" title="Set when the definition was created. To design another business process, start a New definition. To change the client, use Move to client on Home."></div></div>
       <div class="field"><label for="f-def">Definition</label><input id="f-def" type="text" placeholder="Default Definition"></div>
       <div class="field"><label for="f-name">Design name</label><input id="f-name" type="text" placeholder="e.g. AP invoice approvals v2"></div>
-      <div class="field"><label for="f-client">Client</label><input id="f-client" type="text" placeholder="e.g. Aprio" list="client-list" title="Decides which client folder this definition saves into"><datalist id="client-list"></datalist></div>
     </div>
     <div class="actions">
       <span class="status" id="status"></span>
@@ -1329,9 +1330,8 @@ function renderStatus(){
   $('#b-undo').disabled = !hist.length;
 }
 function renderMeta(){
-  $('#client-list').innerHTML = clients().map(c=>`<option value="${esc(c.name)}">`).join('');
-  [['f-name','name'],['f-client','client'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; });
-  $('#f-bp').textContent = wf.bp || 'Business process';
+  [['f-name','name'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; });
+  $('#f-bp').innerHTML = `<span class="fcl">${esc(wf.client || 'No client')} ›</span> ${esc(wf.bp || 'Business process')}`;
 }
 function renderView(){
   const tot = diffInfo().counts.total;
@@ -1656,7 +1656,7 @@ document.addEventListener('focusin', e=>{ if(e.target.matches('input[type=text],
 document.addEventListener('input', e=>{
   const t = e.target, s = stepOf(sel), lf = sel && sel.startsWith('lane:') && findLane(sel);
   const map = {'s-help':v=>s.help=v, 's-spec':v=>s.specify=v, 's-due':v=>s.due=v, 's-mod':v=>s.modifier=v, 's-runas':v=>s.runAs=v, 's-note':v=>s.note=v, 'i-note':v=>wf.init.note=v,
-    'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v, 'f-name':v=>wf.name=v, 'f-client':v=>wf.client=v, 'f-def':v=>wf.def=v};
+    'l-name':v=>lf.lane.name=v, 'l-rule':v=>lf.lane.rule=v, 'f-name':v=>wf.name=v, 'f-def':v=>wf.def=v};
   const ok = t.id.startsWith('s-') ? !!s : t.id.startsWith('l-') ? !!lf : true;
   if(t.dataset.cit!==undefined && s){
     if(!typingSnap){ snapshot(); typingSnap = true; }
@@ -1788,7 +1788,8 @@ function browserHTML(){
   const crumbs = `<nav class="crumbs" aria-label="Folders"><button class="crumb" data-loc="">Clients</button>`+
     (c ? `<span>›</span><button class="crumb" data-loc="${c.id}">${esc(c.name)}</button>` : '')+
     (c && loc.bp ? `<span>›</span><span class="crumb cur">${esc(loc.bp)}</span>` : '')+`</nav>`;
-  const defCard = x => `<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc(x.wf && x.wf.def || '')}${x.wf && x.wf.baseline && x.wf.baseline.v ? ' · Published v' + x.wf.baseline.v : ''}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div></div>`;
+  const defCard = x => `<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc(x.wf && x.wf.def || '')}${x.wf && x.wf.baseline && x.wf.baseline.v ? ' · Published v' + x.wf.baseline.v : ''}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div>`+
+    `<select class="move" data-move="${x.id}" aria-label="Move to client"><option value="">Move to client…</option>${cl.filter(o=>o.id!==x.clientId).sort((a, b)=>a.name.localeCompare(b.name)).map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('')}${x.clientId ? '<option value="__none">No client</option>' : ''}</select></div>`;
   if(!c){
     const none = ds.filter(d=>!d.clientId);
     return `<section><h2>Clients</h2>`+
@@ -1808,7 +1809,7 @@ function browserHTML(){
         : `<div class="empty">No business process folders yet. Add one below, or start a new definition from here.</div>`)+
       (c.id!=='__none' ? `<div class="addrow folder-add"><select id="bpf-pick"><option value="">Add a business process folder…</option>${avail.map(n=>`<option>${esc(n)}</option>`).join('')}</select><button class="btn" id="bpf-add">Add folder</button></div>`+
         `<details class="folder-admin"><summary>Client settings</summary><div class="addrow"><input id="cl-name" type="text" value="${esc(c.name)}"><button class="btn" id="cl-rename">Rename</button></div>`+
-        `<button class="btn sm danger" id="cl-del"${mine.length ? ' disabled title="Move or delete its definitions first"' : ''}>Delete client</button>${mine.length ? `<small class="help">Only an empty client can be deleted. To move a definition, open it and change its Client field.</small>` : ''}</details>` : '')+`</section>`;
+        `<button class="btn sm danger" id="cl-del"${mine.length ? ' disabled title="Move or delete its definitions first"' : ''}>Delete client</button>${mine.length ? `<small class="help">Only an empty client can be deleted. Use Move to client on its definitions first.</small>` : ''}</details>` : '')+`</section>`;
   }
   const own = mine.filter(d=>d.bp===loc.bp).sort((x, y)=>y.updatedAt - x.updatedAt);
   return `<section><h2>${esc(loc.bp)}</h2>${crumbs}`+
@@ -1833,6 +1834,14 @@ function homeAction(t){
   if(t.id==='cl-del'){ if(!t.dataset.armed){ t.dataset.armed = '1'; t.textContent = 'Confirm delete'; return true; } setClients(clients().filter(x=>x.id!==loc.c)); setLoc(null, null); toast('Client deleted'); return true; }
   if(t.id==='h-newin'){ pickBP = loc.bp; showStart(loc.bp); return true; }
   return false;
+}
+function moveDesign(id, cid){
+  const cl = clients(), c = cl.find(x=>x.id===cid), ds = designs(), d = ds.find(x=>x.id===id); if(!d) return;
+  d.clientId = c ? c.id : null; d.client = c ? c.name : ''; d.wf.clientId = d.clientId; d.wf.client = d.client;
+  if(c && d.bp && !c.bps.includes(d.bp)){ c.bps.push(d.bp); setClients(cl); }
+  store.set('bpws2.designs', ds);
+  if(docId===id && wf){ wf.clientId = d.clientId; wf.client = d.client; store.set('bpws5.draft', {wf, docId, dirty, savedAt}); }
+  renderHome(); toast(`Moved to ${c ? c.name : 'No client'}`);
 }
 /* A new or imported definition started inside a client folder belongs to that client */
 function claimForFolder(){ const c = !$('#home').hidden && homeClient(); if(c){ wf.client = c.name; wf.clientId = c.id; } }
@@ -1887,6 +1896,7 @@ function startNew(v){
 function openDesign(id){ const d = designs().find(x=>x.id===id); if(d){ loadWf(d.wf, d.id, d.updatedAt); closeModal(); goBuild(); } }
 function deleteDesign(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.designs', designs().filter(x=>x.id!==id)); if(docId===id){ docId=null; dirty=true; } after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
 function deleteTemplate(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.templates', templates().filter(x=>x.id!==id)); after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
+$('#home').addEventListener('change', e=>{ const t = e.target; if(t.dataset.move && t.value) moveDesign(t.dataset.move, t.value); });
 $('#home').addEventListener('keydown', e=>{ if(e.key!=='Enter') return; const m = {'cl-new':'cl-add', 'cl-name':'cl-rename'}[e.target.id]; if(m){ e.preventDefault(); $('#'+m).click(); } });
 $('#home').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
