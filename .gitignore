@@ -1,0 +1,6 @@
+# Workday pull tool: credentials and pulled client data stay local
+tools/wd_pull/.env
+tools/wd_pull/pulled/
+tools/wd_pull/**/raw_definitions.json
+__pycache__/
+.venv/

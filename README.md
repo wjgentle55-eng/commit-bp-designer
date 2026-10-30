@@ -32,6 +32,10 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 
 Home is organized as **Clients › Business processes › Definitions**. Add a client, add business process folders inside it, and start or import definitions from inside a folder so they're filed there. The header shows where a definition is filed (**Client › Business process**); neither can be edited there. To file a definition under another client, use **Move to client** on its card on Home. Definitions without a client sit under **No client**. Definitions saved before folders existed are filed automatically by their Client field. Renaming a client updates its definitions; only an empty client or folder can be deleted (move its definitions first). Like everything else, folders save in this browser until the hosted version (logins and edit history come later).
 
+## Pulling from Workday
+
+`tools/wd_pull` is a read-only command-line tool that pulls business process definitions from a tenant (`Get_Business_Process_Definitions` on `Core_Implementation_Service`) and writes one `.csv` per definition in the definition export's columns. Drop the files on Home inside a client folder: several at once are each saved as a definition there, and the importer builds paths, conditions and the Document approved point as for an export. Setup, options and what to confirm on the first live run are in [tools/wd_pull/README.md](tools/wd_pull/README.md). Credentials stay in a local `.env`, which is gitignored.
+
 ## Import and export
 
 - **Import** a Workday BP definition export (.xlsx with Step, Order, If, Type, Specify, Group... columns) or a design `.json` file from New or Open. When consecutive steps share a condition, they're grouped into a path automatically.
