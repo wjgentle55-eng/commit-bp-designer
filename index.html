@@ -410,6 +410,15 @@ table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
 .block.linkb .flag{background:var(--panel-2);color:var(--ink)}
 .block.linkb .spec{color:var(--muted);font-weight:600}
 .block.linkb .ord{background:var(--c,#888);color:#fff}
+/* Folders */
+.crumbs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:-2px 0 12px;font-size:13px;color:var(--muted)}
+.crumb{border:0;background:none;padding:2px 4px;border-radius:6px;font-weight:700;color:var(--accent);cursor:pointer}
+.crumb.cur{color:var(--ink);cursor:default}
+button.dcard.folder{text-align:left;cursor:pointer;font:inherit;color:inherit}
+.folder-add{margin-top:12px;max-width:520px}
+.folder-admin{margin-top:14px;font-size:13px}
+.folder-admin summary{cursor:pointer;color:var(--muted);font-weight:600}
+.folder-admin .addrow{margin:8px 0;max-width:420px}
 /* Custom chains */
 .pal-item.chain .block{flex-wrap:wrap}
 .pal-item.chain .row{margin-top:2px}
@@ -429,7 +438,7 @@ table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
       <div class="field bp"><label for="f-bp">Business process</label><div class="pair"><select id="f-bp"></select><input id="f-bp-other" type="text" placeholder="Business process name" hidden></div></div>
       <div class="field"><label for="f-def">Definition</label><input id="f-def" type="text" placeholder="Default Definition"></div>
       <div class="field"><label for="f-name">Design name</label><input id="f-name" type="text" placeholder="e.g. AP invoice approvals v2"></div>
-      <div class="field"><label for="f-client">Client</label><input id="f-client" type="text" placeholder="e.g. Aprio"></div>
+      <div class="field"><label for="f-client">Client</label><input id="f-client" type="text" placeholder="e.g. Aprio" list="client-list" title="Decides which client folder this definition saves into"><datalist id="client-list"></datalist></div>
     </div>
     <div class="actions">
       <span class="status" id="status"></span>
@@ -625,7 +634,7 @@ function P(steps){ return {kind:'par', id:uid(), steps}; }
 function Lane(name, rule, steps){ return {id:uid(), name:name||'', rule:rule||'', steps:steps||[]}; }
 function Split(lanes){ return {kind:'split', id:uid(), lanes:lanes||[Lane('Path 1','')]}; }
 function Comp(){ return {kind:'complete', id:uid()}; }
-function blankWf(bp){ return {v:5, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[], baseline:{items:[], v:0, at:null}, versions:[]}; }
+function blankWf(bp){ return {v:5, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[], clientId:null, baseline:{items:[], v:0, at:null}, versions:[]}; }
 function bpCat(){ return BP_CATALOG[wf.bp] || OTHER_BP; }
 function tasksFor(type){ const c = bpCat(); return type==='action' ? c.actions : type==='service' ? c.services : null; }
 
@@ -1294,6 +1303,7 @@ function renderStatus(){
   $('#b-undo').disabled = !hist.length;
 }
 function renderMeta(){
+  $('#client-list').innerHTML = clients().map(c=>`<option value="${esc(c.name)}">`).join('');
   [['f-name','name'],['f-client','client'],['f-def','def']].forEach(([id,k])=>{ if(document.activeElement !== $('#'+id)) $('#'+id).value = wf[k] || ''; });
   const known = !!BP_CATALOG[wf.bp];
   $('#f-bp').innerHTML = `<option value="__other"${known?'':' selected'}>Other business process…</option>` + Object.keys(BP_CATALOG).map(n=>`<option${n===wf.bp?' selected':''}>${esc(n)}</option>`).join('');
@@ -1667,11 +1677,12 @@ function templates(){ return store.get('bpws2.templates', []); }
 function saveDesign(){
   if(!wf.name.trim()) wf.name = [wf.client, wf.bp, wf.def].filter(Boolean).join(' · ') || 'Untitled design';
   const list = designs(); if(!docId) docId = uid();
-  const rec = {id:docId, name:wf.name, client:wf.client, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
+  fileClient();
+  const rec = {id:docId, name:wf.name, client:wf.client, clientId:wf.clientId, bp:wf.bp, wf:clone(wf), updatedAt:Date.now()};
   const i = list.findIndex(d=>d.id===docId); i>=0 ? list.splice(i,1,rec) : list.unshift(rec);
   if(!store.set('bpws2.designs', list)){ toast('Your browser blocked local saving. Use Export › Design file instead.'); return; }
   dirty = false; savedAt = rec.updatedAt; store.set('bpws5.draft', {wf, docId, dirty:false, savedAt});
-  renderMeta(); renderStatus(); toast('Saved to this browser');
+  renderMeta(); renderStatus(); toast(`Saved to ${wf.client ? wf.client + ' › ' : 'No client › '}${wf.bp}`);
 }
 function normalize(w){
   const b = blankWf(w.bp);
@@ -1695,7 +1706,7 @@ function normalize(w){
     return s;
   };
   const out = Object.assign(b, {name:w.name||'', client:w.client||'', bp:w.bp||b.bp, def:w.def||b.def, init:{note:(w.init&&w.init.note)||''},
-    customGroups:w.customGroups||[], customRules:w.customRules||w.customConds||[]});
+    customGroups:w.customGroups||[], customRules:w.customRules||w.customConds||[], clientId:w.clientId||null});
   out.items = (w.items||[]).map(it=>fix(it, w.axes));
   if(completeId && !out.items.some(i=>i.kind==='complete')) placeCompletionAfter(out.items, completeId);
   /* No baseline yet (an import, a delivered default, or a design saved before versions existed): what's loaded is the Initial version */
@@ -1717,6 +1728,94 @@ $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(
 function minis(w){ const cols=[INIT_COLOR]; const add = it => { if(it.kind==='par') it.steps.forEach(add); else if(it.kind==='split'){ cols.push(SPLIT_COLOR); it.lanes.forEach(l=>l.steps.forEach(add)); } else if(it.kind==='complete') cols.push(DONE_COLOR); else cols.push((TYPES[it.type]||TYPES.action).color); }; (w.items||[]).forEach(add); return `<span class="minis">${cols.map(c=>`<span style="background:${c}"></span>`).join('')}</span>`; }
 
 /* ---------- Home page and New flow ---------- */
+/* ---------- Folders: Clients › Business processes › Definitions. Saved in this browser until the hosted version. ---------- */
+function clients(){ return store.get('bpws.clients', []); }
+function setClients(l){ store.set('bpws.clients', l); }
+let loc = store.get('bpws.homeLoc', {c:null, bp:null});
+function setLoc(c, bp){ loc = {c:c||null, bp:bp||null}; store.set('bpws.homeLoc', loc); renderHome(); window.scrollTo(0,0); }
+/* The client folder follows the Client field: match by name, or create the folder */
+function fileClient(){
+  const cl = clients(), nm = (wf.client||'').trim();
+  if(!nm){ wf.clientId = null; return; }
+  let c = cl.find(x=>x.id===wf.clientId);
+  if(!c || c.name.toLowerCase()!==nm.toLowerCase()) c = cl.find(x=>x.name.toLowerCase()===nm.toLowerCase());
+  if(!c){ c = {id:uid(), name:nm, bps:[], createdAt:Date.now()}; cl.push(c); }
+  wf.clientId = c.id; wf.client = c.name;
+  if(wf.bp && !c.bps.includes(wf.bp)) c.bps.push(wf.bp);
+  setClients(cl);
+}
+/* Definitions saved before folders existed: file them by their Client field */
+function syncFolders(){
+  const cl = clients(), ds = designs(); let cc = false, dc = false;
+  ds.forEach(d=>{
+    const nm = (d.client||'').trim(); if(!nm || cl.some(x=>x.id===d.clientId)) return;
+    let c = cl.find(x=>x.name.toLowerCase()===nm.toLowerCase());
+    if(!c){ c = {id:uid(), name:nm, bps:[], createdAt:Date.now()}; cl.push(c); cc = true; }
+    d.clientId = c.id; d.wf.clientId = c.id; dc = true;
+    if(d.bp && !c.bps.includes(d.bp)){ c.bps.push(d.bp); cc = true; }
+  });
+  if(cc) setClients(cl); if(dc) store.set('bpws2.designs', ds);
+  return cl;
+}
+const NO_CLIENT = {id:'__none', name:'No client', bps:[]};
+function homeClient(){ return loc.c && loc.c!=='__none' ? clients().find(x=>x.id===loc.c) || null : null; }
+function inFolder(d, c){ return c.id==='__none' ? !d.clientId : d.clientId===c.id; }
+function browserHTML(){
+  const cl = syncFolders(), ds = designs();
+  const c = loc.c==='__none' ? NO_CLIENT : cl.find(x=>x.id===loc.c);
+  if(loc.c && !c){ loc = {c:null, bp:null}; return browserHTML(); }
+  const crumbs = `<nav class="crumbs" aria-label="Folders"><button class="crumb" data-loc="">Clients</button>`+
+    (c ? `<span>›</span><button class="crumb" data-loc="${c.id}">${esc(c.name)}</button>` : '')+
+    (c && loc.bp ? `<span>›</span><span class="crumb cur">${esc(loc.bp)}</span>` : '')+`</nav>`;
+  const defCard = x => `<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc(x.wf && x.wf.def || '')}${x.wf && x.wf.baseline && x.wf.baseline.v ? ' · Published v' + x.wf.baseline.v : ''}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div></div>`;
+  if(!c){
+    const none = ds.filter(d=>!d.clientId);
+    return `<section><h2>Clients</h2>`+
+      `<div class="dgrid">${cl.slice().sort((a, b)=>a.name.localeCompare(b.name)).map(x=>{ const n = ds.filter(d=>d.clientId===x.id).length, bps = new Set([...x.bps, ...ds.filter(d=>d.clientId===x.id).map(d=>d.bp)]).size;
+        return `<button class="dcard folder" data-loc="${x.id}"><b>📁 ${esc(x.name)}</b><small>${bps} business process${bps===1?'':'es'} · ${n} definition${n===1?'':'s'}</small></button>`; }).join('')}`+
+      (none.length ? `<button class="dcard folder" data-loc="__none"><b>📁 No client</b><small>${none.length} definition${none.length===1?'':'s'} without a client</small></button>` : '')+`</div>`+
+      (!cl.length && !none.length ? `<div class="empty">No clients yet. Add one below, or save a definition with a Client and its folder is made for you.</div>` : '')+
+      `<div class="addrow folder-add"><input id="cl-new" type="text" placeholder="New client name, e.g. Aprio"><button class="btn" id="cl-add">Add client</button></div></section>`;
+  }
+  const mine = ds.filter(d=>inFolder(d, c));
+  if(!loc.bp){
+    const bps = [...new Set([...c.bps, ...mine.map(d=>d.bp)])].filter(Boolean).sort();
+    const avail = Object.keys(BP_CATALOG).filter(n=>!bps.includes(n));
+    return `<section><h2>${esc(c.name)}</h2>${crumbs}`+
+      (bps.length ? `<div class="dgrid">${bps.map(b=>{ const own = mine.filter(d=>d.bp===b).sort((x, y)=>y.updatedAt - x.updatedAt);
+        return `<button class="dcard folder" data-locbp="${esc(b)}"><b>📂 ${esc(b)}</b><small>${own.length} definition${own.length===1?'':'s'}</small>${own[0] ? minis(own[0].wf) : ''}</button>`; }).join('')}</div>`
+        : `<div class="empty">No business process folders yet. Add one below, or start a new definition from here.</div>`)+
+      (c.id!=='__none' ? `<div class="addrow folder-add"><select id="bpf-pick"><option value="">Add a business process folder…</option>${avail.map(n=>`<option>${esc(n)}</option>`).join('')}</select><button class="btn" id="bpf-add">Add folder</button></div>`+
+        `<details class="folder-admin"><summary>Client settings</summary><div class="addrow"><input id="cl-name" type="text" value="${esc(c.name)}"><button class="btn" id="cl-rename">Rename</button></div>`+
+        `<button class="btn sm danger" id="cl-del"${mine.length ? ' disabled title="Move or delete its definitions first"' : ''}>Delete client</button>${mine.length ? `<small class="help">Only an empty client can be deleted. To move a definition, open it and change its Client field.</small>` : ''}</details>` : '')+`</section>`;
+  }
+  const own = mine.filter(d=>d.bp===loc.bp).sort((x, y)=>y.updatedAt - x.updatedAt);
+  return `<section><h2>${esc(loc.bp)}</h2>${crumbs}`+
+    `<div class="home-actions"><button class="btn primary" id="h-newin">+ New ${esc(loc.bp)} definition${c.id!=='__none' ? ' for ' + esc(c.name) : ''}</button></div>`+
+    (own.length ? `<div class="dgrid">${own.map(defCard).join('')}</div>` : `<div class="empty">No definitions here yet. Start a new one, or drop a definition export above${c.id!=='__none' ? ` and it's filed under ${esc(c.name)}` : ''}.</div>`)+
+    (c.id!=='__none' && !own.length ? `<div class="row"><button class="btn sm danger" id="bpf-del">Remove this folder</button></div>` : '')+`</section>`;
+}
+function homeAction(t){
+  if(t.dataset.loc!==undefined) return setLoc(t.dataset.loc, null), true;
+  if(t.dataset.locbp) return setLoc(loc.c, t.dataset.locbp), true;
+  if(t.id==='cl-add'){ const v = $('#cl-new').value.trim(); if(!v){ $('#cl-new').focus(); return true; } const cl = clients(); if(cl.some(x=>x.name.toLowerCase()===v.toLowerCase())){ toast('That client already exists'); return true; } const c = {id:uid(), name:v, bps:[], createdAt:Date.now()}; cl.push(c); setClients(cl); setLoc(c.id, null); toast(`Added ${v}`); return true; }
+  if(t.id==='bpf-add'){ const v = $('#bpf-pick').value; if(!v) return true; const cl = clients(), c = cl.find(x=>x.id===loc.c); if(c && !c.bps.includes(v)){ c.bps.push(v); setClients(cl); } setLoc(loc.c, v); return true; }
+  if(t.id==='bpf-del'){ const cl = clients(), c = cl.find(x=>x.id===loc.c); if(c){ c.bps = c.bps.filter(b=>b!==loc.bp); setClients(cl); } setLoc(loc.c, null); toast('Folder removed'); return true; }
+  if(t.id==='cl-rename'){
+    const v = $('#cl-name').value.trim(), cl = clients(), c = cl.find(x=>x.id===loc.c); if(!v || !c) return true;
+    if(cl.some(x=>x!==c && x.name.toLowerCase()===v.toLowerCase())){ toast('Another client already has that name'); return true; }
+    c.name = v; setClients(cl);
+    const ds = designs(); ds.forEach(d=>{ if(d.clientId===c.id){ d.client = v; d.wf.client = v; } }); store.set('bpws2.designs', ds);
+    if(wf && wf.clientId===c.id) wf.client = v;
+    renderHome(); toast('Client renamed'); return true;
+  }
+  if(t.id==='cl-del'){ if(!t.dataset.armed){ t.dataset.armed = '1'; t.textContent = 'Confirm delete'; return true; } setClients(clients().filter(x=>x.id!==loc.c)); setLoc(null, null); toast('Client deleted'); return true; }
+  if(t.id==='h-newin'){ pickBP = loc.bp; showStart(loc.bp); return true; }
+  return false;
+}
+/* A new or imported definition started inside a client folder belongs to that client */
+function claimForFolder(){ const c = !$('#home').hidden && homeClient(); if(c){ wf.client = c.name; wf.clientId = c.id; } }
+
 let pickBP = null;
 function goHome(){ $('.app').hidden = true; $('#home').hidden = false; closeModal(); renderHome(); window.scrollTo(0,0); }
 function goBuild(){ $('#home').hidden = true; $('.app').hidden = false; renderAll(); renderPalette(); }
@@ -1731,11 +1830,9 @@ function renderHome(){
       `<details><summary>Or paste the step grid</summary><textarea id="h-paste" placeholder="Copy the Business Process Steps grid, header row included, from the tenant or Excel and paste it here"></textarea><div class="row"><button class="btn primary" id="h-paste-go">Build it</button></div></details>`+
     `</section>`+
     (draftUnsaved ? `<div class="resume"><div class="t"><b>Continue where you left off</b><small>${esc(d.wf.name || d.wf.bp || 'Unsaved definition')} · not saved yet</small></div>${minis(d.wf)}<button class="btn primary" id="h-resume">Continue</button></div>` : '')+
-    `<section><h2>Open</h2>`+
-    (list.length ? `<div class="dgrid">${list.map(x=>`<div class="dcard"><b>${esc(x.name||'Untitled')}</b><small>${esc([x.client, x.bp].filter(Boolean).join(' · '))}</small>${minis(x.wf)}<small>Saved ${timeAgo(x.updatedAt)}</small><div class="row"><button class="btn primary sm" data-open="${x.id}">Open</button><button class="btn sm danger" data-ddel="${x.id}">Delete</button></div></div>`).join('')}</div>`
-      : `<div class="empty">No saved definitions yet. Start a new one, and once you hit Save it shows up here.</div>`)+`</section>`+
+    browserHTML()+
     (tpls.length ? `<section><h2>Templates</h2><div class="dgrid">${tpls.map(t=>`<div class="dcard"><b>${esc(t.name)}</b><small>${esc(t.bp||'')}</small>${minis(t.wf)}<div class="row"><button class="btn sm" data-new="t:${t.id}">Use</button><button class="btn sm danger" data-tdel="${t.id}">Delete</button></div></div>`).join('')}</div></section>` : '')+
-    `<p class="help">Definitions save in this browser. Export a design file to share one with a teammate.</p></div>`;
+    `<p class="help">Clients, folders and definitions save in this browser for now. Export a design file to share one with a teammate.</p></div>`;
 }
 function showNew(){
   pickBP = null;
@@ -1763,14 +1860,16 @@ function startNew(v){
   if(v==='import'){ $('#import-file').click(); return; }
   if(v==='example') loadWf(exampleWf(pickBP || 'Supplier Invoice Event'));
   else if(v==='blank') loadWf(blankWf(pickBP || wf.bp));
-  else { const tp = templates().find(x=>x.id===v.slice(2)); if(!tp) return; const w = clone(tp.wf); w.name=''; w.client=''; w.baseline = null; w.versions = []; loadWf(w); }
-  closeModal(); goBuild(); toast('New definition ready');
+  else { const tp = templates().find(x=>x.id===v.slice(2)); if(!tp) return; const w = clone(tp.wf); w.name=''; w.client=''; w.clientId = null; w.baseline = null; w.versions = []; loadWf(w); }
+  claimForFolder(); closeModal(); goBuild(); toast(wf.client ? `New definition for ${wf.client}` : 'New definition ready');
 }
 function openDesign(id){ const d = designs().find(x=>x.id===id); if(d){ loadWf(d.wf, d.id, d.updatedAt); closeModal(); goBuild(); } }
 function deleteDesign(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.designs', designs().filter(x=>x.id!==id)); if(docId===id){ docId=null; dirty=true; } after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
 function deleteTemplate(btn, id, after){ if(btn.dataset.armed){ store.set('bpws2.templates', templates().filter(x=>x.id!==id)); after(); } else { btn.dataset.armed='1'; btn.textContent='Confirm delete'; } }
+$('#home').addEventListener('keydown', e=>{ if(e.key!=='Enter') return; const m = {'cl-new':'cl-add', 'cl-name':'cl-rename'}[e.target.id]; if(m){ e.preventDefault(); $('#'+m).click(); } });
 $('#home').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
+  if(homeAction(t)) return;
   if(t.id==='h-new') return showNew();
   if(t.id==='h-import') return $('#import-file').click();
   if(t.id==='h-paste-go'){ const v = $('#h-paste').value; if(!v.trim()){ $('#h-paste').focus(); return; } try{ const w = importRows(parseDelimited(v), ''); finishImport(w, 'pasted step grid'); }catch(err){ toast("Couldn't find the Order and Type columns. Paste the grid with its header row."); } return; }
@@ -1801,12 +1900,12 @@ async function importFile(file){
     if(/\.xlsx?$/i.test(file.name)){ await loadLib('xlsx'); w = importWorkbook(await file.arrayBuffer()); finishImport(w, file.name); return; }
     if(/\.(csv|tsv|txt)$/i.test(file.name)){ w = importRows(parseDelimited(await file.text()), ''); finishImport(w, file.name); return; }
     const d = JSON.parse(await file.text()); w = d.wf || d; if(!w.init || !Array.isArray(w.items)) throw new Error('shape');
-    loadWf(w); closeModal(); goBuild(); toast('Design file opened');
+    loadWf(w); claimForFolder(); closeModal(); goBuild(); toast('Design file opened');
   }catch(err){ toast(err && err.message==='load' ? "Couldn't load the Excel reader. Check your connection." : err && err.message==='nohdr' ? "Couldn't find the Order and Type columns in that file." : "That file isn't a definition export or design file I can read."); }
 }
 /* After an import: build it, then summarize what was designed from it in the side panel */
 function finishImport(w, source){
-  loadWf(w); closeModal();
+  loadWf(w); claimForFolder(); closeModal();
   const om = orderMap(), steps = allSteps(), notes = [];
   const letters_ = steps.map(s=>om[s.id]);
   notes.push(`${steps.length} step${steps.length===1?'':'s'} after Initiation (${letters_[0]||''} to ${letters_[letters_.length-1]||''})`);

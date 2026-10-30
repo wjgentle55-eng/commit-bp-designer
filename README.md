@@ -27,6 +27,10 @@ Commit Consulting's drag-and-drop, Scratch-style builder for proposed Workday bu
 - **Recommended**: with nothing selected, the right panel recommends blocks for the chosen process that aren't on the canvas yet.
 - **Security groups**: groups with "admin" in the name are user-based. Everything else is role-based (constrained).
 
+## Clients and folders
+
+Home is organized as **Clients › Business processes › Definitions**. Add a client, add business process folders inside it, and start or import definitions from inside a folder so they're filed there. A definition's folder follows its **Client** field: saving with a new client name creates that client's folder, and changing the name moves it. Definitions without a client sit under **No client**. Definitions saved before folders existed are filed automatically by their Client field. Renaming a client updates its definitions; only an empty client or folder can be deleted. Like everything else, folders save in this browser until the hosted version (logins and edit history come later).
+
 ## Import and export
 
 - **Import** a Workday BP definition export (.xlsx with Step, Order, If, Type, Specify, Group... columns) or a design `.json` file from New or Open. When consecutive steps share a condition, they're grouped into a path automatically.
