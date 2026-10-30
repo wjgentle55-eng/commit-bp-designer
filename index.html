@@ -1982,7 +1982,25 @@ async function helperUp(){
   try{ const r = await fetch('/api/health', {cache:'no-store'}); helperInfo = await r.json(); return !!helperInfo.ok; }catch{ return false; }
 }
 function accessCode(){ try{ return sessionStorage.getItem('bpws.access') || ''; }catch{ return ''; } }
+/* Hosted in the Streamlit app (streamlit_app.py): its sidebar runs the pull and hands the results to this page */
+const EMBED = window.__STUDIO_EMBED__ || null;
+function consumeEmbeddedPull(){
+  const p = EMBED && EMBED.pulled; if(!p || !p.id || !Array.isArray(p.definitions)) return;
+  const seen = store.get('bpws.pullsDone', []); if(seen.includes(p.id)) return;
+  let c = null; const nm = String(p.client || '').trim();
+  if(nm){ const cl = clients(); c = cl.find(x=>x.name.toLowerCase()===nm.toLowerCase()); if(!c){ c = {id:uid(), name:nm, bps:[], createdAt:Date.now()}; cl.push(c); setClients(cl); } }
+  const ws = []; p.definitions.forEach(d=>{ try{ ws.push(importRows(d.rows, '')); }catch(err){} });
+  const n = saveImported(ws, c); if(n < 0) return;
+  store.set('bpws.pullsDone', [...seen, p.id].slice(-50));
+  const bps = [...new Set(ws.map(w=>w.bp))];
+  setLoc(c ? c.id : '__none', bps.length===1 ? bps[0] : null);
+  toast(`Pulled ${n} definition${n===1?'':'s'} from ${p.tenant || 'Workday'}${c ? ' into ' + c.name : ''}`);
+}
 async function showPull(){
+  if(EMBED){
+    openModal('Pull from Workday', `<p>Use the <b>Pull from Workday</b> panel in the sidebar on the left. If it's closed, open it with the arrow at the top left.</p><p>Enter the tenant, ISU credentials, business process and client. The definitions appear here, saved into that client's folder.</p>`);
+    return;
+  }
   if(!(await helperUp())){
     openModal('Pull from Workday',
       `<p>Pulling from Workday needs the Studio server, because browsers block pages from calling Workday directly. Open Studio from its hosted address (ask your admin for the link), or run it on your own computer:</p>`+
@@ -2433,6 +2451,7 @@ $('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
   else { wf = normalize(exampleWf()); dirty = true; }
   renderPalette(); renderAll(); goHome();
+  consumeEmbeddedPull();
   setInterval(renderStatus, 60000);
 })();
 </script>

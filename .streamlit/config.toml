@@ -1,0 +1,14 @@
+[client]
+# Never render Python tracebacks in the page: a SOAP request in one could carry the ISU password.
+showErrorDetails = "none"
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+base = "light"
+primaryColor = "#29357F"   # Studio's --brand (Commit cobalt)
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EEF1F7"
+textColor = "#171E33"

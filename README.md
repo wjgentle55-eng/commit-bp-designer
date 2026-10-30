@@ -48,7 +48,19 @@ Home is organized as **Clients › Business processes › Definitions**. Add a c
 
 Designs and templates save in your browser. To share one, export it as a design file and import it on the other side, or commit it to `designs/`.
 
-## Hosting it (live, nothing to install)
+## Live on Streamlit (nothing to install)
+
+`streamlit_app.py` runs Studio full-page on Streamlit, with a **Pull from Workday** panel in the sidebar: access code (optional), services host, tenant, ISU username and password, business process (or all), Default Definitions only, and the client to save into. The pull is read only; the password is used for that one pull and cleared. Pulled definitions appear in Studio, built into blocks and paths and saved into the client's folder.
+
+Deploy on Streamlit Community Cloud (share.streamlit.io): **Create app** > **Deploy from GitHub** > repository `wjgentle55-eng/commit-bp-designer`, branch `phase3-pull` (or `main` once merged), main file `streamlit_app.py`. Under **Advanced settings > Secrets**, add:
+
+```toml
+STUDIO_ACCESS_CODE = "a team code"
+```
+
+Run it locally the same way: `pip install -r requirements.txt`, then `streamlit run streamlit_app.py`. Until accounts and shared storage (Phase 2) are switched on, each person's clients, folders and definitions stay in their own browser.
+
+## Hosting it elsewhere (live, nothing to install)
 
 Studio and its Pull from Workday server deploy together as one container (`Dockerfile`). On Render: New > Blueprint > this repo (`render.yaml`); on Azure App Service, Railway or similar: deploy the Dockerfile. Set two environment variables on the host:
 
