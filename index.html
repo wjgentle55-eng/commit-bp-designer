@@ -249,7 +249,7 @@ body.trash .trash-note{display:block}
 .desc small{display:block;margin-top:4px;color:var(--muted);font-size:11.5px}
 .sec{display:flex;flex-direction:column;gap:6px}
 .sec>label,.sec>.lbl{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
-.sec select,.sec input[type=text],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+.sec select,.sec input[type=text],.sec input[type=password],.sec textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
 .sec .req{border-color:var(--warn)!important;box-shadow:0 0 0 1px var(--warn)}
 .sec .req-note{font-size:11.5px;color:var(--warn);font-weight:600;margin:0}
 .sec textarea{min-height:64px;resize:vertical}
@@ -423,6 +423,10 @@ select.move{background:var(--panel);border:1px solid var(--line);border-radius:8
 .folder-admin{margin-top:14px;font-size:13px}
 .folder-admin summary{cursor:pointer;color:var(--muted);font-weight:600}
 .folder-admin .addrow{margin:8px 0;max-width:420px}
+/* Pull from Workday */
+.pull-form{display:flex;flex-direction:column;gap:12px}
+.pull-form .pl-err{font-size:12.5px;color:var(--warn);font-weight:600;margin:0}
+pre.cmd{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12.5px;white-space:pre-wrap;margin:0}
 /* Custom chains */
 .pal-item.chain .block{flex-wrap:wrap}
 .pal-item.chain .row{margin-top:2px}
@@ -1636,6 +1640,7 @@ function addCustomGroup(){
 }
 document.addEventListener('change', e=>{
   const t = e.target, s = stepOf(sel);
+  if(t.id==='pl-all'){ $('#pl-bp').disabled = t.checked; return; }
   if(t.dataset.specpick){
     const st = stepOf(t.dataset.specpick); if(!st) return;
     if(t.value==='__custom'){ customSpec.add(st.id); change(()=>{ st.specify=''; sel = st.id; }); setTimeout(()=>{ const i = $('#s-spec'); if(i){ i.focus(); i.scrollIntoView({block:'center'}); } }, 0); }
@@ -1677,7 +1682,7 @@ document.addEventListener('input', e=>{
 document.addEventListener('keydown', e=>{
   if(!$('#home').hidden && $('#modal').hidden) return;
   const typing = e.target.matches('input, textarea, select'), mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
-  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); else if(e.key==='Enter' && e.target.id==='ch-name') saveChain(); else if(e.key==='Enter' && e.target.id==='pub-note') doPublish(); else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click(); else if(e.key==='Enter' && e.target.id==='bp-search'){ const b = document.querySelector('#bp-grid .bpcard:not([hidden])'); b ? b.click() : $('#bp-other-go').click(); } return; }
+  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); else if(e.key==='Enter' && e.target.id==='ch-name') saveChain(); else if(e.key==='Enter' && e.target.id==='pub-note') doPublish(); else if(e.key==='Enter' && /^pl-/.test(e.target.id) && e.target.tagName==='INPUT') doPull(); else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click(); else if(e.key==='Enter' && e.target.id==='bp-search'){ const b = document.querySelector('#bp-grid .bpcard:not([hidden])'); b ? b.click() : $('#bp-other-go').click(); } return; }
   if(mod && k==='z' && !typing){ e.preventDefault(); undo(); }
   else if(mod && k==='s'){ e.preventDefault(); saveDesign(); }
   else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); multiOn() ? duplicateRun() : duplicate(sel); }
@@ -1854,7 +1859,7 @@ function renderHome(){
   const draftUnsaved = d && d.wf && d.dirty && (d.wf.items||[]).length;
   $('#home').innerHTML = `<div class="home-in">`+
     `<div class="home-top"><div class="logo-big"><img src="${LOGO}" alt="Commit, an embark company"></div><div><h1>BP Workflow Studio</h1><p>Design, review and export Workday business process definitions.</p></div></div>`+
-    `<div class="home-actions"><button class="btn primary big" id="h-new">+ New definition</button></div>`+
+    `<div class="home-actions"><button class="btn primary big" id="h-new">+ New definition</button><button class="btn big" id="h-pull" title="Pull business process definitions straight from a Workday tenant (read only)">Pull from Workday</button></div>`+
     `<section class="build-from"><h2 style="margin:0">Build from a Workday definition</h2>`+
       `<div class="drop" id="h-drop"><b>Drop definition exports (.xlsx), or the .csv files from the pull tool, here</b><small>The same layout you get from the tenant: Step, Order, If, Type, Specify, Group… Several files at once are each saved as a definition in the open client folder. It's built out into blocks, paths and the Document approved point for you.</small><button class="btn" id="h-import">Choose files</button></div>`+
       `<details><summary>Or paste the step grid</summary><textarea id="h-paste" placeholder="Copy the Business Process Steps grid, header row included, from the tenant or Excel and paste it here"></textarea><div class="row"><button class="btn primary" id="h-paste-go">Build it</button></div></details>`+
@@ -1902,6 +1907,7 @@ $('#home').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   if(homeAction(t)) return;
   if(t.id==='h-new') return showNew();
+  if(t.id==='h-pull') return showPull();
   if(t.id==='h-import') return $('#import-file').click();
   if(t.id==='h-paste-go'){ const v = $('#h-paste').value; if(!v.trim()){ $('#h-paste').focus(); return; } try{ const w = importRows(parseDelimited(v), ''); finishImport(w, 'pasted step grid'); }catch(err){ toast("Couldn't find the Order and Type columns. Paste the grid with its header row."); } return; }
   if(t.id==='h-resume'){ const d = store.get('bpws5.draft', null); if(d){ wf = normalize(d.wf); docId = d.docId||null; dirty = true; savedAt = d.savedAt||null; hist = []; sel = null; } goBuild(); return; }
@@ -1913,6 +1919,7 @@ $('#home').addEventListener('click', e=>{
 $('#modal-b').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   if(t.id==='pub-go') return doPublish();
+  if(t.id==='pl-go') return doPull();
   if(t.dataset.revert) return doRevert(t.dataset.revert);
   if(t.id==='ch-save') return saveChain();
   if(t.dataset.bp) return showStart(t.dataset.bp);
@@ -1944,20 +1951,88 @@ async function importFile(file){
 /* Several files at once (a mass pull): each is saved as its own definition, in the open client folder */
 async function importFiles(files){
   files = [...files]; if(!files.length) return; if(files.length===1) return importFile(files[0]);
-  const c = !$('#home').hidden ? homeClient() : null, list = designs(), cl = clients(), done = [], bad = [];
+  const c = !$('#home').hidden ? homeClient() : null, ws = [], bad = [];
   for(const file of files){
-    try{
-      const n = normalize((await readDefinition(file)).w);
-      if(!n.name.trim()) n.name = [n.bp, n.def].filter(Boolean).join(': ') || file.name.replace(/\.\w+$/, '');
-      if(c){ n.client = c.name; n.clientId = c.id; const cc = cl.find(x=>x.id===c.id); if(cc && n.bp && !cc.bps.includes(n.bp)) cc.bps.push(n.bp); }
-      list.unshift({id:uid(), name:n.name, client:n.client, clientId:n.clientId || null, bp:n.bp, wf:n, updatedAt:Date.now()});
-      done.push(n);
-    }catch(err){ bad.push(file.name); }
+    try{ ws.push((await readDefinition(file)).w); }catch(err){ bad.push(file.name); }
   }
-  if(done.length && !store.set('bpws2.designs', list)){ toast('Your browser blocked local saving.'); return; }
-  setClients(cl); closeModal();
+  const n = saveImported(ws, c); if(n < 0) return;
+  closeModal();
   if($('#home').hidden) goHome(); else renderHome();
-  toast(`Imported ${done.length} definition${done.length===1?'':'s'}${c ? ' into ' + c.name : ''}${bad.length ? `. Couldn't read: ${bad.join(', ')}` : ''}`);
+  toast(`Imported ${n} definition${n===1?'':'s'}${c ? ' into ' + c.name : ''}${bad.length ? `. Couldn't read: ${bad.join(', ')}` : ''}`);
+}
+/* Save built definitions straight into a client folder (null = No client). Each one's Initial version is what came in. Returns how many, or -1. */
+function saveImported(ws, c){
+  const list = designs(), cl = clients(); let n = 0;
+  ws.forEach(w=>{
+    const d = normalize(w);
+    if(!d.name.trim()) d.name = [d.bp, d.def].filter(Boolean).join(': ') || 'Imported definition';
+    if(c){ d.client = c.name; d.clientId = c.id; const cc = cl.find(x=>x.id===c.id); if(cc && d.bp && !cc.bps.includes(d.bp)) cc.bps.push(d.bp); }
+    list.unshift({id:uid(), name:d.name, client:d.client, clientId:d.clientId || null, bp:d.bp, wf:d, updatedAt:Date.now()});
+    n++;
+  });
+  if(n && !store.set('bpws2.designs', list)){ toast('Your browser blocked local saving.'); return -1; }
+  setClients(cl);
+  return n;
+}
+
+/* ---------- Pull from Workday: the page asks tools/wd_pull/studio_server.py, running on this computer, to call the tenant ---------- */
+async function helperUp(){
+  if(!/^https?:$/.test(location.protocol)) return false;
+  try{ const r = await fetch('/api/health', {cache:'no-store'}); return !!(await r.json()).ok; }catch{ return false; }
+}
+async function showPull(){
+  if(!(await helperUp())){
+    openModal('Pull from Workday',
+      `<p>Pulling runs through a small helper on your computer, so your ISU password never sits in a web page. From the Studio folder, start it once:</p>`+
+      `<pre class="cmd">cd tools/wd_pull\npip install -r requirements.txt\npython studio_server.py</pre>`+
+      `<p>Then open <b>http://localhost:8765</b> and press Pull from Workday again.</p>`);
+    return;
+  }
+  const pr = store.get('bpws.pullPrefs', {}), here = homeClient(), cl = clients().slice().sort((a, b)=>a.name.localeCompare(b.name));
+  const bp = (loc.c && loc.bp) || pr.bp || '';
+  openModal('Pull from Workday',
+    `<div class="pull-form"><p class="help" style="margin:0">Read only: nothing is written to the tenant. The password is used for this pull and isn't saved.</p>`+
+    `<div class="grid2"><div class="sec"><label for="pl-host">Services host</label><input id="pl-host" type="text" value="${esc(pr.host||'')}" placeholder="impl-services1.wd12.myworkday.com"></div>`+
+      `<div class="sec"><label for="pl-tenant">Tenant</label><input id="pl-tenant" type="text" value="${esc(pr.tenant||'')}" placeholder="e.g. commitconsulting_dpt1"></div></div>`+
+    `<div class="grid2"><div class="sec"><label for="pl-user">ISU username</label><input id="pl-user" type="text" value="${esc(pr.username||'')}" autocomplete="off"></div>`+
+      `<div class="sec"><label for="pl-pass">ISU password</label><input id="pl-pass" type="password" autocomplete="new-password"></div></div>`+
+    `<div class="sec"><label for="pl-bp">Business process</label><input id="pl-bp" type="text" list="pl-bps" value="${esc(bp)}" placeholder="Start typing, e.g. Supplier Invoice Event"><datalist id="pl-bps">${Object.keys(BP_CATALOG).map(n=>`<option value="${esc(n)}">`).join('')}</datalist></div>`+
+    `<label class="check-row"><input type="checkbox" id="pl-all"> All business processes (mass pull)</label>`+
+    `<label class="check-row"><input type="checkbox" id="pl-default"${pr.defaultOnly===false?'':' checked'}> Default Definitions only</label>`+
+    `<div class="sec"><label for="pl-client">Save into</label><select id="pl-client"><option value="">No client</option>${cl.map(x=>`<option value="${x.id}"${here && here.id===x.id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></div>`+
+    `<details><summary class="help">Advanced</summary><div class="grid2" style="margin-top:8px"><div class="sec"><label for="pl-ver">Web service version</label><input id="pl-ver" type="text" value="${esc(pr.version||'v47.0')}"></div>`+
+      `<div class="sec"><label for="pl-idt">Business process ID type</label><input id="pl-idt" type="text" value="${esc(pr.idType||'Business_Process_Type')}"></div></div></details>`+
+    `<p class="pl-err" id="pl-err" hidden></p>`+
+    `<div class="row"><button class="btn primary" id="pl-go">Pull definitions</button></div></div>`);
+  setTimeout(()=>{ const f = ['pl-host','pl-tenant','pl-user','pl-pass'].map(id=>$('#'+id)).find(x=>x && !x.value); (f || $('#pl-bp')).focus(); }, 0);
+}
+async function doPull(){
+  const btn = $('#pl-go'); if(!btn || btn.disabled) return;
+  const v = id => $('#'+id).value.trim(), all = $('#pl-all').checked, errEl = $('#pl-err');
+  const fail = m => { errEl.textContent = m; errEl.hidden = false; };
+  const params = {host:v('pl-host'), tenant:v('pl-tenant'), username:v('pl-user'), password:$('#pl-pass').value, bp:all ? '' : v('pl-bp'),
+    defaultOnly:$('#pl-default').checked, version:v('pl-ver') || 'v47.0', idType:v('pl-idt') || 'Business_Process_Type'};
+  if(!params.host || !params.tenant || !params.username || !params.password) return fail('Fill in the services host, tenant, ISU username and password.');
+  if(!all && !params.bp) return fail('Pick a business process, or tick All business processes.');
+  store.set('bpws.pullPrefs', {host:params.host, tenant:params.tenant, username:params.username, version:params.version, idType:params.idType, bp:params.bp, defaultOnly:params.defaultOnly});
+  errEl.hidden = true; btn.disabled = true; btn.textContent = 'Pulling… the first pull for a tenant can take a minute';
+  try{
+    const r = await fetch('/api/pull', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(params)});
+    const j = await r.json().catch(()=>({error:'The helper sent an answer Studio could not read.'}));
+    if(!r.ok) throw new Error(j.error || `The helper answered ${r.status}.`);
+    if(!j.definitions || !j.definitions.length) throw new Error(`No definitions came back for ${params.bp || 'this tenant'}. Check the name, or the ID type under Advanced.`);
+    const c = clients().find(x=>x.id===$('#pl-client').value) || null;
+    const ws = j.definitions.map(d=>importRows(d.rows, ''));
+    const n = saveImported(ws, c); if(n < 0) return;
+    closeModal();
+    const bps = [...new Set(ws.map(w=>w.bp))];
+    setLoc(c ? c.id : '__none', bps.length===1 ? bps[0] : null);
+    toast(`Pulled ${n} definition${n===1?'':'s'} from ${j.tenant || params.tenant}${c ? ' into ' + c.name : ''}`);
+  }catch(e){
+    fail(e instanceof TypeError ? "Couldn't reach the helper. Is studio_server.py still running?" : e.message);
+  }finally{
+    if(document.body.contains(btn)){ btn.disabled = false; btn.textContent = 'Pull definitions'; }
+  }
 }
 /* After an import: build it, then summarize what was designed from it in the side panel */
 function finishImport(w, source){

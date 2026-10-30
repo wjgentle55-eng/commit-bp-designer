@@ -34,7 +34,7 @@ Home is organized as **Clients › Business processes › Definitions**. Add a c
 
 ## Pulling from Workday
 
-`tools/wd_pull` is a read-only command-line tool that pulls business process definitions from a tenant (`Get_Business_Process_Definitions` on `Core_Implementation_Service`) and writes one `.csv` per definition in the definition export's columns. Drop the files on Home inside a client folder: several at once are each saved as a definition there, and the importer builds paths, conditions and the Document approved point as for an export. Setup, options and what to confirm on the first live run are in [tools/wd_pull/README.md](tools/wd_pull/README.md). Credentials stay in a local `.env`, which is gitignored.
+**Pull from Workday** on Home pulls definitions straight from a tenant: run `python tools/wd_pull/studio_server.py`, open http://localhost:8765, enter the tenant and ISU credentials, and pick the business process. Behind it, `tools/wd_pull` is a read-only tool that pulls business process definitions from a tenant (`Get_Business_Process_Definitions` on `Core_Implementation_Service`) and writes one `.csv` per definition in the definition export's columns. Drop the files on Home inside a client folder: several at once are each saved as a definition there, and the importer builds paths, conditions and the Document approved point as for an export. Setup, options and what to confirm on the first live run are in [tools/wd_pull/README.md](tools/wd_pull/README.md). Credentials stay in a local `.env`, which is gitignored.
 
 ## Import and export
 

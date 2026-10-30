@@ -1,6 +1,6 @@
 # Pull business process definitions from Workday
 
-A read-only command-line tool that pulls business process definitions from a
+A read-only tool that pulls business process definitions from a
 Workday tenant into files BP Workflow Studio imports. It calls
 `Get_Business_Process_Definitions` on `Core_Implementation_Service` and never
 writes to the tenant.
@@ -31,7 +31,17 @@ sandbox tenant. The ISU needs Get access to business process definitions
 (the Business Process Administration domain, or your tenant's equivalent).
 `.env` and everything the tool pulls are gitignored.
 
-## Run it
+## Pull from inside Studio (easiest)
+
+```bash
+python studio_server.py
+```
+
+Open **http://localhost:8765** (keep the terminal open). On Home, press **Pull from Workday**, enter the services host, tenant, ISU username and password, pick the business process (or tick All business processes), choose the client folder, and press Pull definitions. Each definition is built into blocks and paths and saved into that folder, with what came in as its Initial version.
+
+The helper listens on this computer only (127.0.0.1), accepts requests from its own Studio page only, talks only to `*.myworkday.com` / `*.workday.com` services hosts, and never saves or logs the password. Studio remembers the host, tenant and username for next time, not the password. The first pull for a tenant loads its web service description, which can take a minute; later pulls reuse it.
+
+## Run it from the command line
 
 ```bash
 python pull_bp_definitions.py --bp "Supplier Invoice Event" --dry-run
