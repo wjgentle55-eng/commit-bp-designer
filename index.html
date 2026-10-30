@@ -386,10 +386,10 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 /* Initial vs proposed */
-.chg{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 6px;background:#E3F7EC;color:#1A7A47;flex:none}
-.chg.mod{background:#FFF1DC;color:#9A5300}
-.bw.chg-new>.block,.bw.chg-new>.cblock>.chead{box-shadow:inset 5px 0 0 #2FBF71}
-.bw.chg-mod>.block{box-shadow:inset 5px 0 0 #F0A030}
+.chg{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 6px;background:#F5C400;color:#3A2E00;flex:none}
+.chg.mod{background:#F5C400;color:#3A2E00}
+.chg.rm{background:var(--panel-2);color:var(--muted)}
+.bw.chg-new>.block,.bw.chg-mod>.block,.bw.chg-new>.cblock>.chead{box-shadow:inset 0 0 0 5px #F5C400}
 .vtoggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-left:10px}
 .vtoggle button{border:0;background:none;padding:5px 10px;font-size:12px;font-weight:700;color:var(--muted)}
 .vtoggle button+button{border-left:1px solid var(--line)}
@@ -399,8 +399,9 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
 .removed h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .removed .ri{display:flex;gap:8px;align-items:center;padding:3px 0}
 .removed .ri span{text-decoration:line-through;color:var(--muted);flex:1;min-width:0}
-table.def tr.chg-new td:first-child{box-shadow:inset 4px 0 0 #2FBF71}
-table.def tr.chg-mod td:first-child{box-shadow:inset 4px 0 0 #F0A030}
+table.def tr.chg-new td,table.def tr.chg-mod td{box-shadow:inset 0 5px 0 #F5C400,inset 0 -5px 0 #F5C400}
+table.def tr.chg-new td:first-child,table.def tr.chg-mod td:first-child{box-shadow:inset 0 5px 0 #F5C400,inset 0 -5px 0 #F5C400,inset 5px 0 0 #F5C400}
+table.def tr.chg-new td:last-child,table.def tr.chg-mod td:last-child{box-shadow:inset 0 5px 0 #F5C400,inset 0 -5px 0 #F5C400,inset -5px 0 0 #F5C400}
 table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
 .chgbox{margin-bottom:12px}
 .chgbox .row{margin-top:8px}
@@ -1173,7 +1174,7 @@ function renderConfig(){
     `<div class="tbl-wrap"><table class="def"><thead><tr><th>Change</th><th>Step</th><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
     rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="14">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
       `<tr data-goto="${r.id}" class="${r.after?'after':''}${chgCls(r.id)}">${chgTd(r.id)}<td class="o">${nums[r.id]||''}</td><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
-    (DIFF ? DIFF.removed.map(b=>`<tr class="removed"><td><span class="chg mod">Removed</span></td><td></td><td class="o">${esc(b.order)}</td><td>${esc(b.conds.join('\n\n'))}</td><td>${esc(TYPES[b.s.type] ? TYPES[b.s.type].label : b.s.type)}</td><td>${esc(b.s.specify)}</td><td></td><td>${esc(b.s.groups.join('\n'))}</td><td colspan="6"></td></tr>`).join('') : '')+
+    (DIFF ? DIFF.removed.map(b=>`<tr class="removed"><td><span class="chg rm">Removed</span></td><td></td><td class="o">${esc(b.order)}</td><td>${esc(b.conds.join('\n\n'))}</td><td>${esc(TYPES[b.s.type] ? TYPES[b.s.type].label : b.s.type)}</td><td>${esc(b.s.specify)}</td><td></td><td>${esc(b.s.groups.join('\n'))}</td><td colspan="6"></td></tr>`).join('') : '')+
     `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
   });
 }
