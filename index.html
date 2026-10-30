@@ -447,6 +447,7 @@ button.dcard.folder{text-align:left;cursor:pointer;font:inherit;color:inherit}
       <button class="btn" id="b-new" title="Start a new definition, or save this one as a template">New</button>
       <button class="btn" id="b-save" title="Saves your work in progress in this browser. It doesn't publish anything or send anything to Workday.">Save</button>
       <button class="btn primary" id="b-publish" title="Publish: saves the proposed changes as the new approved version in Studio. Nothing is sent to Workday.">Publish</button>
+      <button class="btn" id="b-revert" title="Revert: replaces the proposed version with an earlier version (the last published one, or an older one). Nothing is sent to Workday.">Revert</button>
       <button class="btn quiet" id="b-migrate" disabled title="Migrate to tenant: sends the published version to the Workday tenant. Not available yet.">Migrate to tenant</button>
       <div class="menu">
         <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
@@ -756,8 +757,8 @@ function movedIds(baseSeq, curSeq){
   while(k >= 0){ keep.add(curSeq[k]); k = prev[k]; }
   return new Set(curSeq.filter(id=>!keep.has(id)));
 }
-function diffInfo(){
-  const base = stepIndex(wf.baseline.items), cur = stepIndex(wf.items), out = {status:{}, why:{}, removed:[]};
+function diffInfo(baseItems){
+  const base = stepIndex(baseItems || wf.baseline.items), cur = stepIndex(wf.items), out = {status:{}, why:{}, removed:[]};
   const kept = Object.keys(cur).filter(id=>base[id]);
   const moved = movedIds(Object.keys(base).filter(id=>cur[id]), kept);
   Object.keys(cur).forEach(id=>{
@@ -785,7 +786,7 @@ function asShown(fn){ if(!showInitial) return fn(); const cur = wf; wf = Object.
 function changesBox(){
   const d = diffInfo(), c = d.counts;
   return `<div class="desc chgbox"><b>Proposed changes</b> compared with ${esc(baseLabel())}: ${c.total ? `${c.n} new, ${c.m} changed, ${c.r} removed.` : 'none yet.'}`+
-    `<div class="row"><button class="btn sm" data-vmode="initial">View ${esc(baseLabel())}</button><button class="btn sm primary" data-publish="1"${c.total?'':' disabled'}>Publish</button></div>`+
+    `<div class="row"><button class="btn sm" data-vmode="initial">View ${esc(baseLabel())}</button><button class="btn sm primary" data-publish="1"${c.total?'':' disabled'}>Publish</button><button class="btn sm" data-revertopen="1">Revert…</button></div>`+
     `<small>Publish saves the proposed version as the new approved version in Studio. Nothing is sent to Workday.</small></div>`;
 }
 function showPublish(){
@@ -801,9 +802,32 @@ function showPublish(){
     `<div class="row"><button class="btn primary" id="pub-go">Publish v${v}</button></div>`);
   setTimeout(()=>$('#pub-note') && $('#pub-note').focus(), 0);
 }
+/* Revert: replace the proposed version with an earlier one. History is never lost; Publish makes the reverted version official again. */
+function revertChoices(){
+  const out = [{key:'base', label:baseLabel(), sub:'The version changes are compared against. Discards every proposed change.', items:wf.baseline.items}];
+  wf.versions.slice().reverse().forEach(x=>{ if(x.v===(wf.baseline.v||0)) return; out.push({key:'v'+x.v, label:x.v ? `Published v${x.v}` : 'Initial', sub:[x.at ? new Date(x.at).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}) : '', x.v && x.note ? x.note : ''].filter(Boolean).join(' · '), items:x.items}); });
+  return out;
+}
+function showRevert(){
+  if(readOnly()) return;
+  const list = revertChoices().map(c=>({...c, n:diffInfo(c.items).counts.total}));
+  openModal('Revert to a previous version',
+    `<p>Reverting replaces the <b>Proposed</b> version with the version you pick. Published versions stay in the history, and Undo brings your proposed changes back.</p>`+
+    `<p>Nothing is sent to Workday. To make a reverted version the published one again, press <b>Publish</b> afterward.</p>`+
+    `<div class="list">${list.map(c=>`<div class="li"><div class="t"><b>${esc(c.label)}</b><small>${esc(c.sub)}${c.sub?' · ':''}${c.n ? `${c.n} difference${c.n===1?'':'s'} from Proposed` : 'Same as Proposed'}</small></div>${minis({items:c.items})}<button class="btn${c.key==='base'?' primary':''}" data-revert="${c.key}"${c.n?'':' disabled'}>Revert to this</button></div>`).join('')}</div>`+
+    (wf.versions.length ? '' : `<p class="help">Older versions show up here once you publish.</p>`));
+}
+function doRevert(key){
+  const c = revertChoices().find(x=>x.key===key); if(!c) return;
+  closeModal();
+  change(()=>{ wf.items = clone(c.items); sel = null; multi = []; });
+  renderPalette();
+  toast(c.key==='base' ? `Proposed changes discarded. Back to ${c.label}.` : `Proposed is now ${c.label}. Press Publish to make it the published version.`, 'Undo', undo);
+}
 function doPublish(){
   const v = (wf.baseline.v || 0) + 1, at = Date.now(), note = ($('#pub-note') && $('#pub-note').value.trim()) || '';
   snapshot();
+  if(!wf.versions.some(x=>x.v===0) && !wf.baseline.v) wf.versions.push({v:0, at:wf.baseline.at, note:'Initial', items:clone(wf.baseline.items)});
   wf.versions.push({v, at, note, items:clone(wf.items)});
   wf.baseline = {items:clone(wf.items), v, at, note};
   closeModal(); saveDesign(); renderAll(); toast(`Published v${v}. Nothing was sent to Workday.`);
@@ -1534,6 +1558,7 @@ document.addEventListener('click', e=>{
   if(t.closest('#script select')) return;
   const vm = t.closest('[data-vmode]'); if(vm){ showInitial = vm.dataset.vmode==='initial'; document.body.classList.toggle('readonly', showInitial); sel = null; multi = []; renderAll(); return; }
   if(t.closest('[data-publish]')){ showPublish(); return; }
+  if(t.closest('[data-revertopen]')){ showRevert(); return; }
   const rs = t.closest('[data-restore]'); if(rs){ restoreStep(rs.dataset.restore); return; }
   const chd = t.closest('[data-chdel]'); if(chd){ if(chd.dataset.armed){ store.set('bpws.chains', chains().filter(x=>x.id!==chd.dataset.chdel)); renderPalette(); toast('Chain deleted'); } else { chd.dataset.armed = '1'; chd.textContent = 'Confirm delete'; } return; }
   if(t.id==='m-copy'){ copySel(); return; }
@@ -1882,6 +1907,7 @@ $('#home').addEventListener('click', e=>{
 $('#modal-b').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   if(t.id==='pub-go') return doPublish();
+  if(t.dataset.revert) return doRevert(t.dataset.revert);
   if(t.id==='ch-save') return saveChain();
   if(t.dataset.bp) return showStart(t.dataset.bp);
   if(t.id==='bp-other-go'){ const v = $('#bp-other').value.trim(); if(v) showStart(v); else $('#bp-other').focus(); return; }
@@ -2291,7 +2317,7 @@ function toast(msg, actLabel, act){
 }
 
 /* ---------- Boot ---------- */
-$('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps().length) toast('Your work is kept as a draft. Continue it from Home.'); goHome(); }; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo; $('#b-publish').onclick = showPublish;
+$('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps().length) toast('Your work is kept as a draft. Continue it from Home.'); goHome(); }; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo; $('#b-publish').onclick = showPublish; $('#b-revert').onclick = showRevert;
 (function boot(){
   const d = store.get('bpws5.draft', null);
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
