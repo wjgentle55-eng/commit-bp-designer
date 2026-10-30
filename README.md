@@ -48,6 +48,17 @@ Home is organized as **Clients › Business processes › Definitions**. Add a c
 
 Designs and templates save in your browser. To share one, export it as a design file and import it on the other side, or commit it to `designs/`.
 
+## Hosting it (live, nothing to install)
+
+Studio and its Pull from Workday server deploy together as one container (`Dockerfile`). On Render: New > Blueprint > this repo (`render.yaml`); on Azure App Service, Railway or similar: deploy the Dockerfile. Set two environment variables on the host:
+
+| Variable | Value |
+| --- | --- |
+| `STUDIO_PUBLIC_URL` | The address people open, e.g. `https://bp-workflow-studio.onrender.com` |
+| `STUDIO_ACCESS_CODE` | A team access code, 12+ characters. Studio asks for it before a pull; the server won't start publicly without one. |
+
+People then open the address, press Pull from Workday, and enter the access code, tenant and ISU credentials. The pull is read only; the password is passed straight to Workday over HTTPS and never stored or logged. Until accounts and shared storage (Phase 2) are switched on, each person's clients, folders and definitions stay in their own browser.
+
 ## Running it
 
 It's a single static file with no build step. Download `index.html` and open it in a browser, or turn on GitHub Pages (Settings > Pages > `main` / root). Excel import and export, plus PDF export, load SheetJS and jsPDF from cdnjs on first use, so they need an internet connection.

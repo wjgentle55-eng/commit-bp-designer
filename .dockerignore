@@ -1,0 +1,5 @@
+.git
+**/.env
+**/pulled
+**/__pycache__
+**/.venv

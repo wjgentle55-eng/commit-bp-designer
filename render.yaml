@@ -1,0 +1,12 @@
+# One-click deploy on Render (render.com): New > Blueprint > pick this repo.
+services:
+  - type: web
+    name: bp-workflow-studio
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: STUDIO_PUBLIC_URL
+        sync: false   # e.g. https://bp-workflow-studio.onrender.com
+      - key: STUDIO_ACCESS_CODE
+        sync: false   # 12+ characters; share it with the team

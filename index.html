@@ -1976,14 +1976,16 @@ function saveImported(ws, c){
 }
 
 /* ---------- Pull from Workday: the page asks tools/wd_pull/studio_server.py, running on this computer, to call the tenant ---------- */
+let helperInfo = null;
 async function helperUp(){
   if(!/^https?:$/.test(location.protocol)) return false;
-  try{ const r = await fetch('/api/health', {cache:'no-store'}); return !!(await r.json()).ok; }catch{ return false; }
+  try{ const r = await fetch('/api/health', {cache:'no-store'}); helperInfo = await r.json(); return !!helperInfo.ok; }catch{ return false; }
 }
+function accessCode(){ try{ return sessionStorage.getItem('bpws.access') || ''; }catch{ return ''; } }
 async function showPull(){
   if(!(await helperUp())){
     openModal('Pull from Workday',
-      `<p>Pulling runs through a small helper on your computer, so your ISU password never sits in a web page. From the Studio folder, start it once:</p>`+
+      `<p>Pulling from Workday needs the Studio server, because browsers block pages from calling Workday directly. Open Studio from its hosted address (ask your admin for the link), or run it on your own computer:</p>`+
       `<pre class="cmd">cd tools/wd_pull\npip install -r requirements.txt\npython studio_server.py</pre>`+
       `<p>Then open <b>http://localhost:8765</b> and press Pull from Workday again.</p>`);
     return;
@@ -1992,6 +1994,7 @@ async function showPull(){
   const bp = (loc.c && loc.bp) || pr.bp || '';
   openModal('Pull from Workday',
     `<div class="pull-form"><p class="help" style="margin:0">Read only: nothing is written to the tenant. The password is used for this pull and isn't saved.</p>`+
+    (helperInfo && helperInfo.needsAccessCode ? `<div class="sec"><label for="pl-code">Studio access code</label><input id="pl-code" type="password" value="${esc(accessCode())}" autocomplete="off" placeholder="From your Studio admin"></div>` : '')+
     `<div class="grid2"><div class="sec"><label for="pl-host">Services host</label><input id="pl-host" type="text" value="${esc(pr.host||'')}" placeholder="impl-services1.wd12.myworkday.com"></div>`+
       `<div class="sec"><label for="pl-tenant">Tenant</label><input id="pl-tenant" type="text" value="${esc(pr.tenant||'')}" placeholder="e.g. commitconsulting_dpt1"></div></div>`+
     `<div class="grid2"><div class="sec"><label for="pl-user">ISU username</label><input id="pl-user" type="text" value="${esc(pr.username||'')}" autocomplete="off"></div>`+
@@ -2004,7 +2007,7 @@ async function showPull(){
       `<div class="sec"><label for="pl-idt">Business process ID type</label><input id="pl-idt" type="text" value="${esc(pr.idType||'Business_Process_Type')}"></div></div></details>`+
     `<p class="pl-err" id="pl-err" hidden></p>`+
     `<div class="row"><button class="btn primary" id="pl-go">Pull definitions</button></div></div>`);
-  setTimeout(()=>{ const f = ['pl-host','pl-tenant','pl-user','pl-pass'].map(id=>$('#'+id)).find(x=>x && !x.value); (f || $('#pl-bp')).focus(); }, 0);
+  setTimeout(()=>{ const f = ['pl-code','pl-host','pl-tenant','pl-user','pl-pass'].map(id=>$('#'+id)).find(x=>x && !x.value); (f || $('#pl-bp')).focus(); }, 0);
 }
 async function doPull(){
   const btn = $('#pl-go'); if(!btn || btn.disabled) return;
@@ -2017,7 +2020,9 @@ async function doPull(){
   store.set('bpws.pullPrefs', {host:params.host, tenant:params.tenant, username:params.username, version:params.version, idType:params.idType, bp:params.bp, defaultOnly:params.defaultOnly});
   errEl.hidden = true; btn.disabled = true; btn.textContent = 'Pulling… the first pull for a tenant can take a minute';
   try{
-    const r = await fetch('/api/pull', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(params)});
+    const code = $('#pl-code') ? $('#pl-code').value : '';
+    if($('#pl-code')){ try{ sessionStorage.setItem('bpws.access', code); }catch{} }
+    const r = await fetch('/api/pull', {method:'POST', headers:{'Content-Type':'application/json', 'X-Studio-Access':code}, body:JSON.stringify(params)});
     const j = await r.json().catch(()=>({error:'The helper sent an answer Studio could not read.'}));
     if(!r.ok) throw new Error(j.error || `The helper answered ${r.status}.`);
     if(!j.definitions || !j.definitions.length) throw new Error(`No definitions came back for ${params.bp || 'this tenant'}. Check the name, or the ID type under Advanced.`);
@@ -2029,7 +2034,7 @@ async function doPull(){
     setLoc(c ? c.id : '__none', bps.length===1 ? bps[0] : null);
     toast(`Pulled ${n} definition${n===1?'':'s'} from ${j.tenant || params.tenant}${c ? ' into ' + c.name : ''}`);
   }catch(e){
-    fail(e instanceof TypeError ? "Couldn't reach the helper. Is studio_server.py still running?" : e.message);
+    fail(e instanceof TypeError ? "Couldn't reach the Studio server. Check your connection, or that studio_server.py is still running." : e.message);
   }finally{
     if(document.body.contains(btn)){ btn.disabled = false; btn.textContent = 'Pull definitions'; }
   }

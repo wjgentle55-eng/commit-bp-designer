@@ -7,9 +7,14 @@ process; this helper calls Get_Business_Process_Definitions (read only) and
 returns the definitions in the export's columns, which Studio builds into
 blocks and paths.
 
-Run it:
+Run it on your own computer:
   python studio_server.py            # then open http://localhost:8765
-  python studio_server.py --port 9000
+
+Hosted (the Dockerfile at the repo root runs this), set:
+  STUDIO_PUBLIC_URL    the address people open, e.g. https://bp-studio.onrender.com
+  STUDIO_ACCESS_CODE   a team access code; the page asks for it before a pull.
+                       Required whenever the server listens beyond this computer.
+  PORT                 set by most hosts; the server listens on 0.0.0.0:$PORT
 
 Why a helper: browsers block pages from calling Workday's SOAP services, and a
 password should not live in a static page. This helper listens on 127.0.0.1
@@ -22,6 +27,7 @@ Optional environment variables:
 """
 
 import argparse
+import hmac
 import json
 import mimetypes
 import os
@@ -138,12 +144,18 @@ class Handler(BaseHTTPRequestHandler):
     def _same_origin(self):
         origin = self.headers.get("Origin")
         port = self.server.server_address[1]
-        return origin in (None, f"http://localhost:{port}", f"http://127.0.0.1:{port}")
+        public = [u.strip().rstrip("/") for u in os.environ.get("STUDIO_PUBLIC_URL", "").split(",") if u.strip()]
+        return origin in (None, f"http://localhost:{port}", f"http://127.0.0.1:{port}", *public)
+
+    def _access_ok(self):
+        code = os.environ.get("STUDIO_ACCESS_CODE", "")
+        return not code or hmac.compare_digest(code.encode(), (self.headers.get("X-Studio-Access") or "").encode())
 
     def do_GET(self):
         path = self.path.split("?", 1)[0]
         if path == "/api/health":
-            return self._send(200, {"ok": True, "helper": "bp-studio-pull", "version": 1})
+            return self._send(200, {"ok": True, "helper": "bp-studio-pull", "version": 1,
+                                    "needsAccessCode": bool(os.environ.get("STUDIO_ACCESS_CODE"))})
         target = (ROOT / ("index.html" if path in ("", "/") else path.lstrip("/"))).resolve()
         # Only the page and its assets: nothing outside the repo, no dotfiles, nothing under tools/ (pulled data, .env)
         parts = target.relative_to(ROOT).parts if ROOT in target.parents else None
@@ -156,6 +168,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(404, {"error": "Not found"})
         if not self._same_origin() or "application/json" not in (self.headers.get("Content-Type") or ""):
             return self._send(403, {"error": "Requests are accepted from this Studio page only."})
+        if not self._access_ok():
+            return self._send(401, {"error": "That access code isn't right."})
         try:
             length = min(int(self.headers.get("Content-Length") or 0), 64_000)
             params = json.loads(self.rfile.read(length) or b"{}")
@@ -168,10 +182,17 @@ class Handler(BaseHTTPRequestHandler):
 
 def main(argv=None):
     p = argparse.ArgumentParser(description="Run BP Workflow Studio with the Pull from Workday helper.")
-    p.add_argument("--port", type=int, default=8765)
+    p.add_argument("--host", default="127.0.0.1", help="0.0.0.0 when hosted (needs STUDIO_ACCESS_CODE)")
+    p.add_argument("--port", type=int, default=int(os.environ.get("PORT") or 8765))
     args = p.parse_args(argv)
-    httpd = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"BP Workflow Studio is running at http://localhost:{args.port}  (Ctrl+C to stop)")
+    if args.host not in ("127.0.0.1", "localhost") and len(os.environ.get("STUDIO_ACCESS_CODE", "")) < 12:
+        print("Refusing to listen beyond this computer without STUDIO_ACCESS_CODE (12+ characters).", file=sys.stderr)
+        return 2
+    if args.host not in ("127.0.0.1", "localhost") and not os.environ.get("STUDIO_PUBLIC_URL"):
+        print("Set STUDIO_PUBLIC_URL to the address people open, or pulls will be refused.", file=sys.stderr)
+    httpd = ThreadingHTTPServer((args.host, args.port), Handler)
+    where = os.environ.get("STUDIO_PUBLIC_URL") or f"http://localhost:{args.port}"
+    print(f"BP Workflow Studio is running at {where}  (Ctrl+C to stop)")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
