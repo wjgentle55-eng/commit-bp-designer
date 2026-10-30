@@ -385,6 +385,31 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
   .lane,.stack.row>*{width:260px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* Initial vs proposed */
+.chg{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:5px;padding:2px 6px;background:#E3F7EC;color:#1A7A47;flex:none}
+.chg.mod{background:#FFF1DC;color:#9A5300}
+.bw.chg-new>.block,.bw.chg-new>.cblock>.chead{box-shadow:inset 5px 0 0 #2FBF71}
+.bw.chg-mod>.block{box-shadow:inset 5px 0 0 #F0A030}
+.vtoggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-left:10px}
+.vtoggle button{border:0;background:none;padding:5px 10px;font-size:12px;font-weight:700;color:var(--muted)}
+.vtoggle button+button{border-left:1px solid var(--line)}
+.vtoggle button[aria-pressed="true"]{background:var(--panel-2);color:var(--ink)}
+.ro-banner{margin:0 0 10px;padding:8px 12px;border-radius:8px;background:var(--panel-2);border:1px dashed var(--line);font-size:12.5px;color:var(--muted)}
+.removed{margin-top:14px;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px}
+.removed h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.removed .ri{display:flex;gap:8px;align-items:center;padding:3px 0}
+.removed .ri span{text-decoration:line-through;color:var(--muted);flex:1;min-width:0}
+table.def tr.chg-new td:first-child{box-shadow:inset 4px 0 0 #2FBF71}
+table.def tr.chg-mod td:first-child{box-shadow:inset 4px 0 0 #F0A030}
+table.def tr.removed td{text-decoration:line-through;color:var(--muted)}
+.chgbox{margin-bottom:12px}
+.chgbox .row{margin-top:8px}
+.btn-note{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+/* Custom chains */
+.pal-item.chain .block{flex-wrap:wrap}
+.pal-item.chain .row{margin-top:2px}
+.pal-item.chain.off .bw{cursor:not-allowed}
+.multi-list{margin:8px 0 0;padding-left:18px;font-size:12.5px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -405,8 +430,10 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
       <span class="status" id="status"></span>
       <button class="btn quiet" id="b-undo" title="Undo (Ctrl/Cmd+Z)">Undo</button>
       <button class="btn" id="b-open" title="Back to your saved definitions">Home</button>
-      <button class="btn" id="b-new">New</button>
-      <button class="btn primary" id="b-save">Save</button>
+      <button class="btn" id="b-new" title="Start a new definition, or save this one as a template">New</button>
+      <button class="btn" id="b-save" title="Saves your work in progress in this browser. It doesn't publish anything or send anything to Workday.">Save</button>
+      <button class="btn primary" id="b-publish" title="Publish: saves the proposed changes as the new approved version in Studio. Nothing is sent to Workday.">Publish</button>
+      <button class="btn quiet" id="b-migrate" disabled title="Migrate to tenant: sends the published version to the Workday tenant. Not available yet.">Migrate to tenant</button>
       <div class="menu">
         <button class="btn" id="b-export" aria-haspopup="true" aria-expanded="false">Export ▾</button>
         <div class="menu-list" id="export-menu" hidden>
@@ -425,6 +452,7 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
         <button class="ptab" role="tab" data-ptab="steps" aria-selected="true">Steps</button>
         <button class="ptab" role="tab" data-ptab="groups" aria-selected="false">Groups</button>
         <button class="ptab" role="tab" data-ptab="conds" aria-selected="false">Conditions</button>
+        <button class="ptab" role="tab" data-ptab="chains" aria-selected="false">Custom chains</button>
       </div>
       <div class="pane-b" id="palette"></div>
       <div class="trash-note">Drop here to remove</div>
@@ -435,7 +463,8 @@ body.filedrag .drop,body.filedrag #canvas{border-color:var(--sky);background:col
         <button class="ctab" role="tab" data-view="build" aria-selected="true">Build</button>
 <button class="ctab" role="tab" data-view="flow" aria-selected="false">Flow</button>
         <button class="ctab" role="tab" data-view="config" aria-selected="false">Definition <span class="badge" id="check-badge">0</span></button>
-        <span class="hint">Hover a block to copy or delete it</span>
+        <span class="vtoggle" id="vtoggle" role="group" aria-label="Which version to show"></span>
+        <span class="hint">Shift-click to select a run of blocks</span>
       </div>
       <div class="view" id="v-build"><div class="canvas" id="canvas"><p class="legend">Drag steps into order. Steps on the main line have no path condition. A <b>Split into paths</b> block puts paths side by side, and every step dropped into a path carries that path's condition rule. Drop groups and conditions onto steps to attach them.</p><div class="script" id="script"></div></div></div>
       <div class="view" id="v-config" hidden><div class="cfg" id="config"></div></div>
@@ -590,7 +619,7 @@ function P(steps){ return {kind:'par', id:uid(), steps}; }
 function Lane(name, rule, steps){ return {id:uid(), name:name||'', rule:rule||'', steps:steps||[]}; }
 function Split(lanes){ return {kind:'split', id:uid(), lanes:lanes||[Lane('Path 1','')]}; }
 function Comp(){ return {kind:'complete', id:uid()}; }
-function blankWf(bp){ return {v:5, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[]}; }
+function blankWf(bp){ return {v:5, name:'', client:'', bp:bp||'Supplier Invoice Event', def:'Default Definition', init:{note:''}, items:[], customGroups:[], customRules:[], baseline:{items:[], v:0, at:null}, versions:[]}; }
 function bpCat(){ return BP_CATALOG[wf.bp] || OTHER_BP; }
 function tasksFor(type){ const c = bpCat(); return type==='action' ? c.actions : type==='service' ? c.services : null; }
 
@@ -613,30 +642,33 @@ function exampleWf(bp){
     S('service',{specify:'Initiate Asset Registration Events from Invoice', conds:[R_ASSET]}),
     S('action',{specify:'Assign Asset Accounting Information from Invoice', groups:['Business Asset Accountant'], due:'2 Days', conds:[R_ACCT, R_APR]})
   ];
+  w.baseline = null;
   return w;
 }
 
 /* ---------- State ---------- */
 let wf, docId = null, savedAt = null, dirty = false;
 let sel = null, view = 'build', ptab = 'steps', groupFilter = '', clip = null;
+let multi = [], anchor = null, showInitial = false, DIFF = null;
 let hist = [];
 const customSpec = new Set();
 const palOpen = new Set(store.get('bpws.palOpen', ['path']));
 function snapshot(){ hist.push(JSON.stringify({wf, docId})); if(hist.length > 80) hist.shift(); }
 function undo(){
+  if(readOnly()) return;
   const h = hist.pop(); if(!h){ toast('Nothing to undo'); return; }
   const o = JSON.parse(h); wf = o.wf; docId = o.docId; if(sel && sel!=='init' && !find(sel) && !findLane(sel)) sel = null;
   markDirty(); renderAll(); renderPalette();
 }
 function markDirty(){ dirty = true; store.set('bpws5.draft', {wf, docId, dirty, savedAt}); renderStatus(); }
 
-function walk(fn){
+function walk(fn, items){
   const go = (list, ctx) => list.forEach((it, i) => {
     fn(it, list, i, ctx);
     if(it.kind==='par') it.steps.forEach((s, j) => fn(s, it.steps, j, {...ctx, par:it}));
     if(it.kind==='split') it.lanes.forEach(l => go(l.steps, {...ctx, lane:l, split:it}));
   });
-  go(wf.items, {});
+  go(items || wf.items, {});
 }
 function find(id){ let r = null; walk((it, list, index, ctx)=>{ if(!r && it.id===id) r = {item:it, list, index, ...ctx}; }); return r; }
 function findLane(id){ if(!id) return null; const key = String(id).replace(/^lane:/,''); for(const it of wf.items) if(it.kind==='split'){ const l = it.lanes.find(l=>l.id===key); if(l) return {lane:l, split:it}; } return null; }
@@ -655,7 +687,7 @@ function groupsForBP(){ const used = []; allSteps().forEach(s=>{ s.groups.forEac
 function ruleLibrary(){ const s = new Set([...bpCat().rules, ...(wf.customRules||[])]); allSteps().forEach(x=>x.conds.forEach(c=>s.add(c))); wf.items.forEach(it=>it.kind==='split' && it.lanes.forEach(l=>l.rule && s.add(l.rule))); return [...s].filter(r=>!isOwned(r)); }
 function stepGroups(s){ return s.type==='checklist' ? [...new Set(s.items.map(i=>i.assignee).filter(Boolean))] : TYPES[s.type].noGroup ? [] : s.groups; }
 
-function orderMap(){
+function orderMap(items){
   const m = {init:'a'}; let li = 0, sub = 0;
   const seq = list => list.forEach(it=>{
     if(it.kind==='complete'){ m[it.id] = ''; return; }
@@ -664,10 +696,140 @@ function orderMap(){
     li++; sub = 0; const L = letters(li); m[it.id] = L;
     if(it.kind==='par') it.steps.forEach(s=>m[s.id]=L);
   });
-  seq(wf.items);
+  seq(items || wf.items);
   return m;
 }
 function withNewIds(it){ const c = clone(it); const re = x => { x.id = uid(); if(x.steps) x.steps.forEach(re); if(x.items) x.items.forEach(i=>i.id = uid()); if(x.lanes) x.lanes.forEach(l=>{ l.id = uid(); l.steps.forEach(re); }); }; re(c); return c; }
+
+/* ---------- Selection: shift-click selects a run of blocks next to each other in one column ---------- */
+const multiOn = () => multi.length > 1 && multi.includes(sel);
+const isSel = id => sel===id || (multiOn() && multi.includes(id));
+function selectRange(id){
+  const a = anchor && find(anchor), b = find(id);
+  if(!a || !b || a.list!==b.list){ multi = []; anchor = id; sel = id; return false; }
+  const [i, j] = [a.index, b.index].sort((x, y)=>x - y);
+  multi = a.list.slice(i, j+1).map(x=>x.id); sel = id; return true;
+}
+function selItems(){ if(!multiOn()) return null; const f = find(multi[0]); if(!f) return null; const ids = new Set(multi); return f.list.filter(x=>ids.has(x.id)); }
+function readOnly(){ if(!showInitial) return false; toast(`You're viewing ${baseLabel()}. Switch to Proposed to make changes.`); return true; }
+
+/* ---------- Initial vs proposed. The baseline is what came from Workday (or the last published version); steps are matched by id. ---------- */
+const baseLabel = () => wf.baseline && wf.baseline.v ? `Published v${wf.baseline.v}` : 'Initial';
+const DIFF_KEYS = [['type','type'],['specify','task'],['groups','security groups'],['restr','restrictions'],['all','All'],['due','due date'],['optional','optional'],['modifier','routing modifier'],['runAs','run as user'],['doNotAdvance','do not advance'],['items','checklist items'],['sub','sub-step']];
+function stepIndex(items){
+  const om = orderMap(items), m = {}; let last = null, completeId = null;
+  walk((it, list, i, ctx)=>{
+    if(it.kind==='complete'){ completeId = last; return; }
+    if(it.kind!=='step') return;
+    last = it.id;
+    m[it.id] = {s:it, order:om[it.id], conds:[...(ctx.lane && ctx.lane.rule ? [ctx.lane.rule] : []), ...it.conds], par:!!ctx.par};
+  }, items);
+  if(completeId && m[completeId]) m[completeId].complete = true;
+  return m;
+}
+/* Steps that kept their place relative to each other: longest increasing run of baseline positions. Anything outside it moved. */
+function movedIds(baseSeq, curSeq){
+  const pos = Object.fromEntries(baseSeq.map((id, i)=>[id, i])), a = curSeq.map(id=>pos[id]);
+  const tails = [], prev = new Array(a.length), tailIdx = [];
+  a.forEach((v, i)=>{ let lo = 0, hi = tails.length; while(lo < hi){ const md = (lo + hi) >> 1; if(tails[md] < v) lo = md + 1; else hi = md; } tails[lo] = v; tailIdx[lo] = i; prev[i] = lo ? tailIdx[lo-1] : -1; });
+  const keep = new Set(); let k = tails.length ? tailIdx[tails.length-1] : -1;
+  while(k >= 0){ keep.add(curSeq[k]); k = prev[k]; }
+  return new Set(curSeq.filter(id=>!keep.has(id)));
+}
+function diffInfo(){
+  const base = stepIndex(wf.baseline.items), cur = stepIndex(wf.items), out = {status:{}, why:{}, removed:[]};
+  const kept = Object.keys(cur).filter(id=>base[id]);
+  const moved = movedIds(Object.keys(base).filter(id=>cur[id]), kept);
+  Object.keys(cur).forEach(id=>{
+    const c = cur[id], b = base[id];
+    if(!b){ out.status[id] = 'new'; return; }
+    const why = DIFF_KEYS.filter(([k])=>JSON.stringify(c.s[k] ?? '')!==JSON.stringify(b.s[k] ?? '')).map(([, l])=>l);
+    if(JSON.stringify(c.conds)!==JSON.stringify(b.conds)) why.push('conditions');
+    if(c.par!==b.par) why.push('parallel');
+    if(!!c.complete!==!!b.complete) why.push('completion step');
+    if(moved.has(id)) why.push(`moved (was ${b.order})`);
+    if(why.length){ out.status[id] = 'mod'; out.why[id] = why; }
+  });
+  out.removed = Object.values(base).filter(b=>!cur[b.s.id]);
+  out.counts = {n:Object.values(out.status).filter(x=>x==='new').length, m:Object.values(out.status).filter(x=>x==='mod').length, r:out.removed.length};
+  out.counts.total = out.counts.n + out.counts.m + out.counts.r;
+  return out;
+}
+const chgCls = id => { const st = DIFF && DIFF.status[id]; return st ? ' chg-' + st : ''; };
+function chgPill(id){
+  const st = DIFF && DIFF.status[id]; if(!st) return '';
+  return st==='new' ? `<span class="chg" title="Not in ${esc(baseLabel())}">New</span>` : `<span class="chg mod" title="Changed: ${esc(DIFF.why[id].join(', '))}">Changed</span>`;
+}
+const removedLabel = b => `${b.order} · ${TYPES[b.s.type] ? TYPES[b.s.type].label : b.s.type}${b.s.specify ? ': ' + b.s.specify : b.s.groups.length ? ' by ' + b.s.groups.join(', ') : ''}`;
+function asShown(fn){ if(!showInitial) return fn(); const cur = wf; wf = Object.assign({}, wf, {items:wf.baseline.items}); try{ return fn(); } finally { wf = cur; } }
+function changesBox(){
+  const d = diffInfo(), c = d.counts;
+  return `<div class="desc chgbox"><b>Proposed changes</b> compared with ${esc(baseLabel())}: ${c.total ? `${c.n} new, ${c.m} changed, ${c.r} removed.` : 'none yet.'}`+
+    `<div class="row"><button class="btn sm" data-vmode="initial">View ${esc(baseLabel())}</button><button class="btn sm primary" data-publish="1"${c.total?'':' disabled'}>Publish</button></div>`+
+    `<small>Publish saves the proposed version as the new approved version in Studio. Nothing is sent to Workday.</small></div>`;
+}
+function showPublish(){
+  if(readOnly()) return;
+  const d = diffInfo(), c = d.counts, v = (wf.baseline.v || 0) + 1, warns = runChecks().filter(x=>x.sev==='warn').length;
+  if(!c.total){ toast(`Nothing to publish. The proposed version matches ${baseLabel()}.`); return; }
+  openModal(`Publish v${v}`,
+    `<p>Publishing makes the proposed version <b>Published v${v}</b>. It becomes the version every change is compared against, and the earlier versions are kept as history.</p>`+
+    `<p><b>Nothing is sent to Workday.</b> Sending a published version to the tenant is a separate step, Migrate to tenant, which isn't available yet.</p>`+
+    `<ul class="multi-list"><li>${c.n} new step${c.n===1?'':'s'}</li><li>${c.m} changed step${c.m===1?'':'s'}</li><li>${c.r} removed step${c.r===1?'':'s'}</li></ul>`+
+    (warns ? `<p class="req-note">${warns} design check${warns===1?' is':'s are'} still open on the Definition tab.</p>` : '')+
+    `<div class="sec"><label for="pub-note">Version note (optional)</label><input id="pub-note" type="text" placeholder="e.g. Signed off with AP team"></div>`+
+    `<div class="row"><button class="btn primary" id="pub-go">Publish v${v}</button></div>`);
+  setTimeout(()=>$('#pub-note') && $('#pub-note').focus(), 0);
+}
+function doPublish(){
+  const v = (wf.baseline.v || 0) + 1, at = Date.now(), note = ($('#pub-note') && $('#pub-note').value.trim()) || '';
+  snapshot();
+  wf.versions.push({v, at, note, items:clone(wf.items)});
+  wf.baseline = {items:clone(wf.items), v, at, note};
+  closeModal(); saveDesign(); renderAll(); toast(`Published v${v}. Nothing was sent to Workday.`);
+}
+
+/* ---------- Custom chains: saved runs of blocks. Usable in another business process only if every task, group and rule in them exists there. ---------- */
+function chains(){ return store.get('bpws.chains', []); }
+let pendingChain = null;
+function chainCheck(c){
+  if(c.bp===wf.bp) return [];
+  const cat = BP_CATALOG[wf.bp] || OTHER_BP, groups = new Set([...groupsForBP(), 'Initiator']), rules = new Set(ruleLibrary()), miss = [];
+  const rule = r => { if(!r) return; if(isOwned(r)) miss.push(`Workday owned condition "${shortRule(r)}"`); else if(!rules.has(r)) miss.push(`condition "${shortRule(r)}"`); };
+  walk(it=>{
+    if(it.kind==='split') it.lanes.forEach(l=>rule(l.rule));
+    if(it.kind!=='step') return;
+    const list = it.type==='action' ? cat.actions : it.type==='service' ? cat.services : null;
+    if(list && it.specify && !list.some(t=>t.name===it.specify)) miss.push(`task "${it.specify}"`);
+    [...it.groups, ...it.items.map(i=>i.assignee)].filter(Boolean).forEach(g=>{ if(!groups.has(g)) miss.push(`group "${g}"`); });
+    it.conds.forEach(rule);
+  }, c.items);
+  return [...new Set(miss)];
+}
+function promptChain(items){
+  items = items.filter(x=>x.kind!=='complete');
+  if(!items.length){ toast('Select one or more steps to save as a chain'); return; }
+  pendingChain = clone(items);
+  const n = items.length;
+  openModal('Save as custom chain',
+    `<p>Saves these ${n} block${n===1?'':'s'} to <b>Custom chains</b> on the left, so you can drop them into any definition. They can be used in another business process only if every task, security group and condition rule in them exists there.</p>`+
+    `<div class="sec"><label for="ch-name">Chain name</label><input id="ch-name" type="text" placeholder="e.g. Non-PO approval ladder"></div>`+
+    `<div class="row"><button class="btn primary" id="ch-save">Save chain</button></div>`);
+  setTimeout(()=>$('#ch-name') && $('#ch-name').focus(), 0);
+}
+function saveChain(){
+  const name = $('#ch-name').value.trim(); if(!name){ $('#ch-name').focus(); return; }
+  const list = chains(); list.unshift({id:uid(), name, bp:wf.bp, items:pendingChain, createdAt:Date.now()});
+  if(!store.set('bpws.chains', list)){ toast('Your browser blocked local saving.'); return; }
+  pendingChain = null; closeModal(); ptab = 'chains'; renderPalette(); toast(`Saved "${name}" to Custom chains`);
+}
+function insertChain(id, list, idx){
+  const c = chains().find(x=>x.id===id); if(!c) return;
+  const miss = chainCheck(c); if(miss.length){ toast(`Can't use this chain in ${wf.bp}. Missing: ${miss.slice(0,3).join(', ')}${miss.length>3?'…':''}`); return; }
+  const items = c.items.map(withNewIds);
+  change(()=>{ const l = list || wf.items; l.splice(idx ?? insertBeforeCompletion(), 0, ...items); multi = items.map(x=>x.id); anchor = multi[0]; sel = multi[multi.length-1]; });
+  toast(`Added "${c.name}"`);
+}
 
 /* ---------- Build canvas ---------- */
 const tools = (id, noCopy) => `<span class="tools">${noCopy?'':`<button class="cp" data-copy="${id}" title="Duplicate (Ctrl/⌘ D)">⧉ Copy</button>`}<button class="dl" data-del="${id}" title="Delete (Del)">✕ Delete</button></span>`;
@@ -697,8 +859,8 @@ function stepHTML(s, om, lane){
   const specSlot = tasks ? specPick(s, tasks) : s.specify ? `<span class="spec">${esc(s.specify)}</span>` : (T.spec==='required' ? `<span class="slot req">${s.type==='todo'?'add To Do text':'name it'}</span>` : (T.spec && s.type!=='checklist' ? '<span class="slot">specify</span>' : ''));
   const who = T.noGroup ? '' : `<span class="by">by</span>` + (s.groups.length ? s.groups.map(groupChip).join('') : '<span class="slot">drop a security group</span>');
   const cl = s.type==='checklist' ? `<span class="cl">${s.items.length ? s.items.map(i=>`<span class="cl-i"><span class="bx"></span><span class="t">${esc(i.text||'Untitled item')}</span>${i.assignee?`<span class="gp plain">${esc(i.assignee)}</span>`:'<span class="slot">assign</span>'}</span>`).join('') : '<span class="cl-empty">Add items in Step details, or drop a To Do here</span>'}</span>` : '';
-  return `<div class="bw${sel===s.id?' sel':''}${s.sub?' sub':''}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
-    `<span class="ord">${om[s.id]||'?'}</span>`+
+  return `<div class="bw${isSel(s.id)?' sel':''}${s.sub?' sub':''}${chgCls(s.id)}" data-id="${s.id}" data-drag="block" data-type="${s.type}"><div class="block" style="--c:${T.color}">`+
+    `<span class="ord">${om[s.id]||'?'}</span>${chgPill(s.id)}`+
     (lane ? `<span class="hex inh" title="${esc(lane.rule ? 'From path: '+lane.rule : 'This path needs a condition rule')}"><i>if</i><span class="tr">${esc(lane.rule ? shortRule(lane.rule) : 'path rule needed')}</span></span>` : '')+
     s.conds.map(condHex).join('')+
     `<span class="verb">${T.label}</span>${specSlot}${who}`+
@@ -706,7 +868,7 @@ function stepHTML(s, om, lane){
   `</div></div>`;
 }
 function parHTML(p, om, lane){
-  return `<div class="bw par wide${sel===p.id?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
+  return `<div class="bw par wide${isSel(p.id)?' sel':''}" data-id="${p.id}" data-drag="block"><div class="cblock">`+
     `<div class="block chead"><span class="ord">${om[p.id]}</span><span class="verb">Run in parallel</span><span class="hint">side-by-side steps share order ${om[p.id]} and run at the same time</span>${tools(p.id)}</div>`+
     `<div class="cmid"><div class="carm"></div><div class="stack inner row" data-list="par:${p.id}">${p.steps.map(s=>stepHTML(s,om,lane)).join('')}</div></div>`+
     `<div class="cfoot"></div></div></div>`;
@@ -718,21 +880,29 @@ function laneHTML(l, om){
     `<div class="stack lane-stack" data-list="lane:${l.id}">${l.steps.map(it=>it.kind==='par'?parHTML(it,om,l):stepHTML(it,om,l)).join('')}</div></div>`;
 }
 function splitHTML(sp, om){
-  return `<div class="bw split wide${sel===sp.id?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="cblock">`+
+  return `<div class="bw split wide${isSel(sp.id)?' sel':''}" data-id="${sp.id}" data-drag="block"><div class="cblock">`+
     `<div class="block chead"><span class="ord">${om[sp.id]}</span><span class="verb">Split into paths</span><span class="hint">each path runs when its condition is true</span>${tools(sp.id)}</div>`+
     `<div class="cmid"><div class="carm"></div><div class="lanes-row">${sp.lanes.map(l=>laneHTML(l, om)).join('')}<button class="lane add" data-addlane="${sp.id}">+ Add path</button></div></div>`+
     `<div class="cfoot"></div></div></div>`;
 }
 function compHTML(c){
-  return `<div class="bw comp${sel===c.id?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Document approved</span>${tools(c.id, true)}<span class="hint">The step above is the completion step (Complete = Yes).</span></div></div>`;
+  return `<div class="bw comp${isSel(c.id)?' sel':''}" data-id="${c.id}" data-drag="block"><div class="block compl"><span class="verb">✓ Document approved</span>${tools(c.id, true)}<span class="hint">The step above is the completion step (Complete = Yes).</span></div></div>`;
 }
 function itemHTML(it, om){ return it.kind==='split' ? splitHTML(it, om) : it.kind==='par' ? parHTML(it, om) : it.kind==='complete' ? compHTML(it) : stepHTML(it, om); }
 function renderBuild(){
+  DIFF = showInitial ? null : diffInfo();
+  asShown(()=>{
   const om = orderMap();
-  $('#script').innerHTML =
+  $('#script').innerHTML = (showInitial ? `<p class="ro-banner">Showing <b>${esc(baseLabel())}</b>, read-only. Switch to Proposed to make changes.</p>` : '')+
     `<div class="bw hatw${sel==='init'?' sel':''}" data-id="init"><div class="block hat"><span class="ord">a</span><span class="verb">Initiation</span><small>${esc(wf.bp||'')}</small></div></div>`+
     `<div class="stack root" data-list="root">${wf.items.map(it=>itemHTML(it,om)).join('')}</div>`+
-    `<div class="endw"><div class="block end">End of definition</div></div>`;
+    `<div class="endw"><div class="block end">End of definition</div></div>`+
+    (DIFF && DIFF.removed.length ? `<div class="removed"><h4>Removed from ${esc(baseLabel())}</h4>${DIFF.removed.map(b=>`<div class="ri"><span>${esc(removedLabel(b))}</span><button class="btn sm" data-restore="${b.s.id}">Restore</button></div>`).join('')}</div>` : '');
+  });
+}
+function restoreStep(id){
+  const b = stepIndex(wf.baseline.items)[id]; if(!b) return;
+  change(()=>{ wf.items.splice(insertBeforeCompletion(), 0, clone(b.s)); sel = id; }); toast('Restored. Drag it back into place if needed.');
 }
 
 /* ---------- Palette ---------- */
@@ -756,6 +926,15 @@ function renderPalette(){
       cats.map(c=> c.names.length ? `<div class="pal-group"><h3>${KIND_LABEL[c.k]}</h3><div class="pills">${c.names.map(n=>`<span class="pill" data-drag="group" data-name="${esc(n)}">${esc(n)}</span>`).join('')}</div></div>` : '').join('')+
       `<div class="pal-group"><h3>Add a client-specific group</h3><div class="addrow"><input id="g-new" type="text" placeholder="e.g. CFO Approver"><button class="btn" id="g-add">Add</button></div></div>`+
       `<p class="tip">Groups for ${esc(wf.bp)}. Anything with "admin" in the name is user-based; everything else is role-based (constrained).</p></div>`;
+  } else if(ptab==='chains'){
+    const list = chains().map(c=>({c, miss:chainCheck(c)})).sort((a, b)=>a.miss.length - b.miss.length);
+    el.innerHTML = `<div class="pal-list">`+
+      (list.length ? list.map(({c, miss})=>{ const ok = !miss.length, n = c.items.length;
+        return `<div class="pal-item chain${ok?'':' off'}"><div class="bw" ${ok?`data-drag="chain" data-chain="${c.id}"`:''} title="${ok?'Drag onto the canvas, or click to add':'Not available in '+esc(wf.bp)}"><div class="block" style="--c:${SPLIT_COLOR}"><span class="verb">${esc(c.name)}</span><span class="flag">${n} block${n===1?'':'s'}</span></div></div>`+
+          `${minis({items:c.items})}<p>${esc(c.bp)}${ok ? (c.bp===wf.bp ? '' : `. Everything in it exists in ${esc(wf.bp)}.`) : `. Can't be used in ${esc(wf.bp)}. Missing: ${esc(miss.join(', '))}`}</p>`+
+          `<div class="row"><button class="btn sm danger" data-chdel="${c.id}">Delete</button></div></div>`; }).join('')
+        : `<p class="tip">No custom chains yet. Shift-click to select a run of blocks, then choose <b>Save as custom chain</b> in the right panel.</p>`)+
+      (list.length ? `<p class="tip">Drag a chain onto the canvas, or click it to add it above Document approved. A chain from another business process is available only when every task, group and condition rule in it exists in ${esc(wf.bp)}.</p>` : '')+`</div>`;
   } else {
     el.innerHTML = `<div class="pal-list"><div class="pills">`+
       ruleLibrary().map(c=>`<span class="pill hexp" data-drag="rule" data-label="${esc(c)}" title="${esc(c)}"><span class="tr">${esc(shortRule(c))}</span></span>`).join('')+
@@ -814,7 +993,7 @@ function renderRecs(el){
     (recs.length ? `<div class="recs">${recs.map(r=>`<div class="rec">${recBlockHTML(r)}<p>${esc(r.why)}</p><div class="rr"><small>Drag onto the canvas or</small><button class="btn sm" data-recadd="${r.key}">Add</button></div></div>`).join('')}</div>`
       : `<div class="rec-empty">${c.recs.length ? 'Everything recommended for this process is already on the canvas.' : `Recommendations for ${esc(wf.bp)} aren't loaded yet.`}</div>`)+`</div>`+
     `<div class="sec"><span class="lbl">Design checks</span>${checksHTML(runChecks())}</div>`+
-    `<div class="sec"><span class="lbl">Shortcuts</span><div class="shortcuts">Hover a block for <b>Copy</b> and <b>Delete</b><br><span class="kbd">Del</span> delete selected · <span class="kbd">Ctrl/⌘ D</span> duplicate<br><span class="kbd">Ctrl/⌘ C</span> <span class="kbd">V</span> copy and paste · <span class="kbd">Alt</span>-drag drags a copy<br><span class="kbd">Ctrl/⌘ Z</span> undo · <span class="kbd">Ctrl/⌘ S</span> save</div></div></div>`;
+    `<div class="sec"><span class="lbl">Shortcuts</span><div class="shortcuts">Hover a block for <b>Copy</b> and <b>Delete</b><br><span class="kbd">Shift</span>-click selects a run of blocks<br><span class="kbd">Del</span> delete selected · <span class="kbd">Ctrl/⌘ D</span> duplicate<br><span class="kbd">Ctrl/⌘ C</span> <span class="kbd">V</span> copy and paste · <span class="kbd">Alt</span>-drag drags a copy<br><span class="kbd">Ctrl/⌘ Z</span> undo · <span class="kbd">Ctrl/⌘ S</span> save</div></div></div>`;
 }
 function groupOptions(selected){
   const names = groupsForBP();
@@ -848,7 +1027,25 @@ function renderInspector(){
   const showRecs = !sel || (!find(sel) && !findLane(sel) && sel!=='init');
   $('#pane-title').textContent = showRecs ? 'Recommended' : 'Step details';
   $('#b-recs').hidden = showRecs;
-  if(showRecs){ sel = null; renderRecs(el); return; }
+  if(showInitial){
+    $('#pane-title').textContent = baseLabel(); $('#b-recs').hidden = true;
+    const c = diffInfo().counts, b = wf.baseline;
+    el.innerHTML = `<div class="ins"><div class="desc">You're viewing <b>${esc(baseLabel())}</b>${b.at ? `, published ${esc(new Date(b.at).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))}${b.note ? ': ' + esc(b.note) : ''}` : ', the definition as it was when it came into Studio'}. It's read-only.<small>The proposed version has ${c.n} new, ${c.m} changed and ${c.r} removed step${c.r===1?'':'s'} compared with it.</small></div>`+
+      `<div class="row"><button class="btn primary" data-vmode="proposed">Back to Proposed</button></div>`+
+      (wf.versions.length ? `<div class="sec"><span class="lbl">Published versions</span><ul class="multi-list">${wf.versions.slice().reverse().map(x=>`<li>v${x.v} · ${esc(new Date(x.at).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))}${x.note ? ' · ' + esc(x.note) : ''}</li>`).join('')}</ul></div>` : '')+`</div>`;
+    return;
+  }
+  if(showRecs){ sel = null; renderRecs(el); el.insertAdjacentHTML('afterbegin', changesBox()); return; }
+  const run = selItems();
+  if(run){
+    const n = run.length; $('#pane-title').textContent = 'Selection';
+    el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${SPLIT_COLOR}"></span><h3>${n} blocks selected</h3></div>`+
+      `<div class="desc">From <b>${esc(om[run[0].id]||'')}</b> to <b>${esc(om[run[n-1].id]||'')}</b>:<ul class="multi-list">${run.map(x=>`<li>${x.kind==='step' ? esc((om[x.id]||'') + ' · ' + TYPES[x.type].label + (x.specify ? ': ' + x.specify : '')) : x.kind==='par' ? 'Run in parallel' : x.kind==='split' ? 'Split into paths' : 'Document approved'}</li>`).join('')}</ul>`+
+      `<small>Shift-click another block in the same column to change the selection. Selected blocks have to sit next to each other.</small></div>`+
+      `<div class="row"><button class="btn" id="m-copy">Copy</button><button class="btn" id="m-dup">Duplicate</button><button class="btn" id="m-chain">Save as custom chain</button><button class="btn danger" id="m-del">Delete ${n}</button></div>`+
+      `<span class="btn-note">Copy, then select where it goes and press Ctrl/⌘ V. Save as custom chain adds them to the Custom chains tab on the left. Drag any selected block to move them all.</span></div>`;
+    return;
+  }
   if(sel==='init'){
     el.innerHTML = `<div class="ins"><div class="ins-h"><span class="sw" style="background:${INIT_COLOR}"></span><h3>Step a · Initiation</h3></div>`+
       `<div class="desc">Someone submits the ${bpCat().noun} and the business process starts. Who can do that comes from the business process security policy, not this definition.</div>`+
@@ -907,7 +1104,7 @@ function renderInspector(){
     `</div></div>`+
     `<div class="grid2"><div class="sec"><label for="s-mod">Routing modifier</label><input id="s-mod" type="text" value="${esc(it.modifier)}"></div><div class="sec"><label for="s-runas">Run as user</label><input id="s-runas" type="text" value="${esc(it.runAs)}"></div></div>`+
     `<div class="sec"><label for="s-note">Design notes</label><textarea id="s-note" placeholder="Client decisions, thresholds, open questions">${esc(it.note)}</textarea></div>`+
-    `<div class="row"><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn" id="s-copy">Copy</button><button class="btn danger" data-del="${it.id}">Delete step</button></div></div>`;
+    `<div class="row"><button class="btn" data-copy="${it.id}">Duplicate</button><button class="btn" id="s-copy">Copy</button><button class="btn" id="s-chain">Save as custom chain</button><button class="btn danger" data-del="${it.id}">Delete step</button></div></div>`;
 }
 
 /* ---------- Checks ---------- */
@@ -968,12 +1165,17 @@ function defRows(){
 }
 const stepRows = () => defRows().filter(r=>!r.cmp);
 function renderConfig(){
+  DIFF = showInitial ? null : diffInfo();
+  asShown(()=>{
   const rows = defRows(), nums = stepNumbers();
-  $('#config').innerHTML = `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Step is the client-facing number used on the Flow tab and in the PDF. Steps in a path list the path's rule first in the If column. Greyed rows run after the document is approved. Click a row to edit that step.</p></div>`+
-    `<div class="tbl-wrap"><table class="def"><thead><tr><th>Step</th><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
-    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="13">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
-      `<tr data-goto="${r.id}" class="${r.after?'after':''}"><td class="o">${nums[r.id]||''}</td><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+  const chgTd = id => { const st = DIFF && DIFF.status[id]; return `<td>${st==='new' ? '<span class="chg">New</span>' : st==='mod' ? `<span class="chg mod">Changed</span>\n${esc(DIFF.why[id].join(', '))}` : ''}</td>`; };
+  $('#config').innerHTML = (showInitial ? `<p class="ro-banner">Showing <b>${esc(baseLabel())}</b>, read-only.</p>` : '')+ `<div class="sec"><h3>${esc(wf.bp||'Business process')} (${esc(wf.def||'Default Definition')})</h3><p class="help">Same columns as the business process definition in the tenant. Step is the client-facing number used on the Flow tab and in the PDF. Steps in a path list the path's rule first in the If column. Greyed rows run after the document is approved. Click a row to edit that step.</p></div>`+
+    `<div class="tbl-wrap"><table class="def"><thead><tr><th>Change</th><th>Step</th><th>Order</th><th>If</th><th>Type</th><th>Specify</th><th>Optional</th><th>Group</th><th>Additional information</th><th>All</th><th>Due date</th><th>Do not advance</th><th>Complete</th><th>Path</th></tr></thead><tbody>`+
+    rows.map(r=> r.cmp ? `<tr class="cmp"><td colspan="14">✓ Document approved · step ${esc(r.of)} is the completion step</td></tr>` :
+      `<tr data-goto="${r.id}" class="${r.after?'after':''}${chgCls(r.id)}">${chgTd(r.id)}<td class="o">${nums[r.id]||''}</td><td class="o">${r.order}${r.parallel?' ∥':''}</td><td>${esc(r.ifs)}</td><td><span class="tdot" style="background:${r.color}"></span>${esc(r.type)}</td><td>${esc(r.specify)}${r.items&&r.items.length?'\n'+r.items.map(i=>'☐ '+esc(i.text)+' ('+esc(i.assignee||'unassigned')+')').join('\n'):''}</td><td>${r.optional}</td><td>${esc(r.groups)}</td><td>${esc(r.addl)}</td><td>${r.all}</td><td>${esc(r.due)}</td><td>${r.dna}</td><td>${r.complete}</td><td>${esc(r.path)}</td></tr>`).join('')+
+    (DIFF ? DIFF.removed.map(b=>`<tr class="removed"><td><span class="chg mod">Removed</span></td><td></td><td class="o">${esc(b.order)}</td><td>${esc(b.conds.join('\n\n'))}</td><td>${esc(TYPES[b.s.type] ? TYPES[b.s.type].label : b.s.type)}</td><td>${esc(b.s.specify)}</td><td></td><td>${esc(b.s.groups.join('\n'))}</td><td colspan="6"></td></tr>`).join('') : '')+
     `</tbody></table></div><div class="sec"><h3>Design checks</h3>${checksHTML(runChecks())}</div>`;
+  });
 }
 
 /* ---------- Render orchestration ---------- */
@@ -992,6 +1194,9 @@ function renderMeta(){
   if(!known && document.activeElement !== $('#f-bp-other')) $('#f-bp-other').value = wf.bp || '';
 }
 function renderView(){
+  const tot = diffInfo().counts.total;
+  $('#vtoggle').innerHTML = `<button data-vmode="initial" aria-pressed="${showInitial}" title="${wf.baseline.v ? 'The last published version' : 'The definition as it came into Studio'}. Read-only.">${esc(baseLabel())}</button>`+
+    `<button data-vmode="proposed" aria-pressed="${!showInitial}" title="Your working version. New and changed steps are marked.">Proposed${tot ? ' · ' + tot : ''}</button>`;
   document.querySelectorAll('.ctab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.view===view)));
   $('#v-build').hidden = view!=='build'; $('#v-config').hidden = view!=='config'; $('#v-flow').hidden = view!=='flow';
   if(view==='config') renderConfig(); if(view==='flow') renderFlow();
@@ -1000,34 +1205,57 @@ function renderAll(keepInspector){ renderMeta(); renderBuild(); if(!keepInspecto
 function timeAgo(t){ const d = (Date.now()-t)/1000; if(d<60) return 'just now'; if(d<3600) return Math.floor(d/60)+'m ago'; if(d<86400) return Math.floor(d/3600)+'h ago'; return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}); }
 
 /* ---------- Mutations ---------- */
-function change(fn, keepInspector){ snapshot(); fn(); markDirty(); renderAll(keepInspector); }
+function change(fn, keepInspector){ if(readOnly()) return; snapshot(); fn(); markDirty(); renderAll(keepInspector); }
 function stepOf(id){ const f = id && find(id); return f && f.item.kind==='step' ? f.item : null; }
 function addGroupTo(id, name){ const s = stepOf(id); if(!s) return; if(TYPES[s.type].noGroup){ toast(s.type==='checklist' ? 'Assign groups to each checklist item in Step details' : `${TYPES[s.type].label} steps run as the system, so they take no group`); return; } if(!s.groups.includes(name)) change(()=>s.groups.push(name)); }
 function addRule(id, text){ const s = stepOf(id); if(!s || s.conds.includes(text)) return; if(isOwned(text)){ toast("Workday owned conditions stay with their delivered step and can't be added to another one"); return; } const l = laneOf(id); if(l && l.rule===text){ toast('This step already carries that rule from its path'); return; } change(()=>s.conds.push(text)); renderPalette(); }
 function stripRule(x, text){ if(x.kind==='par') x.steps.forEach(s=>stripRule(s, text)); else if(x.conds) x.conds = x.conds.filter(c=>c!==text); }
 function setLaneRule(laneId, text){ const f = findLane(laneId); if(!f) return; if(isOwned(text)){ toast("Workday owned conditions can't be used as a path rule"); return; } change(()=>{ f.lane.rule = text; if(!f.lane.name || /^Path \d+$/.test(f.lane.name)) f.lane.name = shortRule(text); f.lane.steps.forEach(x=>stripRule(x, text)); }); renderPalette(); }
 function removeItem(id){
+  if(readOnly()) return;
   const f = find(id); if(!f) return;
   const label = f.item.kind==='complete' ? 'Document approved block' : f.item.kind==='split' ? 'Split' : f.item.kind==='par' ? 'Parallel block' : 'Step';
   change(()=>{ f.list.splice(f.index,1); if(sel===id) sel=null; }); renderPalette(); toast(`${label} deleted`, 'Undo', undo);
 }
 function duplicate(id){
+  if(readOnly()) return;
   const f = find(id); if(!f) return;
   if(f.item.kind==='complete'){ toast('There can only be one Document approved block'); return; }
   const c = withNewIds(f.item);
   change(()=>{ f.list.splice(f.index+1, 0, c); sel = c.id; }); toast('Duplicated');
 }
 function pasteClip(){
-  if(!clip){ toast('Nothing copied yet'); return; }
-  const c = withNewIds(clip);
+  if(readOnly()) return;
+  if(!clip || !clip.length){ toast('Nothing copied yet'); return; }
+  const cs = clip.map(withNewIds), hasSplit = cs.some(c=>c.kind==='split'), allSteps_ = cs.every(c=>c.kind==='step');
+  const run = selItems(), at = run ? run[run.length-1].id : sel;
   let list = wf.items, idx = wf.items.length;
-  const f = sel && find(sel), l = sel && sel.startsWith('lane:') && findLane(sel);
+  const f = at && find(at), l = at && at.startsWith('lane:') && findLane(at);
   if(f){
     list = f.list; idx = f.index + 1;
-    if(c.kind==='split' && list!==wf.items){ list = wf.items; idx = wf.items.length; }
-    if(c.kind!=='step' && f.par){ const pf = find(f.par.id); list = pf.list; idx = pf.index+1; }
-  } else if(l && c.kind!=='split'){ list = l.lane.steps; idx = list.length; }
-  change(()=>{ list.splice(idx, 0, c); sel = c.id; }); toast('Pasted');
+    if(hasSplit && list!==wf.items){ list = wf.items; idx = wf.items.length; }
+    if(!allSteps_ && f.par){ const pf = find(f.par.id); list = pf.list; idx = pf.index+1; }
+  } else if(l && !hasSplit){ list = l.lane.steps; idx = list.length; }
+  change(()=>{ list.splice(idx, 0, ...cs); multi = cs.map(c=>c.id); anchor = multi[0]; sel = multi[multi.length-1]; }); toast(cs.length > 1 ? `Pasted ${cs.length} blocks` : 'Pasted');
+}
+function copySel(){
+  const run = selItems(), items = (run || [find(sel) && find(sel).item]).filter(Boolean);
+  const keep = items.filter(x=>x.kind!=='complete');
+  if(!keep.length){ toast('There can only be one Document approved block'); return; }
+  clip = keep.map(clone);
+  toast((keep.length > 1 ? `Copied ${keep.length} blocks` : 'Copied') + (keep.length < items.length ? ' (Document approved left out, there can only be one)' : '') + '. Select where it goes and press Ctrl/⌘ V');
+}
+function duplicateRun(){
+  if(readOnly()) return;
+  const run = selItems(); if(!run) return;
+  const f = find(run[run.length-1].id), cs = run.filter(x=>x.kind!=='complete').map(withNewIds);
+  change(()=>{ f.list.splice(f.index+1, 0, ...cs); multi = cs.map(c=>c.id); anchor = multi[0]; sel = multi[multi.length-1]; }); toast(`Duplicated ${cs.length} blocks`);
+}
+function removeRun(){
+  if(readOnly()) return;
+  const run = selItems(); if(!run) return;
+  const f = find(run[0].id);
+  change(()=>{ f.list.splice(f.index, run.length); multi = []; sel = null; }); renderPalette(); toast(`${run.length} blocks deleted`, 'Undo', undo);
 }
 function insertBeforeCompletion(){ const ci = wf.items.findIndex(i=>i.kind==='complete'); return ci<0 ? wf.items.length : ci; }
 function addRec(key){
@@ -1054,6 +1282,7 @@ document.addEventListener('pointerdown', e=>{
   if(e.button!==0) return;
   if(e.target.closest('.x, .tools, .help-chip, input, select, textarea, a, .btn, .lane-head, .lane.add, summary')) return;
   const src = e.target.closest('[data-drag]'); if(!src) return;
+  if(showInitial && src.closest('#script, #palette')) return;
   if(src.classList.contains('wide') && (e.target.closest('.lanes-row') || e.target.closest('.stack.row'))) return;
   drag = {src, x0:e.clientX, y0:e.clientY, started:false, copy:e.altKey};
 });
@@ -1071,7 +1300,13 @@ function startDrag(e){
   let ghostHTML;
   if(kind==='block'){
     const id = src.dataset.id, f = find(id); if(!f){ drag=null; return; }
-    if(drag.copy && f.item.kind!=='complete'){ drag.payload = {kind:'item', item:withNewIds(f.item), isMove:false}; }
+    const run = multiOn() && multi.includes(id) ? selItems() : null;
+    if(run){
+      const fr = find(run[0].id);
+      if(drag.copy){ const items = run.filter(x=>x.kind!=='complete').map(withNewIds); drag.payload = {kind:'item', item:items[0], items, isMove:false}; }
+      else { snapshot(); drag.payload = {kind:'item', item:run[0], items:run, fromList:fr.par?'par:'+fr.par.id:fr.lane?'lane:'+fr.lane.id:'root', fromIndex:fr.index, isMove:true}; fr.list.splice(fr.index, run.length); renderBuild(); }
+    }
+    else if(drag.copy && f.item.kind!=='complete'){ drag.payload = {kind:'item', item:withNewIds(f.item), isMove:false}; }
     else {
       drag.copy = false; snapshot();
       drag.payload = {kind:'item', item:f.item, fromList:f.par?'par:'+f.par.id:f.lane?'lane:'+f.lane.id:'root', fromIndex:f.index, isMove:true};
@@ -1081,6 +1316,9 @@ function startDrag(e){
   } else if(kind==='new' || kind==='newpar' || kind==='newsplit' || kind==='newcomp'){
     const item = kind==='new' ? S(src.dataset.type) : kind==='newpar' ? P([]) : kind==='newsplit' ? Split() : Comp();
     drag.payload = {kind:'item', item, isMove:false}; ghostHTML = itemHTML(item, {});
+  } else if(kind==='chain'){
+    const c = chains().find(x=>x.id===src.dataset.chain); if(!c){ drag=null; return; }
+    const items = c.items.map(withNewIds); drag.payload = {kind:'item', item:items[0], items, isMove:false}; ghostHTML = src.outerHTML;
   } else if(kind==='rec'){
     const r = recList().find(x=>x.key===src.dataset.rec); if(!r){ drag=null; return; }
     drag.payload = {kind:'item', item: r.comp ? Comp() : r.make(), isMove:false}; ghostHTML = src.outerHTML;
@@ -1095,13 +1333,13 @@ function overPalette(x,y){ const r = $('.palette').getBoundingClientRect(); retu
 function computeTarget(x,y){
   const cv = $('#v-build').getBoundingClientRect();
   if(view!=='build' || x<cv.left || x>cv.right || y<cv.top || y>cv.bottom) return null;
-  const k = drag.payload.item.kind;
+  const its = drag.payload.items || [drag.payload.item], rootOnly = its.some(i=>i.kind==='split' || i.kind==='complete'), hasPar = its.some(i=>i.kind==='par');
   drag.ph.remove();
   let best = null, bestArea = Infinity;
   document.querySelectorAll('#script .stack').forEach(st=>{
     const key = st.dataset.list, root = key==='root';
-    if((k==='split' || k==='complete') && !root) return;
-    if(k==='par' && key.startsWith('par:')) return;
+    if(rootOnly && !root) return;
+    if(hasPar && key.startsWith('par:')) return;
     const r = st.getBoundingClientRect();
     const padX = root ? 900 : 8, padY = root ? 3000 : 8;
     if(x>=r.left-padX && x<=r.right+padX && y>=r.top-padY && y<=r.bottom+padY){
@@ -1124,7 +1362,7 @@ function pillTarget(x,y){
   return bw;
 }
 function checklistTarget(x,y){
-  const it = drag.payload.item; if(it.kind!=='step' || it.type!=='todo') return null;
+  const it = drag.payload.item; if(drag.payload.items && drag.payload.items.length > 1) return null; if(it.kind!=='step' || it.type!=='todo') return null;
   const el = hitAt(x,y), bw = el && el.closest('#script .bw[data-type="checklist"]');
   return bw && bw.dataset.id!==it.id ? bw : null;
 }
@@ -1149,22 +1387,27 @@ function endDrag(e){
   if(p.kind==='item'){
     const t = drag.target, onTrash = overPalette(x,y), cl = drag.checklist; finishDragUI();
     if(cl){ if(!p.isMove) snapshot(); todoIntoChecklist(p.item, cl.dataset.id); sel = cl.dataset.id; markDirty(); renderAll(); toast('Added to the checklist as an item', p.isMove ? 'Undo' : '', p.isMove ? undo : null); return; }
+    const its = p.items || [p.item];
     if(t){
-      if(!p.isMove && p.item.kind==='complete' && hasCompletion()){ toast('There can only be one Document approved block'); return; }
+      if(!p.isMove && its.some(i=>i.kind==='complete') && hasCompletion()){ toast('There can only be one Document approved block'); return; }
       const key = t.stack.dataset.list, list = listFor(key); if(!p.isMove) snapshot();
-      if(key.startsWith('par:')) p.item.sub = false;
-      if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(p.item, l.rule); }
-      list.splice(t.index, 0, p.item); sel = p.item.id; markDirty(); renderAll(); renderPalette();
-      if(drag.copy) toast('Copied');
-    } else if(p.isMove && onTrash){ if(sel===p.item.id) sel = null; markDirty(); renderAll(); renderPalette(); toast('Deleted', 'Undo', undo); }
-    else if(p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(Math.min(p.fromIndex, list.length), 0, p.item); hist.pop(); renderAll(); }
+      its.forEach(it=>{
+        if(key.startsWith('par:')) it.sub = false;
+        if(key.startsWith('lane:')){ const l = findLane(key).lane; if(l.rule) stripRule(it, l.rule); }
+      });
+      list.splice(t.index, 0, ...its);
+      if(its.length > 1){ multi = its.map(i=>i.id); anchor = multi[0]; sel = multi[multi.length-1]; } else sel = p.item.id;
+      markDirty(); renderAll(); renderPalette();
+      if(drag.copy) toast(its.length > 1 ? `Copied ${its.length} blocks` : 'Copied');
+    } else if(p.isMove && onTrash){ if(its.some(i=>i.id===sel)) sel = null; multi = []; markDirty(); renderAll(); renderPalette(); toast(its.length > 1 ? `${its.length} blocks deleted` : 'Deleted', 'Undo', undo); }
+    else if(p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(Math.min(p.fromIndex, list.length), 0, ...its); hist.pop(); renderAll(); }
   } else {
     const tg = drag.pillTarget; finishDragUI(); if(!tg) return;
     if(tg.classList.contains('lane')) setLaneRule(tg.dataset.lane, p.value);
     else { sel = tg.dataset.id; p.kind==='group' ? addGroupTo(sel, p.value) : addRule(sel, p.value); }
   }
 }
-function cancelDrag(){ const p = drag.payload; finishDragUI(); if(p && p.kind==='item' && p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(p.fromIndex,0,p.item); hist.pop(); renderAll(); } }
+function cancelDrag(){ const p = drag.payload; finishDragUI(); if(p && p.kind==='item' && p.isMove){ const list = listFor(p.fromList) || wf.items; list.splice(p.fromIndex,0,...(p.items || [p.item])); hist.pop(); renderAll(); } }
 
 /* ---------- Clicks ---------- */
 document.addEventListener('toggle', e=>{ const d = e.target; if(d.matches && d.matches('details.pgrp')){ d.open ? palOpen.add(d.dataset.grp) : palOpen.delete(d.dataset.grp); store.set('bpws.palOpen', [...palOpen]); } }, true);
@@ -1172,6 +1415,15 @@ document.addEventListener('click', e=>{
   if(Date.now() - justDragged < 250) return;
   const t = e.target;
   if(t.closest('#script select')) return;
+  const vm = t.closest('[data-vmode]'); if(vm){ showInitial = vm.dataset.vmode==='initial'; document.body.classList.toggle('readonly', showInitial); sel = null; multi = []; renderAll(); return; }
+  if(t.closest('[data-publish]')){ showPublish(); return; }
+  const rs = t.closest('[data-restore]'); if(rs){ restoreStep(rs.dataset.restore); return; }
+  const chd = t.closest('[data-chdel]'); if(chd){ if(chd.dataset.armed){ store.set('bpws.chains', chains().filter(x=>x.id!==chd.dataset.chdel)); renderPalette(); toast('Chain deleted'); } else { chd.dataset.armed = '1'; chd.textContent = 'Confirm delete'; } return; }
+  if(t.id==='m-copy'){ copySel(); return; }
+  if(t.id==='m-dup'){ duplicateRun(); return; }
+  if(t.id==='m-del'){ removeRun(); return; }
+  if(t.id==='m-chain'){ promptChain(selItems() || []); return; }
+  if(t.id==='s-chain'){ const f = find(sel); if(f) promptChain([f.item]); return; }
   const del = t.closest('[data-del]'); if(del){ removeItem(del.dataset.del); return; }
   const cp = t.closest('[data-copy]'); if(cp){ duplicate(cp.dataset.copy); return; }
   const ra = t.closest('[data-recadd]'); if(ra){ addRec(ra.dataset.recadd); return; }
@@ -1194,14 +1446,19 @@ document.addEventListener('click', e=>{
   if(pal){
     const k = pal.dataset.drag;
     if(k==='newcomp'){ addRec('__comp'); return; }
+    if(k==='chain'){ insertChain(pal.dataset.chain); return; }
     if(k==='new' || k==='newpar' || k==='newsplit'){ const it = k==='new' ? S(pal.dataset.type) : k==='newpar' ? P([]) : Split(); change(()=>{ wf.items.splice(insertBeforeCompletion(), 0, it); sel = it.kind==='split' ? 'lane:'+it.lanes[0].id : it.id; }); return; }
     if(sel && sel.startsWith('lane:') && k==='rule'){ setLaneRule(sel, pal.dataset.label); return; }
     if(!stepOf(sel)){ toast('Select a step first, or drag the pill onto one'); return; }
     k==='group' ? addGroupTo(sel, pal.dataset.name) : addRule(sel, pal.dataset.label); return;
   }
   const bw = t.closest('#script .bw');
-  if(bw && !t.closest('.endw')){ sel = bw.dataset.id; renderBuild(); renderInspector(); return; }
-  if(t.closest('#canvas') && !t.closest('.bw')){ if(sel){ sel = null; renderBuild(); renderInspector(); } return; }
+  if(bw && !t.closest('.endw')){
+    if(e.shiftKey && !showInitial && anchor && bw.dataset.id!=='init' && find(bw.dataset.id)){ if(!selectRange(bw.dataset.id)) toast('Selections have to be in the same column, next to each other'); }
+    else { sel = bw.dataset.id; anchor = sel; multi = []; }
+    renderBuild(); renderInspector(); return;
+  }
+  if(t.closest('#canvas') && !t.closest('.bw')){ if(sel){ sel = null; multi = []; renderBuild(); renderInspector(); } return; }
   const go = t.closest('[data-goto]');
   if(go && go.dataset.goto){ sel = go.dataset.goto; view = 'build'; renderAll(); const n = document.querySelector(sel.startsWith('lane:') ? `#script [data-lane="${sel.slice(5)}"]` : `#script [data-id="${sel}"]`); n && n.scrollIntoView({block:'center', inline:'center', behavior:'smooth'}); return; }
   const pt = t.closest('.ptab'); if(pt){ ptab = pt.dataset.ptab; renderPalette(); return; }
@@ -1213,7 +1470,7 @@ document.addEventListener('click', e=>{
   }
   if(t.id==='ci-add'){ const s = stepOf(sel); change(()=>s.items.push(Item())); setTimeout(()=>{ const ins = document.querySelectorAll('[data-cit]'); ins.length && ins[ins.length-1].focus(); }, 0); return; }
   if(t.dataset.cirm!==undefined){ const s = stepOf(sel); change(()=>s.items.splice(+t.dataset.cirm,1)); return; }
-  if(t.id==='s-copy'){ const f = find(sel); clip = clone(f.item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); return; }
+  if(t.id==='s-copy'){ copySel(); return; }
   if(t.dataset.grm!==undefined){ const s = stepOf(sel); change(()=>s.groups.splice(+t.dataset.grm,1)); return; }
   if(t.dataset.crm!==undefined){ const s = stepOf(sel); change(()=>s.conds.splice(+t.dataset.crm,1)); return; }
   if(t.id==='s-cond-set'){ const v = $('#s-cond-new').value.trim(); if(v){ if(!wf.customRules.includes(v)) wf.customRules.push(v); addRule(sel, v); } return; }
@@ -1278,14 +1535,14 @@ document.addEventListener('input', e=>{
 document.addEventListener('keydown', e=>{
   if(!$('#home').hidden && $('#modal').hidden) return;
   const typing = e.target.matches('input, textarea, select'), mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
-  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click(); else if(e.key==='Enter' && e.target.id==='bp-search'){ const b = document.querySelector('#bp-grid .bpcard:not([hidden])'); b ? b.click() : $('#bp-other-go').click(); } return; }
+  if(!$('#modal').hidden){ if(e.key==='Escape') closeModal(); else if(e.key==='Enter' && e.target.id==='ch-name') saveChain(); else if(e.key==='Enter' && e.target.id==='pub-note') doPublish(); else if(e.key==='Enter' && e.target.id==='bp-other') $('#bp-other-go').click(); else if(e.key==='Enter' && e.target.id==='bp-search'){ const b = document.querySelector('#bp-grid .bpcard:not([hidden])'); b ? b.click() : $('#bp-other-go').click(); } return; }
   if(mod && k==='z' && !typing){ e.preventDefault(); undo(); }
   else if(mod && k==='s'){ e.preventDefault(); saveDesign(); }
-  else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); duplicate(sel); }
-  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ if(find(sel).item.kind==='complete'){ toast('There can only be one Document approved block'); return; } clip = clone(find(sel).item); toast('Copied. Select where it goes and press Ctrl/⌘ V'); }
+  else if(mod && k==='d' && !typing && sel && find(sel)){ e.preventDefault(); multiOn() ? duplicateRun() : duplicate(sel); }
+  else if(mod && k==='c' && !typing && sel && find(sel) && !String(window.getSelection())){ copySel(); }
   else if(mod && k==='v' && !typing && clip){ e.preventDefault(); pasteClip(); }
-  else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); sel.startsWith('lane:') ? removeLane(sel) : removeItem(sel); }
-  else if(e.key==='Escape'){ if(drag && drag.started){ cancelDrag(); drag=null; } else if(sel){ sel = null; renderBuild(); renderInspector(); } }
+  else if((e.key==='Delete'||e.key==='Backspace') && !typing && sel && sel!=='init'){ e.preventDefault(); multiOn() ? removeRun() : sel.startsWith('lane:') ? removeLane(sel) : removeItem(sel); }
+  else if(e.key==='Escape'){ if(drag && drag.started){ cancelDrag(); drag=null; } else if(sel){ sel = null; multi = []; renderBuild(); renderInspector(); } }
   else if(e.key==='Enter' && e.target.id==='g-new') addCustomGroup();
   else if(e.key==='Enter' && e.target.id==='c-new') $('#c-add').click();
   else if(e.key==='Enter' && e.target.id==='s-cond-new') $('#s-cond-set').click();
@@ -1330,12 +1587,15 @@ function normalize(w){
     customGroups:w.customGroups||[], customRules:w.customRules||w.customConds||[]});
   out.items = (w.items||[]).map(it=>fix(it, w.axes));
   if(completeId && !out.items.some(i=>i.kind==='complete')) placeCompletionAfter(out.items, completeId);
+  /* No baseline yet (an import, a delivered default, or a design saved before versions existed): what's loaded is the Initial version */
+  out.baseline = w.baseline && Array.isArray(w.baseline.items) ? clone(w.baseline) : {items:clone(out.items), v:0, at:null};
+  out.versions = Array.isArray(w.versions) ? clone(w.versions) : [];
   return out;
 }
 function placeCompletionAfter(items, stepId){ const holds = it => it.id===stepId || (it.steps||[]).some(holds) || (it.lanes||[]).some(l=>l.steps.some(holds)); const i = items.findIndex(holds); if(i>=0) items.splice(i+1, 0, Comp()); }
 function loadWf(w, id, saved){
   lastImport = null;
-  wf = normalize(clone(w)); docId = id || null; sel = null; hist = []; customSpec.clear();
+  wf = normalize(clone(w)); docId = id || null; sel = null; multi = []; anchor = null; showInitial = false; document.body.classList.remove('readonly'); hist = []; customSpec.clear();
   dirty = !id; savedAt = saved || null; store.set('bpws5.draft', {wf, docId, dirty, savedAt});
   renderAll(); renderPalette();
 }
@@ -1392,7 +1652,7 @@ function startNew(v){
   if(v==='import'){ $('#import-file').click(); return; }
   if(v==='example') loadWf(exampleWf(pickBP || 'Supplier Invoice Event'));
   else if(v==='blank') loadWf(blankWf(pickBP || wf.bp));
-  else { const tp = templates().find(x=>x.id===v.slice(2)); if(!tp) return; const w = clone(tp.wf); w.name=''; w.client=''; loadWf(w); }
+  else { const tp = templates().find(x=>x.id===v.slice(2)); if(!tp) return; const w = clone(tp.wf); w.name=''; w.client=''; w.baseline = null; w.versions = []; loadWf(w); }
   closeModal(); goBuild(); toast('New definition ready');
 }
 function openDesign(id){ const d = designs().find(x=>x.id===id); if(d){ loadWf(d.wf, d.id, d.updatedAt); closeModal(); goBuild(); } }
@@ -1411,6 +1671,8 @@ $('#home').addEventListener('click', e=>{
 });
 $('#modal-b').addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
+  if(t.id==='pub-go') return doPublish();
+  if(t.id==='ch-save') return saveChain();
   if(t.dataset.bp) return showStart(t.dataset.bp);
   if(t.id==='bp-other-go'){ const v = $('#bp-other').value.trim(); if(v) showStart(v); else $('#bp-other').focus(); return; }
   if(t.id==='bp-back') return showNew();
@@ -1525,6 +1787,7 @@ function importRows(rows, name){
         w.items[i] = Split([Lane(shortRule(best.rule), best.rule, steps)]);
       }
     }
+    w.baseline = null;
     return w;
   }
   throw new Error('nohdr');
@@ -1572,7 +1835,7 @@ function stepTitle(s){
  return {approval:'Approve the ' + n, review:'Review the ' + n, chain:'Approval chain', cchain:'Consolidated approval chain', checklist:s.specify ? sentence(s.specify) : 'Checklist', action:'Action (task not picked yet)', service:'Service (not picked yet)', todo:'To Do (text needed)', integration:'Integration (not named yet)'}[s.type] || TYPES[s.type].label;
 }
 function flowCard(s, num, gateRule){
- const T = TYPES[s.type] || TYPES.action, IW = FL.CW - 24, after = isAfterCompletion(s.id);
+ const T = TYPES[s.type] || TYPES.action, IW = FL.CW - 24, after = isAfterCompletion(s.id), chg = DIFF && DIFF.status[s.id];
  const head = fmWrap(stepTitle(s), 12.5, 700, IW).slice(0, 3);
  let label = 'Approver / reviewer', whoTxt, ws = 15, ww = 700;
  if(s.type==='checklist'){ label = 'Checklist items'; ws = 12; ww = 600; whoTxt = s.items.length ? s.items.map(i=>'• ' + (i.text||'Untitled item') + (i.assignee ? ' (' + sentence(i.assignee) + ')' : '')).join('\n') : 'No items yet'; }
@@ -1589,7 +1852,7 @@ function flowCard(s, num, gateRule){
  const condL = conds.length ? conds.map(c=>fmWrap(condText(c), 12, 500, IW-12)) : null;
  const hH = 38 + head.length*16, bH = 34 + who.length*(ws+4) + subL.length*15, dH = 48;
  const cH = 36 + (condL ? condL.reduce((a,l)=>a + l.length*16, 0) : 16);
- return {id:s.id, num, head, tag:after ? 'AFTER APPROVAL' : T.label.toUpperCase(), after, label, who, ws, ww, subL, due, condL, hH, bH, dH, h:hH+bH+dH+cH};
+ return {id:s.id, num, head, tag:(chg==='new' ? 'NEW · ' : chg==='mod' ? 'CHANGED · ' : '') + (after ? 'AFTER APPROVAL' : T.label.toUpperCase()), chg, after, label, who, ws, ww, subL, due, condL, hH, bH, dH, h:hH+bH+dH+cH};
 }
 function drawCard(c, x, y, h){
  const w = FL.CW, r = 6;
@@ -1598,6 +1861,7 @@ function drawCard(c, x, y, h){
  o += ft(x+12, y+22, 'Step ' + c.num, 14, 800, '#FFFFFF');
  o += `<text x="${x+w-12}" y="${y+21}" font-family="${FL.FONT}" font-size="8.5" font-weight="700" fill="#FFFFFF" fill-opacity=".75" text-anchor="end" letter-spacing=".5">${esc(c.tag)}</text>`;
  c.head.forEach((t,i)=> o += ft(x+12, y+40+i*16, t, 12.5, 700, '#FFFFFF'));
+ if(c.chg) o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="none" stroke="${c.chg==='new' ? '#2FBF71' : '#F0A030'}" stroke-width="3"/>`;
  let yy = y + c.hH, ly;
  o += `<rect x="${x+.6}" y="${yy}" width="${w-1.2}" height="${c.bH}" fill="${FL.BAND}"/>` + sepLine(x, yy, w);
  o += ft(x+12, yy+23, c.label, 11, 600, FL.LBL);
@@ -1655,6 +1919,7 @@ function drawSeq(us, x, y, rowH, cardH, out){
 }
 function flowUnits(){
  const nums = stepNumbers(), units = [];
+ if(!wf.baseline) DIFF = null;
  const range = steps => { const ns = []; const add = x => x.kind==='par' ? x.steps.forEach(add) : ns.push(nums[x.id]); steps.forEach(add); return !ns.length ? '' : ns.length===1 ? 'step ' + ns[0] : `steps ${ns[0]} to ${ns[ns.length-1]}`; };
  const cardU = (s, rule) => { const c = flowCard(s, nums[s.id], rule); return {w:FL.CW, h:c.h, stretch:true, draw:(x,y,h)=>drawCard(c, x, y, h)}; };
  const laneUs = l => l.steps.filter(x=>x.kind!=='par' || x.steps.length).map(x=>x.kind==='par' ? parU(x, l.rule, nums) : cardU(x, l.rule));
@@ -1712,8 +1977,9 @@ function flowSVG(opts={}){
   y += r.h + FL.RG;
  });
  const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
- const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, 'Proposed ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}), opts.pages>1 ? `Page ${opts.page} of ${opts.pages}` : ''].filter(Boolean).join(' | ');
- const legend = fmWrap(`Read left to right, row by row. A gate is the condition that decides whether the steps it lists run. Dashed frames group steps that run in parallel or on conditional paths. Steps marked After approval run once the ${bpCat().noun||'document'} is approved.`, 10.5, 500, width - P*2).slice(0, 2);
+ const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, (showInitial ? baseLabel() : 'Proposed') + ' ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}), opts.pages>1 ? `Page ${opts.page} of ${opts.pages}` : ''].filter(Boolean).join(' | ');
+ const chgTxt = DIFF && DIFF.counts.total ? ` Compared with ${baseLabel()}: green outline is a new step, amber is a changed step${DIFF.removed.length ? `. Removed: ${DIFF.removed.map(removedLabel).join('; ')}` : ''}.` : '';
+ const legend = fmWrap(`Read left to right, row by row. A gate is the condition that decides whether the steps it lists run. Dashed frames group steps that run in parallel or on conditional paths. Steps marked After approval run once the ${bpCat().noun||'document'} is approved.${chgTxt}`, 10.5, 500, width - P*2).slice(0, 3);
  const head = `<image href="${LOGO}" x="${width-P-150}" y="${P-4}" width="150" height="45"/>`+
   ft(P, P+18, title, 19, 800, '#29357F') + ft(P, P+40, sub, 12, 500, FL.MUTED) +
   `<rect x="${P}" y="${P+58}" width="${width-P*2}" height="2" fill="#00AEEF"/>`;
@@ -1721,11 +1987,14 @@ function flowSVG(opts={}){
  return {svg:`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(title)} flow"><rect width="100%" height="100%" fill="#FFFFFF"/>${head}${body}${foot}</svg>`, width, height};
 }
 function renderFlow(){
+ DIFF = showInitial ? null : diffInfo();
+ asShown(()=>{
  const plan = flowPlan(), {svg} = flowSVG({M:plan.M});
  $('#flow').innerHTML = `<div class="flow-bar"><p class="help">This is the flow page of the PDF. Steps run left to right and wrap to the next row${plan.pages.length>1 ? `. It is too long for one page, so the PDF splits it across ${plan.pages.length} pages` : ''}. Click a step or gate to edit it.</p>`+
   `<label>Cards per row <select id="flow-cols">${[0,2,3,4,5,6].map(n=>`<option value="${n}"${n===flowCols?' selected':''}>${n ? n : 'Auto (fit one page)'}</option>`).join('')}</select></label>`+
   `<button class="btn primary sm" data-exp="pdf">Download PDF</button></div><div class="flow-sheet">${svg}</div>`;
  $('#flow-cols').onchange = e => { flowCols = +e.target.value || 0; store.set('bpws.flowCols', flowCols); renderFlow(); };
+ });
 }
 
 /* ---------- Exports ---------- */
@@ -1739,6 +2008,9 @@ function svgToCanvas(scale, opts){
   return new Promise((res, rej)=>{ const img = new Image(); img.onload = ()=>{ const c = document.createElement('canvas'); c.width = width*scale; c.height = height*scale; const ctx = c.getContext('2d'); ctx.scale(scale, scale); ctx.drawImage(img,0,0); res({canvas:c, width, height}); }; img.onerror = rej; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
 }
 async function doExport(kind){
+  /* Exports are always the proposed version, with its changes marked */
+  if(showInitial){ showInitial = false; document.body.classList.remove('readonly'); renderAll(); toast('Exports use the Proposed version'); }
+  DIFF = diffInfo();
   try{
     if(kind==='json'){ saveFile(new Blob([JSON.stringify({app:'bp-workflow-studio', version:5, exportedAt:new Date().toISOString(), wf}, null, 2)], {type:'application/json'}), fileBase()+'.json'); toast('Design file downloaded'); return; }
     if(kind==='png'){ const {canvas} = await svgToCanvas(2); canvas.toBlob(b=>{ saveFile(b, fileBase()+'_flow.png'); toast('PNG downloaded'); }, 'image/png'); return; }
@@ -1809,11 +2081,11 @@ function toast(msg, actLabel, act){
 }
 
 /* ---------- Boot ---------- */
-$('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps().length) toast('Your work is kept as a draft. Continue it from Home.'); goHome(); }; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo;
+$('#b-new').onclick = showNew; $('#b-open').onclick = ()=>{ if(dirty && allSteps().length) toast('Your work is kept as a draft. Continue it from Home.'); goHome(); }; $('#b-save').onclick = ()=>saveDesign(); $('#b-undo').onclick = undo; $('#b-publish').onclick = showPublish;
 (function boot(){
   const d = store.get('bpws5.draft', null);
   if(d && d.wf && d.wf.init){ wf = normalize(d.wf); docId = d.docId || null; dirty = !!d.dirty; savedAt = d.savedAt || null; }
-  else { wf = exampleWf(); dirty = true; }
+  else { wf = normalize(exampleWf()); dirty = true; }
   renderPalette(); renderAll(); goHome();
   setInterval(renderStatus, 60000);
 })();
