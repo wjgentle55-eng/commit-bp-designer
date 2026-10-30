@@ -1794,7 +1794,7 @@ function importRows(rows, name){
 }
 
 /* ---------- Flow layout: steps run left to right and wrap to rows (Flow tab, PNG, PDF) ---------- */
-const FL = {CW:232, AG:46, PAD:36, TOP:84, RG:40, FOOT:46, FONT:'Helvetica, Arial, sans-serif', HEAD:'#1D5D7E', AFTER:'#5E6B7E', BAND:'#DCEBF5', EDGE:'#2C3E50', SEP:'#D4DAE6', ARROW:'#2F6F8F', INK:'#171E33', MUTED:'#59647C', LBL:'#33475B'};
+const FL = {PENDING:'#F5C400', PATH:'#1D5D7E', CW:232, AG:46, PAD:36, TOP:84, RG:40, FOOT:46, FONT:'Helvetica, Arial, sans-serif', HEAD:'#1D5D7E', AFTER:'#5E6B7E', BAND:'#DCEBF5', EDGE:'#2C3E50', SEP:'#D4DAE6', ARROW:'#2F6F8F', INK:'#171E33', MUTED:'#59647C', LBL:'#33475B'};
 const PAGE = {landscape:[792,612], portrait:[612,792]}, PM = 24;
 let flowCols = +store.get('bpws.flowCols', 0) || 0, fmCtx = null;
 function fmWrap(text, size, weight, maxW){
@@ -1814,7 +1814,7 @@ const condText = c => String(c||'').replace(/\(Workday Owned\)/i,'').replace(/[?
 const seqW = us => us.reduce((a,u,i)=>a + u.w + (i ? FL.AG : 0), 0);
 const sepLine = (x, y, w) => `<line x1="${x}" y1="${y}" x2="${x+w}" y2="${y}" stroke="${FL.SEP}"/>`;
 const arrowSVG = (x1, x2, y) => { const a = x1 + 7, b = x2 - 7; return `<path d="M${a} ${y}H${b-1}M${b-8} ${y-5.5}L${b} ${y}L${b-8} ${y+5.5}" fill="none" stroke="${FL.ARROW}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`; };
-const frameSVG = (x, y, w, h, color, title, sub) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${color}" fill-opacity=".05" stroke="${color}" stroke-width="1.4" stroke-dasharray="6 4"/>` + ft(x+14, y+20, title, 12, 800, color) + ft(x+14, y+34, sub, 10.5, 500, FL.MUTED);
+const frameSVG = (x, y, w, h, color, title, sub, sw) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${color}" fill-opacity=".05" stroke="${color}" stroke-width="${sw || 1.4}" stroke-dasharray="${sw ? '10 6' : '6 4'}"/>` + ft(x+14, y+20, title, 12, 800, color) + ft(x+14, y+34, sub, 10.5, 500, FL.MUTED);
 const linesH = lines => lines.reduce((a,l)=>a + l.s + 5 + (l.g||0), 0);
 const drawLines = (lines, cx, y, h) => { let o = '', ly = y + (h - linesH(lines))/2; lines.forEach(l=>{ ly += l.s + 5 + (l.g||0); o += ft(cx, ly-5, l.t, l.s, l.w, l.c, 'middle'); }); return o; };
 
@@ -1861,7 +1861,7 @@ function drawCard(c, x, y, h){
  o += ft(x+12, y+22, 'Step ' + c.num, 14, 800, '#FFFFFF');
  o += `<text x="${x+w-12}" y="${y+21}" font-family="${FL.FONT}" font-size="8.5" font-weight="700" fill="#FFFFFF" fill-opacity=".75" text-anchor="end" letter-spacing=".5">${esc(c.tag)}</text>`;
  c.head.forEach((t,i)=> o += ft(x+12, y+40+i*16, t, 12.5, 700, '#FFFFFF'));
- if(c.chg) o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="none" stroke="${c.chg==='new' ? '#2FBF71' : '#F0A030'}" stroke-width="3"/>`;
+ if(c.chg) o += `<rect x="${x+2.5}" y="${y+2.5}" width="${w-5}" height="${h-5}" rx="${r}" fill="none" stroke="${FL.PENDING}" stroke-width="5"/>`;
  let yy = y + c.hH, ly;
  o += `<rect x="${x+.6}" y="${yy}" width="${w-1.2}" height="${c.bH}" fill="${FL.BAND}"/>` + sepLine(x, yy, w);
  o += ft(x+12, yy+23, c.label, 11, 600, FL.LBL);
@@ -1906,8 +1906,8 @@ function splitU(sp, range, laneUs){
  const lanes = sp.lanes.map((l,i)=>{ const us = [gateU(l, range(l.steps), i), ...laneUs(l)]; return {us, w:seqW(us), h:Math.max(...us.map(u=>u.h)), ch:Math.max(...us.filter(u=>u.stretch).map(u=>u.h))}; });
  const w = P*2 + Math.max(...lanes.map(l=>l.w)), h = TH + lanes.reduce((a,l)=>a + l.h, 0) + LG*(lanes.length-1) + P;
  return {w, h, draw:(x,y)=>{
-  let o = frameSVG(x, y, w, h, SPLIT_COLOR, 'Conditional paths', 'Each path runs only when its gate condition is met'), ly = y + TH;
-  lanes.forEach((l,i)=>{ if(i) o += `<line x1="${x+P}" y1="${ly-LG/2}" x2="${x+w-P}" y2="${ly-LG/2}" stroke="${SPLIT_COLOR}" stroke-opacity=".35" stroke-dasharray="3 4"/>`; o += drawSeq(l.us, x+P, ly, l.h, l.ch); ly += l.h + LG; });
+  let o = frameSVG(x, y, w, h, FL.PATH, lanes.length > 1 ? 'Conditional paths' : 'Conditional path', lanes.length > 1 ? 'Each path runs only when its gate condition is met' : 'Runs only when its gate condition is met', 3.5), ly = y + TH;
+  lanes.forEach((l,i)=>{ if(i) o += `<line x1="${x+P}" y1="${ly-LG/2}" x2="${x+w-P}" y2="${ly-LG/2}" stroke="${FL.PATH}" stroke-opacity=".45" stroke-width="2" stroke-dasharray="3 4"/>`; o += drawSeq(l.us, x+P, ly, l.h, l.ch); ly += l.h + LG; });
   return o;
  }};
 }
@@ -1929,7 +1929,6 @@ function flowUnits(){
   if(it.kind==='step') units.push(cardU(it));
   else if(it.kind==='par'){ if(it.steps.length) units.push(parU(it, null, nums)); }
   else if(it.kind==='complete') units.push(doneU(compPrev && nums[compPrev.id], i < wf.items.length-1));
-  else if(it.kind==='split' && it.lanes.length===1){ const l = it.lanes[0]; units.push(gateU(l, range(l.steps), null), ...laneUs(l)); }
   else if(it.kind==='split' && it.lanes.length) units.push(splitU(it, range, laneUs));
  });
  return units;
@@ -1978,7 +1977,7 @@ function flowSVG(opts={}){
  });
  const title = wf.name || `${wf.bp||'Business process'} (${wf.def||'Default Definition'})`;
  const sub = [wf.client, wf.bp && `${wf.bp} · ${wf.def||'Default Definition'}`, (showInitial ? baseLabel() : 'Proposed') + ' ' + new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}), opts.pages>1 ? `Page ${opts.page} of ${opts.pages}` : ''].filter(Boolean).join(' | ');
- const chgTxt = DIFF && DIFF.counts.total ? ` Compared with ${baseLabel()}: green outline is a new step, amber is a changed step${DIFF.removed.length ? `. Removed: ${DIFF.removed.map(removedLabel).join('; ')}` : ''}.` : '';
+ const chgTxt = DIFF && DIFF.counts.total ? ` Compared with ${baseLabel()}: a thick yellow outline marks a pending change (a new or changed step)${DIFF.removed.length ? `. Removed: ${DIFF.removed.map(removedLabel).join('; ')}` : ''}.` : '';
  const legend = fmWrap(`Read left to right, row by row. A gate is the condition that decides whether the steps it lists run. Dashed frames group steps that run in parallel or on conditional paths. Steps marked After approval run once the ${bpCat().noun||'document'} is approved.${chgTxt}`, 10.5, 500, width - P*2).slice(0, 3);
  const head = `<image href="${LOGO}" x="${width-P-150}" y="${P-4}" width="150" height="45"/>`+
   ft(P, P+18, title, 19, 800, '#29357F') + ft(P, P+40, sub, 12, 500, FL.MUTED) +
